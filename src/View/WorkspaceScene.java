@@ -19,12 +19,14 @@ public class WorkspaceScene extends AbstractScene {
 		Library widgets = new Library(mtApplication, 0, 0, 200, 200);
 		Library pages = new Library(mtApplication, 800, 0, 200, 200);
 		Page blank = new Page(mtApplication, 250, 250, 400, 400);
-		Widget w = new Widget(mtApplication, 300, 300, 50, 50);
+		Widget w = new Widget(mtApplication, 200, 200, 50, 50);
+		Widget ww = new Widget(mtApplication, 200, 400, 150, 75);
 		
 		this.getCanvas().addChild(blank);
 		this.getCanvas().addChild(widgets);
 		this.getCanvas().addChild(pages);
 		this.getCanvas().addChild(w);
+		this.getCanvas().addChild(ww);
 	}
 
 }
