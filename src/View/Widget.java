@@ -15,7 +15,7 @@ import org.mt4j.util.math.Vector3D;
 
 import processing.core.PApplet;
 
-public class Widget extends MTClipRectangle
+public class Widget extends MTClipRectangle implements Cloneable
 {
 	public Widget(PApplet applet, float x, float y, float width, float height) 
 	{
@@ -26,7 +26,7 @@ public class Widget extends MTClipRectangle
 		this.addGestureListener(DragProcessor.class, new IGestureEventListener() 
 		{
 			public boolean processGestureEvent(MTGestureEvent ge) 
-			{				
+			{
 				DragEvent de = (DragEvent)ge;
 				Widget.this.translateGlobal(de.getTranslationVect());
 				
@@ -103,5 +103,21 @@ public class Widget extends MTClipRectangle
 				return false;
 			}
 		});
+	}
+	
+	
+	public Object clone() 
+	{
+		Widget w = null;
+	    try 
+	    {
+	      	w = (Widget) super.clone();
+	    } catch(CloneNotSupportedException cnse) 
+	    {
+	      	cnse.printStackTrace(System.err);
+	    }
+	    	    
+	    // on renvoie le clone
+	    return w;
 	}
 }
