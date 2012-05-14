@@ -16,8 +16,8 @@ public class WorkspaceScene extends AbstractScene {
 		//Show touches
 		this.registerGlobalInputProcessor(new CursorTracer(mtApplication, this));
 		
-		Library widgets = new Library(mtApplication, 0, 0, 200, 200);
-		Library pages = new Library(mtApplication, 800, 0, 200, 200);
+		WidgetLibrary widgets = new WidgetLibrary(mtApplication, 0, 0, 200, 200);
+		PageLibrary pages = new PageLibrary(mtApplication, 800, 0, 200, 200);
 		Page blank = new Page(mtApplication, 250, 250, 400, 400);
 		Widget w = new Widget(mtApplication, 200, 200, 50, 50);
 		Widget ww = new Widget(mtApplication, 200, 400, 150, 75);
