@@ -1,5 +1,8 @@
 package view;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
+
 import org.mt4j.components.visibleComponents.widgets.MTListCell;
 import org.mt4j.input.inputProcessors.IGestureEventListener;
 import org.mt4j.input.inputProcessors.MTGestureEvent;
@@ -11,10 +14,12 @@ import processing.core.PApplet;
 
 public class WidgetLibrary extends Library 
 {
-
+	protected HashMap<MTListCell, widget.Widget> clones;
+	
 	public WidgetLibrary(PApplet applet, float x, float y, float width, float height)
 	{
 		super(applet, x, y, width, height);
+		clones = new HashMap<MTListCell, widget.Widget>();
 		
 		for ( int i = 0 ; i < 5 ; i++ )
 		{
@@ -43,10 +48,29 @@ public class WidgetLibrary extends Library
 			{
 				DragEvent de = (DragEvent)ge;
 				MTListCell target = (MTListCell) ge.getTarget();
-				widget.Widget w = (widget.Widget) target.getChildByIndex(0);
-				widget.Widget nw = (widget.Widget) w.clone();
-				nw.setFullSize();
-				nw.processGestureEvent(ge);
+				
+				if ( de.getId() == MTGestureEvent.GESTURE_STARTED )
+				{
+					widget.Widget w = (widget.Widget) target.getChildByIndex(0);
+					widget.Widget nw = null;
+					
+					try {
+						nw = w.getClass().getConstructor(w.getClass()).newInstance(w);
+					} catch (Exception e) {
+						e.printStackTrace();
+						return false;
+					}
+					w.getRoot().addChild(nw);
+					nw.setFullSize();
+					nw.processGestureEvent(ge);
+					
+					WidgetLibrary.this.clones.put(target, nw);
+				}
+				else if ( WidgetLibrary.this.clones.get(target) != null )
+				{
+					WidgetLibrary.this.clones.get(target).processGestureEvent(ge);
+				}
+				
 				return false;
 			}
 		});

@@ -15,45 +15,69 @@ import org.mt4j.util.math.Vector3D;
 import processing.core.PApplet;
 import widget.Widget;
 
-public class Page extends MTClipRectangle implements Cloneable
+public class Page extends MTClipRectangle
 {
+	protected PApplet applet;
 	private float h, w;
+	private float mh, mw;
 	
-	public Page(PApplet applet, float x, float y, float width, float height) 
+	public Page(PApplet a, float x, float y, float width, float height) 
 	{
-		super(applet, x, y, 0, width, height);
+		super(a, x, y, 0, width, height);
+		applet = a;
 		h = height;
 		w = width;
 		this.setFillColor(MTColor.WHITE);
 	}
 	
-	public void setMinSize(int _h, int _w)
+	public Page(Page p)
 	{
+		super(p.applet, 0, 0, 0, p.w, p.h);
+		applet = p.applet;
+		h = p.h; 
+		w = p.w;
+		mh = p.mh; 
+		mw = p.mw;
+		this.setPositionGlobal(new Vector3D(p.getCenterPointGlobal().x, p.getCenterPointGlobal().y, 0));
+		this.setMinSize(p.mw, p.mh);
+		this.setFillColor(p.getFillColor());
+		
+		initGesture();
+	}
+	
+	public void setMinSize(float _w, float _h)
+	{
+		this.mh = _h;
+		this.mw = _w;
+		
 		Vector3D pos = this.getCenterPointGlobal();
-		this.setSizeXYGlobal(_h, _w);
-		pos.x = pos.x - (h - _h)/2;
-		pos.y = pos.y - (w - _w)/2;
+		this.setSizeXYGlobal(mw, mh);
+		pos.x = pos.x - (w - mw)/2;
+		pos.y = pos.y - (h - mh)/2;
 		this.setPositionGlobal(pos);
+		
+		initGesture();
 	}
 	
 	public void setFullSize()
 	{
 		this.setSizeXYGlobal(h, w);
-	}	
+	}
 	
-	public Object clone() 
+	private void initGesture()
 	{
-		Page new_object = null;
-	    try 
-	    {
-	    	new_object = (Page) super.clone();
-	    } 
-	    catch(CloneNotSupportedException cnse) 
-	    {
-	      	cnse.printStackTrace(System.err);
-	    }
-	    	    
-	    return new_object;
+		this.removeAllGestureEventListeners(DragProcessor.class);
+		this.addGestureListener(DragProcessor.class, new IGestureEventListener() 
+		{
+			public boolean processGestureEvent(MTGestureEvent ge) 
+			{
+				DragEvent de = (DragEvent)ge;
+				Page.this.translateGlobal(de.getTranslationVect());
+				Page.this.sendToFront();
+				
+				return false;
+			}
+		});
 	}
 
 }

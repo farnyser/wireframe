@@ -18,17 +18,50 @@ import processing.core.PApplet;
 import view.Library;
 import view.Page;
 
-public class Widget extends MTClipRectangle implements Cloneable
+public class Widget extends MTClipRectangle
 {
+	protected PApplet applet;
+	
+	// real size
 	protected float h, w;
 	
-	public Widget(PApplet applet, float x, float y, float width, float height) 
+	// miniature size
+	protected float mh, mw;
+	
+	public Widget(PApplet a, float x, float y, float width, float height) 
 	{
-		super(applet, x, y, 0, width, height);
-		h = width; 
-		w = height;
+		super(a, x, y, 0, width, height);
+		applet = a;
+		w = width; 
+		h = height;
+		mh = h;
+		mw = w;
+		initGesture();
+		initGraphics();
+	}
+	
+	public Widget(Widget widget) 
+	{
+		super(widget.applet, 0, 0, 0, widget.w, widget.h);
+		applet = widget.applet;
+		h = widget.h; 
+		w = widget.w;
+		mh = widget.mh; 
+		mw = widget.mw;
+		initGesture();
+		initGraphics();
+		this.setPositionGlobal(new Vector3D(widget.getCenterPointGlobal().x, widget.getCenterPointGlobal().y, 0));
+		this.setMinSize(mw, mh);
+		this.setFillColor(widget.getFillColor());
+	}
+	
+	protected void initGraphics()
+	{
 		this.setFillColor(MTColor.randomColor());
-		
+	}
+	
+	private void initGesture()
+	{
 		this.removeAllGestureEventListeners(DragProcessor.class);
 		this.addGestureListener(DragProcessor.class, new IGestureEventListener() 
 		{
@@ -94,7 +127,7 @@ public class Widget extends MTClipRectangle implements Cloneable
 						// dragged to page/widget
 						else if ( c instanceof Page || c instanceof Widget ) 
 						{ 
-							System.out.println("Widget dragged to page/widget");
+							System.out.println(Widget.this.getClass() + " dragged to page/widget");
 							if ( c.getChildbyID(Widget.this.getID()) == null )
 							{
 								c.addChild(Widget.this);
@@ -116,32 +149,20 @@ public class Widget extends MTClipRectangle implements Cloneable
 		});
 	}
 	
-	public void setMinSize(int _h, int _w)
+	public void setMinSize(float _w, float _h)
 	{
+		this.mh = _h;
+		this.mw = _w;
+		
 		Vector3D pos = this.getCenterPointGlobal();
-		this.setSizeXYGlobal(_h, _w);
-		pos.x = pos.x - (h - _h)/2;
-		pos.y = pos.y - (w - _w)/2;
+		this.setSizeXYGlobal(this.mw, this.mh);
+		pos.x = pos.x - (this.w - this.mw)/2;
+		pos.y = pos.y - (this.h - this.mh)/2;
 		this.setPositionGlobal(pos);
 	}
 	
 	public void setFullSize()
 	{
-		this.setSizeXYGlobal(h, w);
-	}
-	
-	public Object clone() 
-	{
-		Widget w = null;
-	    try 
-	    {
-	      	w = (Widget) super.clone();
-	    } catch(CloneNotSupportedException cnse) 
-	    {
-	      	cnse.printStackTrace(System.err);
-	    }
-	    	    
-	    // on renvoie le clone
-	    return w;
+		this.setSizeXYGlobal(w,h);
 	}
 }

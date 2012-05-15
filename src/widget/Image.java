@@ -9,9 +9,18 @@ public class Image extends Widget
 	public Image(PApplet applet, float x, float y, float width, float height) 
 	{
 		super(applet, x, y, width, height);
-		
-		MTLine l1 = new MTLine(applet, 0, 0, width, height);
-		MTLine l2 = new MTLine(applet, width, 0, 0, height);
+	}
+	
+	public Image(widget.Image widget)
+	{
+		super(widget);
+	}
+	
+	protected void initGraphics()
+	{		
+		super.initGraphics();
+		MTLine l1 = new MTLine(applet, 0, 0, this.w, this.h);
+		MTLine l2 = new MTLine(applet, this.w, 0, 0, this.h);
 		l1.setPickable(false);
 		l2.setPickable(false);
 		
