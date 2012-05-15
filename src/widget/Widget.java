@@ -28,6 +28,11 @@ public class Widget extends MTClipRectangle
 	// miniature size
 	protected float mh, mw;
 	
+	// fake position
+	protected float fx = -1, fy = -1;
+	
+	protected boolean GRID_ENABLED = true;
+	
 	public Widget(PApplet a, float x, float y, float width, float height) 
 	{
 		super(a, x, y, 0, width, height);
@@ -68,10 +73,21 @@ public class Widget extends MTClipRectangle
 			public boolean processGestureEvent(MTGestureEvent ge) 
 			{
 				DragEvent de = (DragEvent)ge;
+				
+				if ( fx == -1 || fy == -1 ) 
+				{ 
+					fx = Widget.this.getCenterPointRelativeToParent().x; 
+					fy = Widget.this.getCenterPointRelativeToParent().y; 
+				};
+				Widget.this.fx += de.getTranslationVect().x;
+				Widget.this.fy += de.getTranslationVect().y;
+				
 				Widget.this.translateGlobal(de.getTranslationVect());
 				Widget.this.sendToFront();
 				
-				if ( de.getId() == MTGestureEvent.GESTURE_ENDED )
+				// calcul du "parent" uniquement si on utilise la grille
+				// ou bien lors de la fin du mouvement
+				if ( GRID_ENABLED || de.getId() == MTGestureEvent.GESTURE_ENDED )
 				{
 					MTComponent c = null;
 					Vector3D[] newposshape = Widget.this.getBounds().getVectorsGlobal();
@@ -119,7 +135,7 @@ public class Widget extends MTClipRectangle
 					if ( c != null )
 					{
 						// dragged to library
-						if ( c instanceof Library ) 
+						if ( de.getId() == MTGestureEvent.GESTURE_ENDED && c instanceof Library ) 
 						{ 
 							System.out.println("Widget dragged to library"); 
 							Widget.this.destroy();
@@ -127,19 +143,44 @@ public class Widget extends MTClipRectangle
 						// dragged to page/widget
 						else if ( c instanceof Page || c instanceof Widget ) 
 						{ 
-							System.out.println(Widget.this.getClass() + " dragged to page/widget");
-							if ( c.getChildbyID(Widget.this.getID()) == null )
+							if ( de.getId() == MTGestureEvent.GESTURE_ENDED && c.getChildbyID(Widget.this.getID()) == null )
 							{
+								System.out.println("Widget dragged to page/widget");
 								c.addChild(Widget.this);
 								Widget.this.setPositionGlobal(newpos);
+								fx = Widget.this.getCenterPointRelativeToParent().x; 
+								fy = Widget.this.getCenterPointRelativeToParent().y; 
+							}
+							
+							// grid
+							if ( GRID_ENABLED )
+							{
+								int grid = 40;
+								int spacing = 20;
+								
+								float x = fx - Widget.this.w/2;
+								float y = fy - Widget.this.h/2;
+								
+//								System.out.println("x%grid = " + (int)(x%grid) );
+								
+								if ( x%grid <= spacing ) { x = (x-x%grid); System.out.println("snap to x=" + x); }
+								else if ( x%grid > grid-spacing ) { x = (x-x%grid+grid); System.out.println("snap to x=" + x);  }
+								if ( y%grid <= spacing ) { y = (y-y%grid); System.out.println("snap to y=" + y);  }
+								else if ( y%grid > grid-spacing ) { y = (y-y%grid+grid); System.out.println("snap to y=" + y);  }
+								
+								x += Widget.this.w/2;
+								y += Widget.this.h/2;
+								
+								Widget.this.setPositionRelativeToParent(new Vector3D(x,y,0));
 							}
 						}	
 					}
-					else if ( Widget.this.getParent() != Widget.this.getRoot() )
+					else if ( de.getId() == MTGestureEvent.GESTURE_ENDED && Widget.this.getParent() != Widget.this.getRoot() )
 					{
 						System.out.println("Widget dragged to scene (workspace)");
 						Widget.this.getRoot().addChild(Widget.this);
 						Widget.this.setPositionGlobal(newpos);
+						fx = -1;
 					}
 
 				}
