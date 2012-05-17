@@ -1,7 +1,8 @@
 package model.widget;
 
+import org.mt4j.util.math.Vector3D;
+
 import model.Element;
-import quicktime.qd3d.math.Vector3D;
 
 public class Widget extends Element
 {
@@ -19,6 +20,11 @@ public class Widget extends Element
 		this.position = _position;
 	}
 	
+	public Widget(float x, float y, float z)
+	{
+		this.position = new Vector3D(x,y,z);
+	}
+	
 	public Vector3D getPosition()
 	{
 		return this.position;
@@ -27,5 +33,10 @@ public class Widget extends Element
 	public void getPosition(Vector3D _position)
 	{
 		this.position = _position;
+	}
+
+	public void setPosition(float x, float y, float z)
+	{
+		this.position = new Vector3D(x,y,z);
 	}
 }
