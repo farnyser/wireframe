@@ -1,6 +1,8 @@
 package utils;
 
 import org.mt4j.MTApplication;
+import org.mt4j.input.inputSources.MacTrackpadSource;
+
 
 import view.WorkspaceScene;
 
@@ -17,6 +19,11 @@ public class Main extends MTApplication
 	@Override
 	public void startUp() 
 	{
+		// Auto-detect Mac magic touchpad
+		if(System.getProperty("os.name").equals("Mac OS X"))
+			getInputManager().registerInputSource(new MacTrackpadSource(this));
+		
 		addScene(new WorkspaceScene(this,"Wireframe"));
+		
 	}
 }
