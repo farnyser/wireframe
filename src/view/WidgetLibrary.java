@@ -1,6 +1,5 @@
 package view;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 
 import org.mt4j.components.visibleComponents.widgets.MTListCell;
@@ -14,25 +13,35 @@ import processing.core.PApplet;
 
 public class WidgetLibrary extends Library 
 {
-	protected HashMap<MTListCell, widget.Widget> clones;
+	protected HashMap<MTListCell, view.widget.Widget> clones;
 	
 	public WidgetLibrary(PApplet applet, float x, float y, float width, float height)
 	{
 		super(applet, x, y, width, height);
-		clones = new HashMap<MTListCell, widget.Widget>();
+		clones = new HashMap<MTListCell, view.widget.Widget>();
 		
 		for ( int i = 0 ; i < 5 ; i++ )
 		{
 			MTListCell cell = new MTListCell(applet, 50, 50);
-			widget.Widget widget = null;
+			view.widget.Widget widget = null;
+			model.widget.Widget model = new model.widget.Widget();
 			
 			if ( i < 3 )
-				widget = new widget.Widget(applet, 0, 0, (i%2==0)?100:200, (i%3==0)?200:(i%3==1)?100:50);
+			{
+				model.setSize((i%2==0)?100:200, (i%3==0)?200:(i%3==1)?100:50);
+				widget = new view.widget.Widget(applet, model);
+			}
 			else if ( i == 3 )
-				widget = new widget.Image(applet, 0, 0, (i%2==0)?100:200, (i%3==0)?200:(i%3==1)?100:50);
+			{
+				model.setSize((i%2==0)?100:200, (i%3==0)?200:(i%3==1)?100:50);
+				widget = new view.widget.Image(applet, model);
+			}
 			else
-				widget = new widget.Button(applet, 0, 0);
-
+			{
+				model.setSize(100, 30);
+				widget = new view.widget.Button(applet, model);
+			}
+			
 			widget.setMinSize(50, 50);
 			cell.addChild(widget);
 			this.addListElement(cell);
@@ -51,8 +60,8 @@ public class WidgetLibrary extends Library
 				
 				if ( de.getId() == MTGestureEvent.GESTURE_STARTED )
 				{
-					widget.Widget w = (widget.Widget) target.getChildByIndex(0);
-					widget.Widget nw = null;
+					view.widget.Widget w = (view.widget.Widget) target.getChildByIndex(0);
+					view.widget.Widget nw = null;
 					
 					try {
 						nw = w.getClass().getConstructor(w.getClass()).newInstance(w);

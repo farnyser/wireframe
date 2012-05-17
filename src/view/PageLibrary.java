@@ -22,7 +22,7 @@ public class PageLibrary extends Library
 		for ( int i = 0 ; i < 5 ; i++ )
 		{
 			MTListCell cell = new MTListCell(applet, 50, 50);
-			Page page = new Page(applet, 0, 0, 500, 500);
+			Page page = new Page(applet, 0, 0, new model.Page("untitled"));
 			page.setMinSize(50, 50);
 			cell.addChild(page);
 			this.addListElement(cell);

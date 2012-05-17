@@ -1,41 +1,35 @@
 package view;
 
-import java.util.Vector;
-
-import org.mt4j.components.MTComponent;
 import org.mt4j.components.visibleComponents.widgets.MTClipRectangle;
 import org.mt4j.input.inputProcessors.IGestureEventListener;
 import org.mt4j.input.inputProcessors.MTGestureEvent;
 import org.mt4j.input.inputProcessors.componentProcessors.dragProcessor.DragEvent;
 import org.mt4j.input.inputProcessors.componentProcessors.dragProcessor.DragProcessor;
 import org.mt4j.util.MTColor;
-import org.mt4j.util.math.ToolsGeometry;
 import org.mt4j.util.math.Vector3D;
 
 import processing.core.PApplet;
-import widget.Widget;
 
 public class Page extends MTClipRectangle
 {
+	protected model.Page model;
+	
 	protected PApplet applet;
-	private float h, w;
 	private float mh, mw;
 	
-	public Page(PApplet a, float x, float y, float width, float height) 
+	public Page(PApplet a, float x, float y, model.Page p) 
 	{
-		super(a, x, y, 0, width, height);
+		super(a, x, y, 0, p.getWidth(), p.getHeight());
 		applet = a;
-		h = height;
-		w = width;
+		model = p;
 		this.setFillColor(MTColor.WHITE);
 	}
 	
 	public Page(Page p)
 	{
-		super(p.applet, 0, 0, 0, p.w, p.h);
+		super(p.applet, 0, 0, 0, p.model.getWidth(), p.model.getHeight());
 		applet = p.applet;
-		h = p.h; 
-		w = p.w;
+		model = p.model;
 		mh = p.mh; 
 		mw = p.mw;
 		this.setPositionGlobal(new Vector3D(p.getCenterPointGlobal().x, p.getCenterPointGlobal().y, 0));
@@ -52,8 +46,8 @@ public class Page extends MTClipRectangle
 		
 		Vector3D pos = this.getCenterPointGlobal();
 		this.setSizeXYGlobal(mw, mh);
-		pos.x = pos.x - (w - mw)/2;
-		pos.y = pos.y - (h - mh)/2;
+		pos.x = pos.x - (model.getWidth() - mw)/2;
+		pos.y = pos.y - (model.getHeight() - mh)/2;
 		this.setPositionGlobal(pos);
 		
 		initGesture();
@@ -61,7 +55,12 @@ public class Page extends MTClipRectangle
 	
 	public void setFullSize()
 	{
-		this.setSizeXYGlobal(h, w);
+		this.setSizeXYGlobal(model.getWidth(), model.getHeight());
+	}
+	
+	public model.Page getModel() 
+	{
+		return model;
 	}
 	
 	private void initGesture()
