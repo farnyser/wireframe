@@ -3,7 +3,6 @@ package view.widget;
 import java.util.Vector;
 
 import org.mt4j.components.MTComponent;
-import org.mt4j.components.visibleComponents.widgets.MTClipRectangle;
 import org.mt4j.input.inputProcessors.IGestureEventListener;
 import org.mt4j.input.inputProcessors.MTGestureEvent;
 import org.mt4j.input.inputProcessors.componentProcessors.dragProcessor.DragEvent;
@@ -12,20 +11,12 @@ import org.mt4j.util.MTColor;
 import org.mt4j.util.math.ToolsGeometry;
 import org.mt4j.util.math.Vector3D;
 
-
-
 import processing.core.PApplet;
 import view.Library;
 import view.Page;
 
-public class Widget extends MTClipRectangle
+public class Widget extends view.Element
 {
-	protected PApplet applet;
-	protected model.widget.Widget model;
-		
-	// miniature size
-	protected float mh, mw;
-	
 	// fake position
 	protected float fx = -1, fy = -1;
 	
@@ -33,27 +24,12 @@ public class Widget extends MTClipRectangle
 	
 	public Widget(PApplet a, model.widget.Widget m) 
 	{
-		super(a, m.getPosition().x, m.getPosition().y, m.getPosition().z, m.getWidth(), m.getHeight());
-		applet = a;
-		model = m;
-		mh = m.getHeight();
-		mw = m.getWidth();
-		initGesture();
-		initGraphics();
+		super(a, m.getPosition().x, m.getPosition().y, m);
 	}
 	
 	public Widget(Widget widget) 
 	{
-		super(widget.applet, 0, 0, 0, widget.model.getWidth(), widget.model.getHeight());
-		applet = widget.applet;
-		model = widget.model;
-		mh = widget.model.getHeight();
-		mw = widget.model.getWidth();
-		initGesture();
-		initGraphics();
-		this.setPositionGlobal(new Vector3D(widget.getCenterPointGlobal().x, widget.getCenterPointGlobal().y, 0));
-		this.setMinSize(mw, mh);
-		this.setFillColor(widget.getFillColor());
+		super(widget);
 	}
 	
 	protected void initGraphics()
@@ -61,7 +37,7 @@ public class Widget extends MTClipRectangle
 		this.setFillColor(MTColor.randomColor());
 	}
 	
-	private void initGesture()
+	protected void initGesture()
 	{
 		this.removeAllGestureEventListeners(DragProcessor.class);
 		this.addGestureListener(DragProcessor.class, new IGestureEventListener() 
@@ -136,25 +112,22 @@ public class Widget extends MTClipRectangle
 							System.out.println("Widget dragged to library"); 
 
 							// remove from parent (model)
-							if ( Widget.this.getParent() instanceof Page ){ view.Page cc = (Page)  Widget.this.getParent(); cc.getModel().removeElement(Widget.this.model); }
-							else if ( Widget.this.getParent() instanceof Widget ){ view.widget.Widget cc = (Widget)  Widget.this.getParent(); cc.getModel().removeElement(Widget.this.model); }
+							if ( Widget.this.getParent() instanceof view.Element ){ view.Element cc = (view.Element)  Widget.this.getParent(); cc.getModel().removeElement(Widget.this.model); }
 
 							Widget.this.destroy();
 						}
 						// dragged to page/widget
-						else if ( c instanceof Page || c instanceof Widget ) 
+						else if ( c instanceof view.Element ) 
 						{ 
 							if ( de.getId() == MTGestureEvent.GESTURE_ENDED && c.getChildbyID(Widget.this.getID()) == null )
 							{
 								System.out.println("Widget dragged to page/widget");
 								
 								// remove from parent (model)
-								if ( Widget.this.getParent() instanceof Page ){ view.Page cc = (Page)  Widget.this.getParent(); cc.getModel().removeElement(Widget.this.model); }
-								else if ( Widget.this.getParent() instanceof Widget ){ view.widget.Widget cc = (Widget)  Widget.this.getParent(); cc.getModel().removeElement(Widget.this.model); }
+								if ( Widget.this.getParent() instanceof view.Element ){ view.Element cc = (view.Element)  Widget.this.getParent(); cc.getModel().removeElement(Widget.this.model); }
 								
 								// add to new parent (model)
-								if ( c instanceof Page ){ view.Page cc = (Page) c; cc.getModel().addElement(Widget.this.model); }
-								else if ( c instanceof Widget ){ view.widget.Widget cc = (Widget) c; cc.getModel().addElement(Widget.this.model); }
+								{ view.Element cc = (view.Element) c; cc.getModel().addElement(Widget.this.model); }
 								
 								c.addChild(Widget.this);
 								Widget.this.setPositionGlobal(newpos);
@@ -206,8 +179,7 @@ public class Widget extends MTClipRectangle
 						System.out.println("Widget dragged to scene (workspace)");
 						
 						// remove from parent (model)
-						if ( Widget.this.getParent() instanceof Page ){ view.Page cc = (Page)  Widget.this.getParent(); cc.getModel().removeElement(Widget.this.model); }
-						else if ( Widget.this.getParent() instanceof Widget ){ view.widget.Widget cc = (Widget)  Widget.this.getParent(); cc.getModel().removeElement(Widget.this.model); }
+						if ( Widget.this.getParent() instanceof view.Element ){ view.Element cc = (view.Element)  Widget.this.getParent(); cc.getModel().removeElement(Widget.this.model); }
 
 						Widget.this.getRoot().addChild(Widget.this);
 						Widget.this.setPositionGlobal(newpos);
@@ -219,27 +191,5 @@ public class Widget extends MTClipRectangle
 				return false;
 			}
 		});
-	}
-	
-	public void setMinSize(float _w, float _h)
-	{
-		this.mh = _h;
-		this.mw = _w;
-		
-		Vector3D pos = this.getCenterPointGlobal();
-		this.setSizeXYGlobal(this.mw, this.mh);
-		pos.x = pos.x - (this.model.getWidth() - this.mw)/2;
-		pos.y = pos.y - (this.model.getHeight() - this.mh)/2;
-		this.setPositionGlobal(pos);
-	}
-	
-	public void setFullSize()
-	{
-		this.setSizeXYGlobal(this.model.getWidth(), this.model.getHeight());
-	}
-	
-	public model.widget.Widget getModel() 
-	{
-		return model;
 	}
 }

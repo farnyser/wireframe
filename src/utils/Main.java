@@ -24,6 +24,5 @@ public class Main extends MTApplication
 			getInputManager().registerInputSource(new MacTrackpadSource(this));
 		
 		addScene(new WorkspaceScene(this,"Wireframe"));
-		
 	}
 }
