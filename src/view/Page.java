@@ -1,16 +1,19 @@
 package view;
 
+import org.mt4j.components.visibleComponents.widgets.MTClipRoundRect;
 import org.mt4j.input.inputProcessors.IGestureEventListener;
 import org.mt4j.input.inputProcessors.MTGestureEvent;
 import org.mt4j.input.inputProcessors.componentProcessors.dragProcessor.DragEvent;
 import org.mt4j.input.inputProcessors.componentProcessors.dragProcessor.DragProcessor;
+import org.mt4j.input.inputProcessors.componentProcessors.tapProcessor.TapEvent;
+import org.mt4j.input.inputProcessors.componentProcessors.tapProcessor.TapProcessor;
 import org.mt4j.util.MTColor;
 
 import processing.core.PApplet;
 
 public class Page extends Element
 {
-	protected model.Page model;
+	MTClipRoundRect close;
 	
 	public Page(PApplet a, float x, float y, model.Page p) 
 	{
@@ -38,12 +41,34 @@ public class Page extends Element
 				return false;
 			}
 		});
+		
+		close.registerInputProcessor(new TapProcessor(this.applet));
+		close.addGestureListener(TapProcessor.class, new IGestureEventListener()
+		{
+			public boolean processGestureEvent(MTGestureEvent ge) 
+			{
+				if (ge instanceof TapEvent) 
+				{
+					TapEvent te = (TapEvent) ge;
+					if (te.getTapID() == TapEvent.TAPPED) 
+					{
+			            view.Page.this.destroy();
+					}
+		        }
+				
+		        return false;
+			}
+		});
 	}
 
 	@Override
 	protected void initGraphics() 
 	{
 		this.setFillColor(MTColor.WHITE);
+		
+		close = new MTClipRoundRect(applet, this.model.getWidth() - 10, -10, 0, 20, 20, 10, 10);
+		close.setFillColor(MTColor.RED);
+		this.addChild(close);
 	}
 
 }

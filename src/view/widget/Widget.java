@@ -13,7 +13,6 @@ import org.mt4j.util.math.Vector3D;
 
 import processing.core.PApplet;
 import view.Library;
-import view.Page;
 
 public class Widget extends view.Element
 {
