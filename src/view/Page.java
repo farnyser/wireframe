@@ -69,6 +69,12 @@ public class Page extends Element
 		close = new MTClipRoundRect(applet, this.model.getWidth() - 10, -10, 0, 20, 20, 10, 10);
 		close.setFillColor(MTColor.RED);
 		this.addChild(close);
+		
+		for ( model.Element e : model.getElements() )
+		{
+			view.widget.Widget w = view.widget.Widget.newInstance(applet, e);
+			this.addChild(w);
+		}
 	}
 
 }

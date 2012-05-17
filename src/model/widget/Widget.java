@@ -9,7 +9,6 @@ public class Widget extends Element
 	private static final long serialVersionUID = -8215736840679294259L;
 	
 	protected Vector3D position;
-	//protected float width, height, angle;
 	
 	public Widget()
 	{
@@ -19,6 +18,11 @@ public class Widget extends Element
 	public Widget(Vector3D _position)
 	{
 		this.position = _position;
+	}
+	
+	public Widget(float x, float y, float z)
+	{
+		this.position = new Vector3D(x,y,z);
 	}
 	
 	public Vector3D getPosition()
@@ -31,4 +35,8 @@ public class Widget extends Element
 		this.position = _position;
 	}
 
+	public void setPosition(float x, float y, float z)
+	{
+		this.position = new Vector3D(x,y,z);
+	}
 }

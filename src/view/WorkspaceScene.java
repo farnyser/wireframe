@@ -1,5 +1,7 @@
 package view;
 
+import model.Project;
+
 import org.mt4j.AbstractMTApplication;
 import org.mt4j.input.inputProcessors.globalProcessors.CursorTracer;
 import org.mt4j.sceneManagement.AbstractScene;
@@ -17,8 +19,9 @@ public class WorkspaceScene extends AbstractScene {
 		//Show touches
 		this.registerGlobalInputProcessor(new CursorTracer(mtApplication, this));
 		
+		Project project = new Project("Mon projet !");
 		WidgetLibrary widgets = new WidgetLibrary(mtApplication, 0, 0, 200, 200);
-		PageLibrary pages = new PageLibrary(mtApplication, 800, 0, 200, 200);
+		PageLibrary pages = new PageLibrary(mtApplication, 800, 0, 200, 200, project);
 		
 		this.getCanvas().addChild(widgets);
 		this.getCanvas().addChild(pages);

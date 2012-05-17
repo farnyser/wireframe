@@ -118,21 +118,28 @@ public class Widget extends view.Element
 						// dragged to page/widget
 						else if ( c instanceof view.Element ) 
 						{ 
-							if ( de.getId() == MTGestureEvent.GESTURE_ENDED && c.getChildbyID(Widget.this.getID()) == null )
+							if ( de.getId() == MTGestureEvent.GESTURE_ENDED )
 							{
-								System.out.println("Widget dragged to page/widget");
-								
-								// remove from parent (model)
-								if ( Widget.this.getParent() instanceof view.Element ){ view.Element cc = (view.Element)  Widget.this.getParent(); cc.getModel().removeElement(Widget.this.model); }
-								
-								// add to new parent (model)
-								{ view.Element cc = (view.Element) c; cc.getModel().addElement(Widget.this.model); }
-								
-								c.addChild(Widget.this);
-								Widget.this.setPositionGlobal(newpos);
-								fx = Widget.this.getCenterPointRelativeToParent().x; 
-								fy = Widget.this.getCenterPointRelativeToParent().y; 
-							}
+								if ( c.getChildbyID(Widget.this.getID()) == null )
+								{
+									System.out.println("Widget dragged to page/widget");
+									
+									// remove from parent (model)
+									if ( Widget.this.getParent() instanceof view.Element ){ view.Element cc = (view.Element)  Widget.this.getParent(); cc.getModel().removeElement(Widget.this.model); }
+									
+									// add to new parent (model)
+									{ view.Element cc = (view.Element) c; cc.getModel().addElement(Widget.this.model); }
+									
+									c.addChild(Widget.this);
+									Widget.this.setPositionGlobal(newpos);
+									fx = Widget.this.getCenterPointRelativeToParent().x; 
+									fy = Widget.this.getCenterPointRelativeToParent().y; 
+								}
+
+								// update coordinate in the model
+								model.widget.Widget mw = (model.widget.Widget) Widget.this.model;
+								mw.setPosition(Widget.this.getCenterPointRelativeToParent().x - model.getWidth()/2, Widget.this.getCenterPointRelativeToParent().y - model.getHeight()/2, 0);
+						}
 							
 							// grid
 							if ( GRID_ENABLED )
@@ -190,5 +197,15 @@ public class Widget extends view.Element
 				return false;
 			}
 		});
+	}
+
+	public static Widget newInstance(PApplet applet, model.Element e) 
+	{
+		Widget w = null;
+		
+		if ( e instanceof model.widget.Widget )
+			w = new view.widget.Widget(applet, (model.widget.Widget) e);
+		
+		return w;
 	}
 }
