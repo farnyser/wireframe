@@ -203,7 +203,11 @@ public class Widget extends view.Element
 	{
 		Widget w = null;
 		
-		if ( e instanceof model.widget.Widget )
+		if ( e instanceof model.widget.ButtonWidget )
+			w = new view.widget.Button(applet, (model.widget.ButtonWidget) e);
+		else if ( e instanceof model.widget.ImgWidget )
+			w = new view.widget.Image(applet, (model.widget.ImgWidget) e);
+		else if ( e instanceof model.widget.Widget )
 			w = new view.widget.Widget(applet, (model.widget.Widget) e);
 		
 		return w;

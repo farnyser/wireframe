@@ -26,11 +26,13 @@ public class WidgetLibrary extends Library
 			}
 			else if ( i == 3 )
 			{
+				model = new model.widget.ImgWidget();
 				model.setSize((i%2==0)?100:200, (i%3==0)?200:(i%3==1)?100:50);
 				widget = new view.widget.Image(applet, model);
 			}
 			else
 			{
+				model = new model.widget.ButtonWidget();
 				model.setSize(100, 30);
 				widget = new view.widget.Button(applet, model);
 			}

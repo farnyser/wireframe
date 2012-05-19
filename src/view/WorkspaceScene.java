@@ -1,5 +1,6 @@
 package view;
 
+import model.ApplicationModel;
 import model.Project;
 
 import org.mt4j.AbstractMTApplication;
@@ -10,7 +11,7 @@ import org.mt4j.util.MTColor;
 
 public class WorkspaceScene extends AbstractScene {
 
-	public WorkspaceScene(AbstractMTApplication mtApplication, String name)
+	public WorkspaceScene(AbstractMTApplication mtApplication, String name, ApplicationModel model)
 	{
 		super(mtApplication, name);
 		
@@ -19,7 +20,7 @@ public class WorkspaceScene extends AbstractScene {
 		//Show touches
 		this.registerGlobalInputProcessor(new CursorTracer(mtApplication, this));
 		
-		Project project = new Project("Mon projet !");
+		Project project = model.getCurrentProject();
 		WidgetLibrary widgets = new WidgetLibrary(mtApplication, 0, 0, 200, 200);
 		PageLibrary pages = new PageLibrary(mtApplication, 800, 0, 200, 200, project);
 		

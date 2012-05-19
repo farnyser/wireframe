@@ -8,6 +8,7 @@ public class Element implements Serializable,Cloneable
 	private static final long serialVersionUID = 5913307790282474281L;
 	
 	protected ArrayList<model.Element> childs;
+
 	protected int width = 600, height = 600;
 
 	public Element()

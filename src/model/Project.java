@@ -3,17 +3,21 @@ package model;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import utils.Slugger;
+
 public class Project implements Serializable
 {
 	private static final long serialVersionUID = 1422300687543381832L;
 	
 	protected String name;
 	protected ArrayList<model.Page> pages;
+	protected String _sluggedLabel;
 	
 	public Project(String _name)
 	{
 		this.name = _name;
 		this.pages = new ArrayList<model.Page>();
+		this._sluggedLabel = Slugger.toSlug(this.name);
 		
 		for ( int i = 0 ; i < 3 ; i++ )
 		{
@@ -34,5 +38,17 @@ public class Project implements Serializable
 	public ArrayList<model.Page> getPages()
 	{
 		return pages;
+	}
+
+	
+	
+	public String getName() 
+	{	
+		return this.name;	
+	}
+	
+	public String getSluggedLabel() 
+	{ 
+		return this._sluggedLabel; 
 	}
 }

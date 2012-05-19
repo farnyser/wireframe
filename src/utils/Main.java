@@ -1,5 +1,7 @@
 package utils;
 
+import model.ApplicationModel;
+
 import org.mt4j.MTApplication;
 import org.mt4j.input.inputSources.MacTrackpadSource;
 
@@ -10,7 +12,9 @@ import view.WorkspaceScene;
 public class Main extends MTApplication 
 {
 	private static final long serialVersionUID = -4290913978074932279L;
+	private	ApplicationModel app = new ApplicationModel();
 
+	
 	public static void main(String[] args) 
 	{
 		initialize();
@@ -22,7 +26,8 @@ public class Main extends MTApplication
 		// Auto-detect Mac magic touchpad
 		if(System.getProperty("os.name").equals("Mac OS X"))
 			getInputManager().registerInputSource(new MacTrackpadSource(this));
-		
-		addScene(new WorkspaceScene(this,"Wireframe"));
+	
+		app.createProject("untitled");
+		addScene(new WorkspaceScene(this,"Wireframe",app));
 	}
 }
