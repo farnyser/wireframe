@@ -1,5 +1,6 @@
 package view.widget;
 
+import java.beans.PropertyChangeEvent;
 import java.util.Vector;
 
 import org.mt4j.components.MTComponent;
@@ -12,6 +13,7 @@ import org.mt4j.util.math.ToolsGeometry;
 import org.mt4j.util.math.Vector3D;
 
 import processing.core.PApplet;
+import view.Element;
 import view.Library;
 
 public class Widget extends view.Element
@@ -29,6 +31,18 @@ public class Widget extends view.Element
 	public Widget(Widget widget) 
 	{
 		super(widget);
+	}
+	
+	public void propertyChange(PropertyChangeEvent e) 
+	{
+		super.propertyChange(e);
+		
+        String propertyName = e.getPropertyName();
+		if ( propertyName == "setPosition" ) 
+        {
+			model.widget.Widget wm = (model.widget.Widget) e.getNewValue();
+        	this.setPositionRelativeToParent(wm.getPosition());
+        }
 	}
 	
 	protected void initGraphics()
@@ -197,19 +211,5 @@ public class Widget extends view.Element
 				return false;
 			}
 		});
-	}
-
-	public static Widget newInstance(PApplet applet, model.Element e) 
-	{
-		Widget w = null;
-		
-		if ( e instanceof model.widget.ButtonWidget )
-			w = new view.widget.Button(applet, (model.widget.ButtonWidget) e);
-		else if ( e instanceof model.widget.ImgWidget )
-			w = new view.widget.Image(applet, (model.widget.ImgWidget) e);
-		else if ( e instanceof model.widget.Widget )
-			w = new view.widget.Widget(applet, (model.widget.Widget) e);
-		
-		return w;
 	}
 }

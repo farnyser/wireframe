@@ -72,7 +72,7 @@ public class Page extends Element
 		
 		for ( model.Element e : model.getElements() )
 		{
-			view.widget.Widget w = view.widget.Widget.newInstance(applet, e);
+			view.Element w = view.Element.newInstance(applet, e);
 			this.addChild(w);
 		}
 	}
