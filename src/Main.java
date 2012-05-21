@@ -18,20 +18,20 @@ public class Main {
 		cp.addScene("Scene 2");
 		app.saveCurrentProject("/Users/joseph/Desktop/");
 		System.out.println(app.getCurrentProject().getLabel());
-		cp.scenesToString();
+		cp.pagesToString();
 
 		
 		app.createProject("project wireframe");
 		cp = app.getCurrentProject();
 		System.out.println(cp.getLabel());
 		cp.addScene("Scene 19");
-		cp.scenesToString();
+		cp.pagesToString();
 
 		
 		app.loadProject("/Users/joseph/Desktop/test-projet");
 		cp = app.getCurrentProject();
 		System.out.println(cp.getLabel());
-		cp.scenesToString();
+		cp.pagesToString();
 		
 	}
 

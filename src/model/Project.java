@@ -22,7 +22,7 @@ public class Project implements Serializable{
 	/**
 	 * The list of scenes
 	 */
-	private ArrayList<Scene> _sceneList;
+	private ArrayList<Page> _pageList;
 	
 	/**
 	 * The project label slugged (for save)
@@ -34,7 +34,7 @@ public class Project implements Serializable{
 		_label = projectLabel;
 		_sluggedLabel = Slugger.toSlug(projectLabel);
 		
-		_sceneList = new ArrayList<Scene>();
+		_pageList = new ArrayList<Page>();
 	}
 	
 	/**
@@ -42,10 +42,10 @@ public class Project implements Serializable{
 	 * @param sceneLabel
 	 * @return the created scene
 	 */
-	public Scene addScene(String sceneLabel) {
+	public Page addScene(String sceneLabel) {
 		
-		Scene sc = new Scene(sceneLabel);
-		_sceneList.add(sc);
+		Page sc = new Page(sceneLabel);
+		_pageList.add(sc);
 		
 		return sc;
 	}
@@ -54,8 +54,8 @@ public class Project implements Serializable{
 	 * Removes a scene
 	 * @param scene
 	 */
-	public void removeScene(Scene scene) {
-		_sceneList.remove(scene);
+	public void removeScene(Page scene) {
+		_pageList.remove(scene);
 	}
 	
 	/**
@@ -63,12 +63,12 @@ public class Project implements Serializable{
 	 * @param newIndex
 	 * @param scene
 	 */
-	public void reorderScene(int newIndex, Scene scene) {
-		_sceneList.remove(scene);
-		_sceneList.add(newIndex, scene);
+	public void reorderScene(int newIndex, Page scene) {
+		_pageList.remove(scene);
+		_pageList.add(newIndex, scene);
 	}
 	
-	public ArrayList<Scene> getSceneList() { return _sceneList; }
+	public ArrayList<Page> getSceneList() { return _pageList; }
 	
 	public String getLabel() {	return _label;	}
 	
@@ -77,16 +77,16 @@ public class Project implements Serializable{
 	/**
 	 * Debug method
 	 */
-	public void scenesToString() {
+	public void pagesToString() {
 		
-		if(_sceneList.isEmpty()) {
+		if(_pageList.isEmpty()) {
 			System.out.println("DEBUG: Project#This project has no scene.");
 		}
 		
-		Iterator<Scene> it = _sceneList.iterator();
+		Iterator<Page> it = _pageList.iterator();
 		
 		while(it.hasNext()) {
-			Scene s = (Scene) it.next();
+			Page s = (Page) it.next();
 			System.out.println(s.getLabel());
 		}
 	}
