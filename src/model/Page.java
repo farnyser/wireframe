@@ -26,6 +26,10 @@ public class Page implements Serializable{
 		_widgets = new ArrayList<Element>();
 	}
 	
+	public void addElement(Element widget) {
+		_widgets.add(widget);
+	}
+	
 	public String getLabel() { return _label; }
 	
 	public ArrayList<Element> getWidgets() { return _widgets; }

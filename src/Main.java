@@ -14,7 +14,7 @@ public class Main {
 		
 		app.createProject("test projet");
 		Project cp = app.getCurrentProject();
-		cp.addScene("Scene 1");
+		/*cp.addScene("Scene 1");
 		cp.addScene("Scene 2");
 		app.saveCurrentProject("/Users/joseph/Desktop/");
 		System.out.println(app.getCurrentProject().getLabel());
@@ -32,7 +32,7 @@ public class Main {
 		cp = app.getCurrentProject();
 		System.out.println(cp.getLabel());
 		cp.pagesToString();
-		
+		*/
 	}
 
 }

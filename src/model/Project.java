@@ -33,46 +33,64 @@ public class Project implements Serializable{
 		
 		_label = projectLabel;
 		_sluggedLabel = Slugger.toSlug(projectLabel);
-		
+
 		_pageList = new ArrayList<Page>();
+		
+		// for initialization # debug
+		model.Page tmpPage;
+		model.widget.Widget tmpWidget;
+		for ( int i = 0 ; i < 3 ; i++ )	{
+			tmpPage = createPage("untitled document "+i);
+			tmpWidget = new model.widget.Widget(100,100,0);
+			tmpWidget.setSize(100, 100);
+			tmpPage.addElement(tmpWidget);
+		}		
 	}
 	
 	/**
-	 * Adds a scene
-	 * @param sceneLabel
-	 * @return the created scene
+	 * Createe a page
+	 * @param pageLabel
+	 * @return the created page
 	 */
-	public Page addScene(String sceneLabel) {
+	public Page createPage(String pageLabel) {
 		
-		Page sc = new Page(sceneLabel);
-		_pageList.add(sc);
+		Page sc = new Page(pageLabel);
+		this.addPage(sc);
 		
 		return sc;
 	}
 	
 	/**
-	 * Removes a scene
-	 * @param scene
+	 * Adds a page
+	 * @param page
 	 */
-	public void removeScene(Page scene) {
-		_pageList.remove(scene);
+	public void addPage(Page page) {
+		_pageList.add(page);
 	}
 	
 	/**
-	 * Put the specified scene at the specified index
-	 * @param newIndex
-	 * @param scene
+	 * Removes a page
+	 * @param page
 	 */
-	public void reorderScene(int newIndex, Page scene) {
-		_pageList.remove(scene);
-		_pageList.add(newIndex, scene);
+	public void removePage(Page page) {
+		_pageList.remove(page);
 	}
 	
-	public ArrayList<Page> getSceneList() { return _pageList; }
+	/**
+	 * Put the specified page at the specified index
+	 * @param newIndex
+	 * @param page
+	 */
+	public void reorderPage(int newIndex, Page page) {
+		_pageList.remove(page);
+		_pageList.add(newIndex, page);
+	}
+	
+	public ArrayList<Page> getPageList() { return _pageList; }
 	
 	public String getLabel() {	return _label;	}
-	
-	public String getSluggedLabel() { return _sluggedLabel; }
+
+	public String getSluggedLabel() { return this._sluggedLabel; }
 	
 	/**
 	 * Debug method
