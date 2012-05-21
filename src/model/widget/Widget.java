@@ -38,5 +38,6 @@ public class Widget extends Element
 	public void setPosition(float x, float y, float z)
 	{
 		this.position = new Vector3D(x,y,z);
+		this.pcs.firePropertyChange("setPosition", null, this);
 	}
 }

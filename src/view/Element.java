@@ -1,11 +1,15 @@
 package view;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
 import org.mt4j.components.visibleComponents.widgets.MTClipRectangle;
 import org.mt4j.util.math.Vector3D;
 
 import processing.core.PApplet;
+import view.widget.Widget;
 
-public abstract class Element extends MTClipRectangle
+public abstract class Element extends MTClipRectangle implements PropertyChangeListener
 {
 	protected model.Element model;
 	protected PApplet applet;
@@ -20,6 +24,8 @@ public abstract class Element extends MTClipRectangle
 		mh =  p.getHeight();
 		initGraphics();
 		initGesture();
+		
+		model.addListener(this);
 	}
 	
 	public Element(Element e)
@@ -34,6 +40,9 @@ public abstract class Element extends MTClipRectangle
 		this.setPositionGlobal(new Vector3D(e.getCenterPointGlobal().x, e.getCenterPointGlobal().y, 0));
 		this.setMinSize(e.mw, e.mh);
 		this.setFillColor(e.getFillColor());
+		
+//		model.resetListener();
+		model.addListener(this);
 	}
 	
 
@@ -57,6 +66,48 @@ public abstract class Element extends MTClipRectangle
 	public model.Element getModel() 
 	{
 		return model;
+	}
+
+	public void propertyChange(PropertyChangeEvent e) 
+	{
+        String propertyName = e.getPropertyName();
+        
+        if ( propertyName == "addElement" ) 
+        {
+			view.Element el = view.Element.newInstance(applet, (model.Element)e.getNewValue());
+			this.addChild(el);
+        }
+        else if ( propertyName == "removeElement" ) 
+        {
+        	for ( int i = 0 ; i < this.getChildCount() ; i++ )
+        	{
+        		if ( this.getChildByIndex(i) instanceof view.Element )
+        		{
+        			view.Element child = (Element) this.getChildByIndex(i);
+        			if ( child.getModel() ==  (model.Element)e.getNewValue())
+        			{
+        				this.removeChild(i);
+        				break;
+        			}
+        		}
+        	}
+        }
+    }
+	
+	protected static Element newInstance(PApplet applet, model.Element e) 
+	{		
+		Element el = null;
+	
+		if ( e instanceof model.Page )
+			el = new view.Page(applet, 0, 0, (model.Page) e);
+		else if ( e instanceof model.widget.ButtonWidget )
+			el = new view.widget.Button(applet, (model.widget.ButtonWidget) e);
+		else if ( e instanceof model.widget.ImgWidget )
+			el = new view.widget.Image(applet, (model.widget.ImgWidget) e);
+		else if ( e instanceof model.widget.Widget )
+			el = new view.widget.Widget(applet, (model.widget.Widget) e);
+	
+		return el;
 	}
 
 	protected abstract void initGesture();

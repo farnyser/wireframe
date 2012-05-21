@@ -9,7 +9,8 @@ import org.mt4j.sceneManagement.AbstractScene;
 import org.mt4j.util.MTColor;
 
 
-public class WorkspaceScene extends AbstractScene {
+public class WorkspaceScene extends AbstractScene 
+{
 
 	public WorkspaceScene(AbstractMTApplication mtApplication, String name, ApplicationModel model)
 	{
