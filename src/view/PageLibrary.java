@@ -13,7 +13,7 @@ public class PageLibrary extends Library
 		super(applet, x, y, width, height);
 		clones = new HashMap<MTListCell, Element>();
 		
-		for ( model.Page p : project.getPages() )
+		for ( model.Page p : project.getPageList() )
 		{
 			MTListCell cell = new MTListCell(applet, 50, 50);
 			Page page = new Page(applet, 0, 0, p);

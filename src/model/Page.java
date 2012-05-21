@@ -3,7 +3,7 @@ package model;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Page implements Serializable{
+public class Page extends Element implements Serializable {
 	
 	/**
 	 * 
