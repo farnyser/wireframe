@@ -7,7 +7,6 @@ import org.mt4j.components.visibleComponents.widgets.MTClipRectangle;
 import org.mt4j.util.math.Vector3D;
 
 import processing.core.PApplet;
-import view.widget.Widget;
 
 public abstract class Element extends MTClipRectangle implements PropertyChangeListener
 {
