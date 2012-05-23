@@ -1,10 +1,17 @@
 package view.widget;
 
+import java.beans.PropertyChangeEvent;
+
+import model.widget.ButtonWidget;
+
 import org.mt4j.components.StateChange;
 import org.mt4j.components.StateChangeEvent;
 import org.mt4j.components.StateChangeListener;
 import org.mt4j.components.visibleComponents.widgets.MTTextArea;
+import org.mt4j.components.visibleComponents.widgets.keyboard.ITextInputListener;
 import org.mt4j.components.visibleComponents.widgets.keyboard.MTKeyboard;
+import org.mt4j.input.IMTInputEventListener;
+import org.mt4j.input.inputData.MTInputEvent;
 import org.mt4j.input.inputProcessors.IGestureEventListener;
 import org.mt4j.input.inputProcessors.MTGestureEvent;
 import org.mt4j.input.inputProcessors.componentProcessors.dragProcessor.DragProcessor;
@@ -28,7 +35,17 @@ public class Button extends Widget
 	public Button(view.widget.Button widget, Boolean create_new_model)
 	{
 		super(widget, create_new_model);
-		texta.setText(widget.texta.getText());
+	}
+	
+	public void propertyChange(PropertyChangeEvent e) 
+	{
+		super.propertyChange(e);
+		
+        String propertyName = e.getPropertyName();
+		if ( propertyName == "setContent" ) 
+        {
+        	this.texta.setText((String) e.getNewValue());       
+        }
 	}
 
 	protected void initGraphics()
@@ -37,9 +54,10 @@ public class Button extends Widget
 		Vector3D parentPosition = this.getCenterPointGlobal();
 		
 		texta = new MTTextArea(applet, 0, 0, this.model.getWidth(), this.model.getHeight());
-		texta.setText("Button");
 		texta.setPickable(true);
 		texta.setFillColor(new MTColor(0,0,0,MTColor.ALPHA_FULL_TRANSPARENCY));
+		model.widget.ButtonWidget m = (ButtonWidget) model;
+		texta.setText(m.getContent());
 		
 	    // Add Tap listener to evoke Keyboard
 		texta.removeAllGestureEventListeners(DragProcessor.class);
@@ -56,13 +74,48 @@ public class Button extends Widget
 					TapEvent te = (TapEvent) ge;
 					if (te.getTapID() == TapEvent.DOUBLE_TAPPED) 
 					{
-						System.out.println("DOUBLE_TAPPED");
-						
 			            if (keyboard == null) 
 			            {
 							keyboard = new MTKeyboard(applet);
 							Button.this.addChild(keyboard);
-							keyboard.addTextInputListener(texta);
+							keyboard.addTextInputListener(new ITextInputListener()
+							{
+								@Override
+								public void appendCharByUnicode(String arg0) {
+									texta.appendCharByUnicode(arg0);
+									model.widget.ButtonWidget m = (ButtonWidget) model;
+									m.setContent(texta.getText());
+								}
+
+								@Override
+								public void appendText(String arg0) {
+									texta.appendText(arg0);
+									model.widget.ButtonWidget m = (ButtonWidget) model;
+									m.setContent(texta.getText());
+								}
+
+								@Override
+								public void clear() {
+									texta.clear();
+									model.widget.ButtonWidget m = (ButtonWidget) model;
+									m.setContent(texta.getText());
+								}
+
+								@Override
+								public void removeLastCharacter() {
+									texta.removeLastCharacter();
+									model.widget.ButtonWidget m = (ButtonWidget) model;
+									m.setContent(texta.getText());
+								}
+
+								@Override
+								public void setText(String arg0) {
+									texta.setText(arg0);
+									model.widget.ButtonWidget m = (ButtonWidget) model;
+									m.setContent(texta.getText());
+								}
+								
+							});
 							keyboard.addStateChangeListener(
 						      StateChange.COMPONENT_DESTROYED,
 						      new StateChangeListener() {
