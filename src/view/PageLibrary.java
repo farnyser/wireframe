@@ -12,6 +12,7 @@ public class PageLibrary extends Library
 	{
 		super(applet, x, y, width, height);
 		clones = new HashMap<MTListCell, Element>();
+		create_new_model = false;
 		
 		for ( model.Page p : project.getPageList() )
 		{

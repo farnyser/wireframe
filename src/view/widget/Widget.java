@@ -28,9 +28,9 @@ public class Widget extends view.Element
 		super(a, m.getPosition().x, m.getPosition().y, m);
 	}
 	
-	public Widget(Widget widget) 
+	public Widget(Widget widget, Boolean create_new_model) 
 	{
-		super(widget);
+		super(widget, create_new_model);
 	}
 	
 	public void propertyChange(PropertyChangeEvent e) 
@@ -45,9 +45,68 @@ public class Widget extends view.Element
         }
 	}
 	
+	protected Vector<MTComponent> getMTcomponents()
+	{
+		Vector<MTComponent> mtcs= new Vector<MTComponent>();
+		mtcs.add(Widget.this.getRoot());
+		
+		for ( int i = 0; i < mtcs.size() ; i++ )
+		{
+			for ( int j = 0 ; j < mtcs.get(i).getChildCount() ; j++ )
+			{
+				mtcs.add( mtcs.get(i).getChildByIndex(j) );
+			}
+		}
+		
+		mtcs.remove(Widget.this);
+		return mtcs;
+	}
+	
+	protected MTComponent getMTcomponent()
+	{
+		MTComponent c = null;
+		Vector3D[] newposshape = this.getBounds().getVectorsGlobal();
+		
+		Vector<MTComponent> mtcs = Widget.this.getMTcomponents();
+		mtcs.remove(Widget.this);
+		
+		for ( int i = mtcs.size()-1 ; i >= 0 ; i-- )
+		{
+			boolean inside = true;
+			MTComponent p = mtcs.get(i);
+			if ( p.getBounds() == null ) { continue; }
+
+			Vector3D[] v_p = p.getBounds().getVectorsGlobal();
+
+			
+			for (Vector3D v : newposshape) 
+			{
+				if (!ToolsGeometry.isPolygonContainsPoint(v_p, v))
+				{
+					inside = false;
+					break;
+				}
+			}
+			
+			if ( inside )
+			{
+				c = p;
+				break;
+			}
+		}
+		
+		return c;
+	}
+	
 	protected void initGraphics()
 	{
 		this.setFillColor(MTColor.randomColor());
+		
+		for ( model.Element e : model.getElements() )
+		{
+			view.Element w = view.Element.newInstance(applet, e);
+			this.addChild(w);
+		}
 	}
 	
 	protected void initGesture()
@@ -58,6 +117,7 @@ public class Widget extends view.Element
 			public boolean processGestureEvent(MTGestureEvent ge) 
 			{
 				DragEvent de = (DragEvent)ge;
+				boolean destroy = false;
 				
 				if ( fx == -1 || fy == -1 ) 
 				{ 
@@ -74,47 +134,8 @@ public class Widget extends view.Element
 				// ou bien lors de la fin du mouvement
 				if ( GRID_ENABLED || de.getId() == MTGestureEvent.GESTURE_ENDED )
 				{
-					MTComponent c = null;
-					Vector3D[] newposshape = Widget.this.getBounds().getVectorsGlobal();
+					MTComponent c = Widget.this.getMTcomponent();
 					Vector3D newpos = Widget.this.getCenterPointGlobal();
-					
-					Vector<MTComponent> mtcs = new Vector<MTComponent>();
-					mtcs.add(Widget.this.getRoot());
-					
-					for ( int i = 0; i < mtcs.size() ; i++ )
-					{
-						for ( int j = 0 ; j < mtcs.get(i).getChildCount() ; j++ )
-						{
-							mtcs.add( mtcs.get(i).getChildByIndex(j) );
-						}
-					}
-					
-					mtcs.remove(Widget.this);
-					
-					for ( int i = mtcs.size()-1 ; i >= 0 ; i-- )
-					{
-						boolean inside = true;
-						MTComponent p = mtcs.get(i);
-						if ( p.getBounds() == null ) { continue; }
-
-						Vector3D[] v_p = p.getBounds().getVectorsGlobal();
-
-						
-						for (Vector3D v : newposshape) 
-						{
-							if (!ToolsGeometry.isPolygonContainsPoint(v_p, v))
-							{
-								inside = false;
-								break;
-							}
-						}
-						
-						if ( inside )
-						{
-							c = p;
-							break;
-						}
-					}
 					
 					
 					if ( c != null )
@@ -145,12 +166,14 @@ public class Widget extends view.Element
 									{ view.Element cc = (view.Element) c; cc.getModel().addElement(Widget.this.model); }
 									
 									c.addChild(Widget.this);
+									destroy = true;
 									Widget.this.setPositionGlobal(newpos);
 									fx = Widget.this.getCenterPointRelativeToParent().x; 
 									fy = Widget.this.getCenterPointRelativeToParent().y; 
 								}
 
 								// update coordinate in the model
+//								System.out.println("-- update coordinate..");
 								model.widget.Widget mw = (model.widget.Widget) Widget.this.model;
 								mw.setPosition(Widget.this.getCenterPointRelativeToParent().x - model.getWidth()/2, Widget.this.getCenterPointRelativeToParent().y - model.getHeight()/2, 0);
 						}
@@ -187,27 +210,32 @@ public class Widget extends view.Element
 //									System.out.println("snap to y=" + y);  
 								}
 								
+//								System.out.println("snap to x=" + x + ", y = " + y);
 								x += Widget.this.model.getWidth()/2;
 								y += Widget.this.model.getHeight()/2;
 								
 								Widget.this.setPositionRelativeToParent(new Vector3D(x,y,0));
+								model.widget.Widget mw = (model.widget.Widget) Widget.this.model;
+								mw.setPosition(x,y,0);
 							}
 						}	
 					}
 					else if ( de.getId() == MTGestureEvent.GESTURE_ENDED && Widget.this.getParent() != Widget.this.getRoot() )
 					{
 						System.out.println("Widget dragged to scene (workspace)");
-						
-						// remove from parent (model)
-						if ( Widget.this.getParent() instanceof view.Element ){ view.Element cc = (view.Element)  Widget.this.getParent(); cc.getModel().removeElement(Widget.this.model); }
+						Object o = Widget.this.getParent();
 
 						Widget.this.getRoot().addChild(Widget.this);
 						Widget.this.setPositionGlobal(newpos);
 						fx = -1;
+						
+						// remove from parent (model)
+						if ( o instanceof view.Element ){ view.Element cc = (view.Element)  o; cc.getModel().removeElement(Widget.this.model); }
 					}
 
 				}
 				
+				if ( destroy ) { Widget.this.removeFromParent(); }
 				return false;
 			}
 		});

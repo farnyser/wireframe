@@ -22,9 +22,9 @@ public class Page extends Element
 		model = p;
 	}
 	
-	public Page(Page p)
+	public Page(Page p, Boolean create_new_model)
 	{
-		super(p);
+		super(p,create_new_model);
 	}
 	
 	protected void initGesture()

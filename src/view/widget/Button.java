@@ -25,15 +25,17 @@ public class Button extends Widget
 		super(applet, m);
 	}	
 	
-	public Button(view.widget.Button widget)
+	public Button(view.widget.Button widget, Boolean create_new_model)
 	{
-		super(widget);
+		super(widget, create_new_model);
 		texta.setText(widget.texta.getText());
 	}
 
 	protected void initGraphics()
 	{
 		super.initGraphics();
+		Vector3D parentPosition = this.getCenterPointGlobal();
+		
 		texta = new MTTextArea(applet, 0, 0, this.model.getWidth(), this.model.getHeight());
 		texta.setText("Button");
 		texta.setPickable(true);
@@ -89,5 +91,7 @@ public class Button extends Widget
 		});
 	    
 		this.addChild(texta);
+//		texta.setPositionRelativeToParent(new Vector3D(this.model.getWidth()/2,this.model.getHeight()/2,0));
+		texta.setPositionRelativeToParent(parentPosition);
 	}
 }

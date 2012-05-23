@@ -11,9 +11,9 @@ public class Image extends Widget
 		super(applet, m);
 	}
 	
-	public Image(view.widget.Image widget)
+	public Image(view.widget.Image widget,Boolean create_new_model)
 	{
-		super(widget);
+		super(widget,create_new_model);
 	}
 	
 	protected void initGraphics()
@@ -26,5 +26,8 @@ public class Image extends Widget
 		
 		this.addChild(l1);
 		this.addChild(l2);
+		
+		l1.setPositionRelativeToParent(this.getCenterPointGlobal());
+		l2.setPositionRelativeToParent(this.getCenterPointGlobal());
 	}
 }

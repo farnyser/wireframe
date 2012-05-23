@@ -40,10 +40,33 @@ public abstract class Element extends MTClipRectangle implements PropertyChangeL
 		this.setMinSize(e.mw, e.mh);
 		this.setFillColor(e.getFillColor());
 		
-//		model.resetListener();
 		model.addListener(this);
 	}
 	
+	public Element(Element e, Boolean create_new_model)
+	{
+		super(e.applet, 0, 0, 0, e.model.getWidth(), e.model.getHeight());
+		
+		if ( create_new_model )
+		{
+			model = (model.Element) e.model.clone();
+		}
+		else
+		{
+			model = e.model;
+		}
+		
+		applet = e.applet;
+		mh = e.mh; 
+		mw = e.mw;
+		initGraphics();
+		initGesture();
+		this.setPositionGlobal(new Vector3D(e.getCenterPointGlobal().x, e.getCenterPointGlobal().y, 0));
+		this.setMinSize(e.mw, e.mh);
+		this.setFillColor(e.getFillColor());
+		
+		model.addListener(this);
+	}
 
 	public void setMinSize(float _w, float _h)
 	{

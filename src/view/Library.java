@@ -15,6 +15,7 @@ import processing.core.PApplet;
 public class Library extends MTList
 {
 	protected HashMap<MTListCell, view.Element> clones;
+	protected Boolean create_new_model = true;
 	
 	public Library(PApplet applet, float x, float y, float width, float height) 
 	{
@@ -39,7 +40,7 @@ public class Library extends MTList
 					view.Element nw = null;
 					
 					try {
-						nw = w.getClass().getConstructor(w.getClass()).newInstance(w);
+						nw = w.getClass().getConstructor(w.getClass(),Boolean.class).newInstance(w,create_new_model);
 					} catch (Exception e) {
 						e.printStackTrace();
 						return false;

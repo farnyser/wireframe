@@ -67,4 +67,23 @@ public class Element  implements Serializable,Cloneable
 	{
 		return childs;
 	}
+	
+	public Object clone()
+	{
+		try {
+			model.Element obj = (model.Element) super.clone();
+			obj.pcs = new PropertyChangeSupport(obj);
+			obj.childs = new ArrayList<model.Element>();
+			
+			for( model.Element em : this.childs )
+			{
+				obj.childs.add((Element) em.clone());
+			}
+
+			return obj;
+		} catch (CloneNotSupportedException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 }
