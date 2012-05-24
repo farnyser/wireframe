@@ -226,12 +226,12 @@ public class Widget extends view.Element
 								}
 							}	
 						}
+						// dragged to scene
 						else if ( de.getId() == MTGestureEvent.GESTURE_ENDED && Widget.this.getParent() != Widget.this.getRoot() )
 						{
 							System.out.println("Widget dragged to scene (workspace)");
 							Object o = Widget.this.getParent();
-	
-							Widget.this.getRoot().addChild(Widget.this);
+							
 							Widget.this.setPositionGlobal(newpos);
 							fx = -1;
 							
