@@ -6,6 +6,7 @@ import menu.NewProjectMenu;
 import menu.HexagonMenu;
 import menu.ExistProjectMenu;
 import menu.RectangleMenu;
+import model.ApplicationModel;
 
 import org.mt4j.AbstractMTApplication;
 import org.mt4j.input.inputProcessors.IGestureEventListener;
@@ -17,15 +18,20 @@ import org.mt4j.util.math.Vector3D;
 import org.mt4jx.components.visibleComponents.widgets.menus.MenuItem;
 
 import processing.core.PImage;
+import view.Page;
+import view.PageLibrary;
+import view.WidgetLibrary;
 
 public class StartMenuScene extends AbstractScene{
 
 	private AbstractMTApplication app;
 	private HexagonMenu hMenu;
+	private ApplicationModel model;
 	
-	public StartMenuScene(AbstractMTApplication mtApplication, String name) {
+	public StartMenuScene(AbstractMTApplication mtApplication, String name, ApplicationModel model) {
 		super(mtApplication, name);
 		
+		this.model = model;
 		this.app = mtApplication;
 		this.registerGlobalInputProcessor(new CursorTracer(mtApplication, this));
 		this.getCanvas().setFrustumCulling(true); //?
@@ -92,6 +98,14 @@ public class StartMenuScene extends AbstractScene{
 					{
 						createNewPage();
 					}
+					if(string.equals("Scenes"))
+					{
+						openScenesLibrary();
+					}
+					if(string.equals("Widgets"))
+					{
+						openWidgetLibrary();
+					}
 				}
 			}
 			return false;
@@ -134,7 +148,7 @@ public class StartMenuScene extends AbstractScene{
 			
 			if(nameArea != null) nameArea.destroy();
 			
-			nameArea = new NewProjectMenu(app, 640, 450, 380, 100);
+			nameArea = new NewProjectMenu(app, model, 640, 450, 380, 100);
 			scene.getCanvas().addChild(nameArea);
 	
 		}
@@ -152,21 +166,34 @@ public class StartMenuScene extends AbstractScene{
 			
 			if(projectList != null) projectList.destroy();
 			
-			projectList = new ExistProjectMenu(app, 0, 0, (float)listWidth, listHeight, 40);
+			projectList = new ExistProjectMenu(app, model, 0, 0, (float)listWidth, listHeight, 40);
 			scene.getCanvas().addChild(projectList);
 			scene.getCanvas().setFrustumCulling(true); 
 		}
 	
 	    private void createNewPage()
 	    {
-	    	/*Page newPage = new Page(app,app.width/5,app.height/8, 500, 600);
-	    	scene.getCanvas().addChild(newPage);*/
+	    	model.Page newAbPage = model.getCurrentProject().createPage("default");
+	    	Page newPage = new Page(app, 300, 100, newAbPage);
+	    	scene.getCanvas().addChild(newPage);
 	    }
 	    
 		private void exitApplication()
 	    {
 	    	
 	    }
+		
+		private void openWidgetLibrary()
+		{
+			WidgetLibrary widgets = new WidgetLibrary(app, 0, 0, 200, 200);
+			scene.getCanvas().addChild(widgets);
+		}
+		
+		private void openScenesLibrary()
+		{
+			PageLibrary pages = new PageLibrary(app, 800, 0, 200, 200, model.getCurrentProject());
+			scene.getCanvas().addChild(pages);
+		}
 	    
 	}
 

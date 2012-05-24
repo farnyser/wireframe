@@ -1,5 +1,8 @@
 package menu;
 
+import model.ApplicationModel;
+import model.Project;
+
 import org.mt4j.AbstractMTApplication;
 import org.mt4j.components.TransformSpace;
 import org.mt4j.components.visibleComponents.shapes.MTPolygon;
@@ -24,6 +27,7 @@ import org.mt4j.util.math.Vertex;
 import processing.core.PApplet;
 import processing.core.PConstants;
 import processing.core.PImage;
+import utils.Slugger;
 
 public class ExistProjectMenu extends MTList{
 	
@@ -50,10 +54,13 @@ public class ExistProjectMenu extends MTList{
 	/** The preferred icon width. */
 	private int preferredIconWidth;
 	
-	public ExistProjectMenu(PApplet applet, float x, float y, float width, int height, float padY) {
+	private ApplicationModel model;
+	
+	public ExistProjectMenu(PApplet applet, ApplicationModel m, float x, float y, float width, int height, float padY) {
 		super(applet, x, y, width, height, padY);
 		
 		this.app = (AbstractMTApplication) applet;
+		this.model = m;
 		
 		preferredIconWidth = 256;
 		preferredIconHeight = 192;
@@ -218,7 +225,7 @@ public class ExistProjectMenu extends MTList{
 				if (te.isTapped()){
 					
 					System.out.println("Selected :" + te.getTarget().getName());
-					setData();//Model
+					setData(te.getTarget().getName());//Model
 					close();
 				}
 				return false;
@@ -226,8 +233,9 @@ public class ExistProjectMenu extends MTList{
 		});
 	}
 	
-	private void setData(){
-		
+	private void setData(String name)
+	{
+		model.loadProject(Project._path+Slugger.toSlug(name));
 	}
 	
 	private void close(){

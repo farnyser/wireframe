@@ -14,6 +14,7 @@ public class Main {
 		
 		app.createProject("test projet");
 		Project cp = app.getCurrentProject();
+		
 		/*cp.addScene("Scene 1");
 		cp.addScene("Scene 2");
 		app.saveCurrentProject("/Users/joseph/Desktop/");

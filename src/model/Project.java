@@ -29,6 +29,9 @@ public class Project implements Serializable{
 	 */
 	private String _sluggedLabel;
 	
+	public static String _path ="repository/";
+	
+	
 	public Project(String projectLabel) {
 		
 		_label = projectLabel;

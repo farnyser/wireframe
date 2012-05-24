@@ -3,6 +3,8 @@ package menu;
 import java.util.ArrayList;
 import java.util.List;
 
+import model.ApplicationModel;
+
 import org.mt4j.AbstractMTApplication;
 import org.mt4j.components.MTComponent;
 import org.mt4j.components.TransformSpace;
@@ -73,7 +75,7 @@ public class RectangleMenu extends MTRectangle implements CSSStylableComponent{
 	 * @param menuLoad the menu items
 	 * @param size the size of the squares
 	 */
-	public RectangleMenu(AbstractMTApplication app, Vector3D position,
+	public RectangleMenu(AbstractMTApplication app,Vector3D position,
 			List<MenuItem> menuLoad, float size) {
 		super(app, position.x, position.y, (float) (int) Math
 						.sqrt(menuLoad.size() + 1) * size, (float) (int) Math

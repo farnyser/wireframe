@@ -1,5 +1,7 @@
 package menu;
 
+import model.ApplicationModel;
+
 import org.mt4j.components.StateChange;
 import org.mt4j.components.StateChangeEvent;
 import org.mt4j.components.StateChangeListener;
@@ -35,8 +37,10 @@ public class NewProjectMenu extends MTRectangle {
 	private MTTextArea label;
 	private MTKeyboard keyboard = null;
 	private MTRectangle ok, cancel;
+	private ApplicationModel model;
+	
 
-	public NewProjectMenu(PApplet a, float x, float y, float width, float height) 
+	public NewProjectMenu(PApplet a, ApplicationModel m, float x, float y, float width, float height) 
 	{
 		super(a, x, y, 0, width, height);
 		applet = a;
@@ -45,6 +49,7 @@ public class NewProjectMenu extends MTRectangle {
 		w = width; 
 		h = height;
 		size = width;
+		model = m;
 		
 		initMenu();
 	}
@@ -310,6 +315,7 @@ public class NewProjectMenu extends MTRectangle {
 	
 	private void setData(){
 		
+		 model.createProject(texta.getText());
 	}
 }
 
