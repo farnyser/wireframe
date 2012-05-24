@@ -16,6 +16,7 @@ public abstract class Element extends MTClipRectangle implements PropertyChangeL
 	protected PApplet applet;
 	protected float mh, mw;
 	protected DragType dragType = DragType.MOVE;
+	protected boolean isMiniature = false;
 	
 	public Element(PApplet a, float x, float y, model.Element p) 
 	{
@@ -76,6 +77,8 @@ public abstract class Element extends MTClipRectangle implements PropertyChangeL
 		this.mh = _h;
 		this.mw = _w;
 		
+		this.isMiniature = true;
+		
 		Vector3D pos = this.getCenterPointGlobal();
 		this.setSizeXYGlobal(mw, mh);
 		pos.x = pos.x - (model.getWidth() - mw)/2;
@@ -85,6 +88,9 @@ public abstract class Element extends MTClipRectangle implements PropertyChangeL
 	
 	public void setFullSize()
 	{
+		this.isMiniature = false;
+		this.mw = model.getWidth();
+		this.mh = model.getHeight();
 		this.setSizeXYGlobal(model.getWidth(), model.getHeight());
 	}
 	
@@ -119,8 +125,11 @@ public abstract class Element extends MTClipRectangle implements PropertyChangeL
         }
         else if ( propertyName == "setSize" ) 
         {
-        	Vector3D newsize = (Vector3D) e.getNewValue();
-        	this.setSizeXYRelativeToParent(newsize.x, newsize.y);
+        	if(!this.isMiniature)
+        	{
+        		Vector3D newsize = (Vector3D) e.getNewValue();
+        		this.setSizeXYRelativeToParent(newsize.x, newsize.y);
+        	}
         }
     }
 	
@@ -142,5 +151,4 @@ public abstract class Element extends MTClipRectangle implements PropertyChangeL
 
 	protected abstract void initGesture();
 	protected abstract void initGraphics();
-
 }
