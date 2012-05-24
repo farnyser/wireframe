@@ -14,14 +14,14 @@ import org.mt4j.input.inputProcessors.componentProcessors.tapAndHoldProcessor.Ta
 import org.mt4j.input.inputProcessors.componentProcessors.tapProcessor.TapEvent;
 import org.mt4j.input.inputProcessors.componentProcessors.tapProcessor.TapProcessor;
 import org.mt4j.util.MTColor;
+import org.mt4j.util.math.Vector3D;
 
 import processing.core.PApplet;
-import view.Element.DragType;
-import view.widget.Widget;
 
 public class Page extends Element
 {
-	MTClipRoundRect close;
+	protected MTClipRoundRect close;
+	protected PageMenu menu;
 	
 	public Page(PApplet a, float x, float y, model.Page p) 
 	{
@@ -82,6 +82,7 @@ public class Page extends Element
 		    }    
 		});
 		
+		close.removeAllGestureEventListeners(); // supprime les comportements par défaut (drag, zoom, ...)
 		close.registerInputProcessor(new TapProcessor(this.applet));
 		close.addGestureListener(TapProcessor.class, new IGestureEventListener()
 		{
@@ -106,8 +107,17 @@ public class Page extends Element
 	{
 		this.setFillColor(MTColor.WHITE);
 		
-		close = new MTClipRoundRect(applet, this.model.getWidth() - 10, -10, 0, 20, 20, 10, 10);
+		menu = new PageMenu(applet);
+		this.addChild(menu);
+		menu.setWidthXYGlobal(this.getWidthXYGlobal());
+		menu.setAnchor(PositionAnchor.UPPER_LEFT);
+		menu.setPositionRelativeToParent(new Vector3D(0, -menu.getHeight(), 0));
+		menu.getTextArea().setText(((model.Page) model).getLabel());
+		menu.getTextArea().setPositionRelativeToParent(menu.getCenterPointLocal());
+
+		close = new MTClipRoundRect(applet, this.model.getWidth() - 10, -(menu.getHeight() + 10), 0, 20, 20, 10, 10);
 		close.setFillColor(MTColor.RED);
+		
 		this.addChild(close);
 		
 		for ( model.Element e : model.getElements() )
@@ -115,6 +125,21 @@ public class Page extends Element
 			view.Element w = view.Element.newInstance(applet, e);
 			this.addChild(w);
 		}
+	}
+	
+	public void setMinSize(float _w, float _h) {
+		super.setMinSize(_w, _h);
+		
+		menu.setVisible(false);
+		close.setVisible(false);
+	}
+	
+	public void setFullSize() {
+		super.setFullSize();
+		
+		menu.setVisible(true);
+		menu.sendToFront();
+		close.setVisible(true);
 	}
 
 }
