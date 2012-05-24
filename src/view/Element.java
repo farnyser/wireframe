@@ -10,9 +10,12 @@ import processing.core.PApplet;
 
 public abstract class Element extends MTClipRectangle implements PropertyChangeListener
 {
+	protected enum DragType { MOVE, RESIZE };
+	
 	protected model.Element model;
 	protected PApplet applet;
 	protected float mh, mw;
+	protected DragType dragType = DragType.MOVE;
 	
 	public Element(PApplet a, float x, float y, model.Element p) 
 	{
@@ -113,6 +116,11 @@ public abstract class Element extends MTClipRectangle implements PropertyChangeL
         			}
         		}
         	}
+        }
+        else if ( propertyName == "setSize" ) 
+        {
+        	Vector3D newsize = (Vector3D) e.getNewValue();
+        	this.setSizeXYRelativeToParent(newsize.x, newsize.y);
         }
     }
 	

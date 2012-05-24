@@ -5,12 +5,14 @@ import java.beans.PropertyChangeSupport;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import org.mt4j.util.math.Vector3D;
+
 public class Element  implements Serializable,Cloneable
 {
 	private static final long serialVersionUID = 5913307790282474281L;
 	
 	protected ArrayList<model.Element> childs;
-	protected int width = 600, height = 600;
+	protected float width = 600, height = 600;
 	protected PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 
 	public Element()
@@ -47,20 +49,21 @@ public class Element  implements Serializable,Cloneable
 		pcs.firePropertyChange("removeElement", null, e);
 	}
 
-	public int getWidth() 
+	public float getWidth() 
 	{
 		return width;
 	}
 
-	public int getHeight() 
+	public float getHeight() 
 	{
 		return height;
 	}
 
-	public void setSize(int width, int height) 
+	public void setSize(float f, float g) 
 	{
-		this.width = width;
-		this.height = height;
+		this.width = f;
+		this.height = g;
+		pcs.firePropertyChange("setSize", null, new Vector3D(f, g));
 	}
 
 	public ArrayList<model.Element> getElements() 

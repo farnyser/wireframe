@@ -4,17 +4,18 @@ import java.beans.PropertyChangeEvent;
 
 import model.widget.ButtonWidget;
 
+import org.mt4j.MTApplication;
 import org.mt4j.components.StateChange;
 import org.mt4j.components.StateChangeEvent;
 import org.mt4j.components.StateChangeListener;
 import org.mt4j.components.visibleComponents.widgets.MTTextArea;
 import org.mt4j.components.visibleComponents.widgets.keyboard.ITextInputListener;
 import org.mt4j.components.visibleComponents.widgets.keyboard.MTKeyboard;
-import org.mt4j.input.IMTInputEventListener;
-import org.mt4j.input.inputData.MTInputEvent;
+import org.mt4j.input.gestureAction.TapAndHoldVisualizer;
 import org.mt4j.input.inputProcessors.IGestureEventListener;
 import org.mt4j.input.inputProcessors.MTGestureEvent;
 import org.mt4j.input.inputProcessors.componentProcessors.dragProcessor.DragProcessor;
+import org.mt4j.input.inputProcessors.componentProcessors.tapAndHoldProcessor.TapAndHoldProcessor;
 import org.mt4j.input.inputProcessors.componentProcessors.tapProcessor.TapEvent;
 import org.mt4j.input.inputProcessors.componentProcessors.tapProcessor.TapProcessor;
 import org.mt4j.util.MTColor;
@@ -140,6 +141,15 @@ public class Button extends Widget
 			public boolean processGestureEvent(MTGestureEvent ge) 
 			{
 		        return Button.super.processGestureEvent(ge);
+			}
+		});
+		texta.registerInputProcessor(new TapAndHoldProcessor((MTApplication)applet,1000));
+		texta.addGestureListener(TapAndHoldProcessor.class,new TapAndHoldVisualizer((MTApplication)applet, this));
+		texta.addGestureListener(TapAndHoldProcessor.class, new IGestureEventListener()
+		{
+			public boolean processGestureEvent(MTGestureEvent the) 
+			{
+		        return Button.super.processGestureEvent(the);
 			}
 		});
 	    
