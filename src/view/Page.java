@@ -1,6 +1,8 @@
 package view;
 
 import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 
 import org.mt4j.MTApplication;
 import org.mt4j.components.visibleComponents.widgets.MTClipRoundRect;
@@ -20,19 +22,27 @@ import processing.core.PApplet;
 
 public class Page extends Element
 {
+	final static public String EVENT_DELETE_PAGE = "event_delete_page";
+	
 	protected MTClipRoundRect close;
 	protected PageMenu menu;
+	
+	protected PropertyChangeSupport _viewNotifier;
 	
 	public Page(PApplet a, float x, float y, model.Page p) 
 	{
 		super(a, x, y, p);
 		applet = a;
 		model = p;
+		
+		_viewNotifier = new PropertyChangeSupport(this);
 	}
 	
 	public Page(Page p, Boolean create_new_model)
 	{
 		super(p,create_new_model);
+		
+		_viewNotifier = new PropertyChangeSupport(this);
 	}
 	
 	public void propertyChange(PropertyChangeEvent e) 
@@ -141,5 +151,21 @@ public class Page extends Element
 		menu.sendToFront();
 		close.setVisible(true);
 	}
-
+	
+	public void addListener(PropertyChangeListener listener)
+	{
+		_viewNotifier.addPropertyChangeListener(listener);
+	}
+	
+	public void removeListener(PropertyChangeListener listener)
+	{
+		_viewNotifier.removePropertyChangeListener(listener);
+	}
+	
+	public void resetListener()
+	{
+		_viewNotifier = new PropertyChangeSupport(this);
+	}
+	
+	public PropertyChangeSupport getViewNotifier() { return _viewNotifier; }
 }

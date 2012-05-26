@@ -1,5 +1,6 @@
 package view;
 
+import org.mt4j.components.TransformSpace;
 import org.mt4j.components.visibleComponents.widgets.MTClipRectangle;
 import org.mt4j.components.visibleComponents.widgets.MTTextArea;
 import org.mt4j.input.inputProcessors.IGestureEventListener;
@@ -19,6 +20,7 @@ public class PageMenu extends MTClipRectangle {
 	
 	protected MTTextArea textArea;
 	protected PageMenuProperties properties;
+	protected MTClipRectangle arrowDown;
 	protected PApplet applet;
 	
 	private boolean animationRunning = false; // for the slide down animation	
@@ -29,6 +31,7 @@ public class PageMenu extends MTClipRectangle {
 		this.applet = applet;
 		textArea = new MTTextArea(applet);
 		properties = new PageMenuProperties(applet);
+		arrowDown = new MTClipRectangle(applet, 0, 0, 0, 10, 10);
 
 		initGraphics();
 		initGesture();
@@ -36,6 +39,7 @@ public class PageMenu extends MTClipRectangle {
 	
 	protected void initGraphics() {
 		this.setFillColor(MTColor.GRAY);
+		this.setNoStroke(true);
 
 		textArea.setFillColor(new MTColor(0,0,0,MTColor.ALPHA_FULL_TRANSPARENCY));
 		textArea.setNoStroke(true);
@@ -45,12 +49,21 @@ public class PageMenu extends MTClipRectangle {
 		this.addChild(properties);
 		properties.setAnchor(PositionAnchor.UPPER_LEFT);
 		properties.setPositionRelativeToParent(new Vector3D(0, this.getHeight(), 0));
+		
+		this.addChild(arrowDown);
+		arrowDown.setFillColor(MTColor.GRAY);
+		arrowDown.setNoStroke(true);
+		arrowDown.setPositionRelativeToParent(new Vector3D(this.getWidth() / 2, this.getHeight(), 0));
+		arrowDown.rotateZ(arrowDown.getCenterPointLocal(), 45, TransformSpace.LOCAL);
+		
+		textArea.sendToFront();
 	}
 	
 	protected void initGesture() {
 
 		this.removeAllGestureEventListeners();
 		
+		// Slide down animation
 		final int duration = 200;
 		MultiPurposeInterpolator slideDownInterpolator = new MultiPurposeInterpolator(0, PageMenuProperties.HEIGHT_WHEN_OPENED, duration, 0.0f, 1.0f, 1);
 		final Animation slideDownAnimation = new Animation("Slide down anim", slideDownInterpolator, this.properties, 0);
@@ -61,10 +74,12 @@ public class PageMenu extends MTClipRectangle {
 				
 				if(ae.getId() == AnimationEvent.ANIMATION_ENDED) {
 					animationRunning = false;
+					PageMenu.this.properties.setVisible(true);
 				}
 			}
 		});
 		
+		// Slide Down interaction
 		this.addGestureListener(DragProcessor.class, new IGestureEventListener()
 		{
 			public boolean processGestureEvent(MTGestureEvent ge) 
@@ -89,6 +104,8 @@ public class PageMenu extends MTClipRectangle {
 			}
 		});
 		
+		arrowDown.removeAllGestureEventListeners();
+		
 		textArea.removeAllGestureEventListeners();
 		textArea.addGestureListener(DragProcessor.class, new IGestureEventListener()
 		{
@@ -96,9 +113,11 @@ public class PageMenu extends MTClipRectangle {
 			{
 		        return PageMenu.this.processGestureEvent(ge);
 			}
-		});		
+		});
 	}
 	
 	public float getHeight() { return this.getHeightXYGlobal(); }
+	public float getWidth() { return this.getWidthXYGlobal(); }
+
 	public MTTextArea getTextArea() { return this.textArea; }
 }

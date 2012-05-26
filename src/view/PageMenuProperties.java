@@ -6,6 +6,7 @@ import org.mt4j.input.inputProcessors.IGestureEventListener;
 import org.mt4j.input.inputProcessors.MTGestureEvent;
 import org.mt4j.input.inputProcessors.componentProcessors.dragProcessor.DragEvent;
 import org.mt4j.input.inputProcessors.componentProcessors.dragProcessor.DragProcessor;
+import org.mt4j.input.inputProcessors.componentProcessors.tapProcessor.TapProcessor;
 import org.mt4j.util.MTColor;
 import org.mt4j.util.animation.Animation;
 import org.mt4j.util.animation.AnimationEvent;
@@ -17,31 +18,38 @@ import processing.core.PApplet;
 
 public class PageMenuProperties extends MTClipRectangle {
 	
-	protected MTTextArea ta;
+	protected MTTextArea deleteButton;
 	
 	final static public float HEIGHT_WHEN_OPENED = 200;
 	
-	private boolean animationRunning = false; // for the slide up animation	
+	protected boolean animationRunning = false; // for the slide up animation 
 
 	PageMenuProperties(PApplet applet) {
 		super(applet, 0, 0, 0, 400, 0);
 
-		ta = new MTTextArea(applet);
-		
+		deleteButton = new MTTextArea(applet);
+
 		initGraphics();
 		initGesture();
 	}
 	
 	protected void initGraphics() {
 		this.setFillColor(MTColor.GRAY);
+		this.setNoStroke(true);
 		
-		ta.setText("Supprimer la page");
+		this.setVisible(false);
+		
+		deleteButton.setText("Supprimer la page");
+		deleteButton.setFillColor(MTColor.GRAY);
+		deleteButton.setNoStroke(true);
+		this.addChild(deleteButton);
 	}
 	
 	protected void initGesture() {
 
 		this.removeAllGestureEventListeners();
 		
+		// Slide up animation
 		final int duration = 200;
 		MultiPurposeInterpolator slideUpInterpolator = new MultiPurposeInterpolator(PageMenuProperties.HEIGHT_WHEN_OPENED, 0, duration, 0.0f, 1.0f, 1);
 		final Animation slideUpAnimation = new Animation("Slide up anim", slideUpInterpolator, this, 0);
@@ -52,10 +60,12 @@ public class PageMenuProperties extends MTClipRectangle {
 				
 				if(ae.getId() == AnimationEvent.ANIMATION_ENDED) {
 					animationRunning = false;
+					PageMenuProperties.this.setVisible(false);
 				}
 			}
 		});
 		
+		// Slide up interaction
 		this.addGestureListener(DragProcessor.class, new IGestureEventListener()
 		{
 			public boolean processGestureEvent(MTGestureEvent ge) 
@@ -76,7 +86,22 @@ public class PageMenuProperties extends MTClipRectangle {
 				
 		        return false;
 			}
-		});		
+		});
+		
+		// Delete button interaction
+		deleteButton.removeAllGestureEventListeners();
+		deleteButton.registerInputProcessor(new TapProcessor(this.getRenderer()));
+		deleteButton.addGestureListener(TapProcessor.class, new IGestureEventListener() {
+			
+			@Override
+			public boolean processGestureEvent(MTGestureEvent arg0) {
+
+				Page pageView = (Page) PageMenuProperties.this.getParent().getParent();
+				pageView.getViewNotifier().firePropertyChange(Page.EVENT_DELETE_PAGE, null, null);
+				
+				return false;
+			}
+		});
 	}
 
 }
