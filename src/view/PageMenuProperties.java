@@ -1,34 +1,41 @@
 package view;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
+import org.mt4j.components.TransformSpace;
 import org.mt4j.components.visibleComponents.widgets.MTClipRectangle;
 import org.mt4j.components.visibleComponents.widgets.MTTextArea;
 import org.mt4j.input.inputProcessors.IGestureEventListener;
 import org.mt4j.input.inputProcessors.MTGestureEvent;
 import org.mt4j.input.inputProcessors.componentProcessors.dragProcessor.DragEvent;
 import org.mt4j.input.inputProcessors.componentProcessors.dragProcessor.DragProcessor;
-import org.mt4j.input.inputProcessors.componentProcessors.tapProcessor.TapProcessor;
 import org.mt4j.util.MTColor;
 import org.mt4j.util.animation.Animation;
 import org.mt4j.util.animation.AnimationEvent;
 import org.mt4j.util.animation.IAnimationListener;
 import org.mt4j.util.animation.MultiPurposeInterpolator;
+import org.mt4j.util.font.FontManager;
 import org.mt4j.util.math.Vector3D;
 
 import processing.core.PApplet;
 
-public class PageMenuProperties extends MTClipRectangle {
+public class PageMenuProperties extends MTClipRectangle implements PropertyChangeListener {
 	
 	protected MTTextArea deleteButton;
 	
 	final static public float HEIGHT_WHEN_OPENED = 200;
 	
-	protected boolean animationRunning = false; // for the slide up animation 
+	protected boolean animationRunning = false; // for the slide up animation
+	
+	protected ConfirmationSlider _sliderConfirm;
 
 	PageMenuProperties(PApplet applet) {
 		super(applet, 0, 0, 0, 400, 0);
 
-		deleteButton = new MTTextArea(applet);
-
+		_sliderConfirm = new ConfirmationSlider(applet, 200, 20, 15);
+		_sliderConfirm.addPropertyChangeListener(ConfirmationSlider.EVENT_CONFIRMATION, this);
+		
 		initGraphics();
 		initGesture();
 	}
@@ -38,11 +45,18 @@ public class PageMenuProperties extends MTClipRectangle {
 		this.setNoStroke(true);
 		
 		this.setVisible(false);
+
+		MTTextArea deleteLabel = new MTTextArea(this.getRenderer(), FontManager.getInstance().createFont(this.getRenderer(), "SansSerif", 12));
+		this.addChild(deleteLabel);
+		deleteLabel.setAnchor(PositionAnchor.UPPER_LEFT);
+		deleteLabel.setPositionRelativeToParent(new Vector3D(0, 20, 0));
+		deleteLabel.setText("Suppression de la page");
+		deleteLabel.setNoFill(true);
+		deleteLabel.setNoStroke(true);
+		deleteLabel.setPickable(false);
 		
-		deleteButton.setText("Supprimer la page");
-		deleteButton.setFillColor(MTColor.GRAY);
-		deleteButton.setNoStroke(true);
-		this.addChild(deleteButton);
+		this.addChild(_sliderConfirm);
+		_sliderConfirm.setPositionRelativeToParent(new Vector3D(deleteLabel.getPosition(TransformSpace.RELATIVE_TO_PARENT).x + deleteLabel.getWidthXY(TransformSpace.RELATIVE_TO_PARENT) + 5, 20, 0));
 	}
 	
 	protected void initGesture() {
@@ -87,21 +101,14 @@ public class PageMenuProperties extends MTClipRectangle {
 		        return false;
 			}
 		});
-		
-		// Delete button interaction
-		deleteButton.removeAllGestureEventListeners();
-		deleteButton.registerInputProcessor(new TapProcessor(this.getRenderer()));
-		deleteButton.addGestureListener(TapProcessor.class, new IGestureEventListener() {
-			
-			@Override
-			public boolean processGestureEvent(MTGestureEvent arg0) {
-
-				Page pageView = (Page) PageMenuProperties.this.getParent().getParent();
-				pageView.getViewNotifier().firePropertyChange(Page.EVENT_DELETE_PAGE, null, null);
-				
-				return false;
-			}
-		});
 	}
 
+	@Override
+	public void propertyChange(PropertyChangeEvent ev) {
+		
+		if(ev.getPropertyName() == ConfirmationSlider.EVENT_CONFIRMATION) {
+			Page pageView = (Page) PageMenuProperties.this.getParent().getParent();
+			pageView.getViewNotifier().firePropertyChange(Page.EVENT_DELETE_PAGE, null, null);
+		}
+	}
 }
