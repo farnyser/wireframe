@@ -15,6 +15,9 @@ public class Page extends Element implements Serializable {
 	private String _label;
 	
 	public Page(String sceneLabel) {
+		
+		super();
+		
 		_label = sceneLabel;
 	}
 
