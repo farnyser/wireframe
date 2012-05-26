@@ -11,6 +11,10 @@ import org.mt4j.input.inputProcessors.MTGestureEvent;
 import org.mt4j.input.inputProcessors.componentProcessors.dragProcessor.DragEvent;
 import org.mt4j.input.inputProcessors.componentProcessors.dragProcessor.DragProcessor;
 import org.mt4j.util.MTColor;
+import org.mt4j.util.animation.Animation;
+import org.mt4j.util.animation.AnimationEvent;
+import org.mt4j.util.animation.IAnimationListener;
+import org.mt4j.util.animation.MultiPurposeInterpolator;
 import org.mt4j.util.math.Vector3D;
 
 import processing.core.PApplet;
@@ -23,6 +27,8 @@ public class ConfirmationSlider extends MTRectangle {
 	protected MTRectangle _trail;
 	protected MTRectangle _confirmationZone;
 	protected float _confirmationZoneRatio;
+	
+	protected boolean animationRunning = false;
 	
 	protected PropertyChangeSupport propertyChangeSupport;
 
@@ -42,15 +48,12 @@ public class ConfirmationSlider extends MTRectangle {
 	
 	public void initGraphics() {
 		this.setFillColor(new MTColor(150, 150, 150, 255));
-		this.setPickable(false);
-		this.setAnchor(PositionAnchor.UPPER_LEFT);
-		this.setPositionRelativeToParent(new Vector3D(15, 20, 0));		
+		this.setAnchor(PositionAnchor.UPPER_LEFT);	
 
 		// The confirmation zone (the zone where is fire the vent)
 		this.addChild(_confirmationZone);
 		_confirmationZone.setAnchor(PositionAnchor.UPPER_LEFT);
 		_confirmationZone.setFillColor(MTColor.RED);
-		_confirmationZone.setNoStroke(true);
 		float confirmationZoneWidth = this.getWidthXY(TransformSpace.LOCAL) * _confirmationZoneRatio / 100;
 		float confirmationZoneStart = this.getPosition(TransformSpace.LOCAL).x + this.getWidthXY(TransformSpace.LOCAL) - confirmationZoneWidth;
 		_confirmationZone.setWidthLocal(confirmationZoneWidth);
@@ -60,7 +63,6 @@ public class ConfirmationSlider extends MTRectangle {
 		this.addChild(_trail);
 		_trail.setAnchor(PositionAnchor.UPPER_LEFT);
 		_trail.setFillColor(MTColor.GREEN);
-		_trail.setNoStroke(true);
 
 		// the button
 		this.addChild(_knob);
@@ -71,10 +73,12 @@ public class ConfirmationSlider extends MTRectangle {
 	
 	public void initGesture() {
 		
+		this.removeAllGestureEventListeners();
 		_trail.removeAllGestureEventListeners();
 		_confirmationZone.removeAllGestureEventListeners();
 		
 		_knob.removeAllGestureEventListeners();
+			
 		_knob.addGestureListener(DragProcessor.class, new IGestureEventListener() {
 			//@Override
 			public boolean processGestureEvent(MTGestureEvent ge) {
@@ -106,18 +110,44 @@ public class ConfirmationSlider extends MTRectangle {
 					_knob.setPositionRelativeToParent(pos);
 				}
 				
-				// fire the event if we are in the confirmation area
 				if(knobCenterRelToParent.x > confirmZoneStart) {
-					if(de.getId() == DragEvent.GESTURE_ENDED) {
-						if(propertyChangeSupport.hasListeners(ConfirmationSlider.EVENT_CONFIRMATION)) {
-							propertyChangeSupport.firePropertyChange(ConfirmationSlider.EVENT_CONFIRMATION, null, null);
-						}
-					}
 					_knob.setSizeXYRelativeToParent(25, 25);
 				}
 				else {
 					float knobSize = ConfirmationSlider.this.getHeightXY(TransformSpace.LOCAL);
 					_knob.setSizeXYRelativeToParent(knobSize,knobSize);
+				}
+				
+				if(de.getId() == DragEvent.GESTURE_ENDED) {
+					
+					// fire the event if we are in the confirmation area
+					if(knobCenterRelToParent.x > confirmZoneStart) {
+						
+						if(propertyChangeSupport.hasListeners(ConfirmationSlider.EVENT_CONFIRMATION)) {
+							propertyChangeSupport.firePropertyChange(ConfirmationSlider.EVENT_CONFIRMATION, null, null);
+						}
+					}
+					else {
+						// Slide left animation
+						final int duration = 500;
+						MultiPurposeInterpolator slideLeftInterpolator = new MultiPurposeInterpolator(knobCenterRelToParent.x, 0, duration, 0.0f, 1.0f, 1);
+						final Animation slideLeftAnimation = new Animation("Slide left anim", slideLeftInterpolator, this, 0);
+						slideLeftAnimation.addAnimationListener(new IAnimationListener() {
+							
+							public void processAnimationEvent(AnimationEvent ae) {
+								_trail.setWidthLocal(ae.getValue());
+								_knob.setPositionRelativeToParent(new Vector3D(ae.getValue(), 10, 0));
+								
+								if(ae.getId() == AnimationEvent.ANIMATION_ENDED) {
+									animationRunning = false;
+								}
+							}
+						});
+
+						animationRunning = true;
+						slideLeftAnimation.start();
+					}
+					
 				}
 
 				return false;
