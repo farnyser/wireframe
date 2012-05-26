@@ -83,6 +83,8 @@ public class ConfirmationSlider extends MTRectangle {
 			//@Override
 			public boolean processGestureEvent(MTGestureEvent ge) {
 
+				if(animationRunning == true) return false;
+				
 				DragEvent de = (DragEvent)ge;
 				Vector3D dir = new Vector3D(de.getTranslationVect());
 				//Transform the global direction vector into knob local coordiante space
