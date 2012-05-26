@@ -8,12 +8,10 @@ import org.mt4j.input.inputSources.MacTrackpadSource;
 
 import view.WorkspaceScene;
 
-
-public class Main extends MTApplication 
+public class StartWireframe extends MTApplication 
 {
 	private static final long serialVersionUID = -4290913978074932279L;
 	private	ApplicationModel app = new ApplicationModel();
-
 	
 	public static void main(String[] args) 
 	{
