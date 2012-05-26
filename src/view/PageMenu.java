@@ -1,6 +1,5 @@
 package view;
 
-import org.mt4j.components.visibleComponents.shapes.MTRectangle.PositionAnchor;
 import org.mt4j.components.visibleComponents.widgets.MTClipRectangle;
 import org.mt4j.components.visibleComponents.widgets.MTTextArea;
 import org.mt4j.input.inputProcessors.IGestureEventListener;
@@ -54,7 +53,7 @@ public class PageMenu extends MTClipRectangle {
 					Vector3D move = de.getTo();
 					move.subtractLocal(PageMenu.this.getCenterPointGlobal());
 					
-					if(move.y > 50 && (Math.abs(move.x) <= 30)) {
+					if(move.y > 200 && (Math.abs(move.x) <= 100)) {
 						PageMenu.this.properties.setVisible(true);
 					}
 
@@ -62,7 +61,7 @@ public class PageMenu extends MTClipRectangle {
 				
 		        return false;
 			}
-		});		
+		});
 		
 		textArea.removeAllGestureEventListeners();
 		textArea.addGestureListener(DragProcessor.class, new IGestureEventListener()
