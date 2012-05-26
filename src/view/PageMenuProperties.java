@@ -82,14 +82,20 @@ public class PageMenuProperties extends MTClipRectangle implements PropertyChang
 		// Slide up interaction
 		this.addGestureListener(DragProcessor.class, new IGestureEventListener()
 		{
+			private Vector3D initialPoint;
 			public boolean processGestureEvent(MTGestureEvent ge) 
 			{
 				DragEvent de = (DragEvent) ge;
+				
+				if(de.getId() == MTGestureEvent.GESTURE_STARTED) {
+					initialPoint = de.getFrom();
+				}
+				
 				if(de.getId() == MTGestureEvent.GESTURE_ENDED) {
 					
-					Vector3D move = PageMenuProperties.this.getCenterPointGlobal();
-					move.subtractLocal(de.getTo());
-					if(move.y > 100 && (Math.abs(move.x) <= 100)) {
+					initialPoint.subtractLocal(de.getTo());
+
+					if(initialPoint.y > 100 && (Math.abs(initialPoint.x) <= 100)) {
 						if (!animationRunning){
 							animationRunning = true;
 							slideUpAnimation.start();
