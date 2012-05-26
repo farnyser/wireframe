@@ -72,9 +72,11 @@ public class PageMenu extends MTClipRectangle {
 			public void processAnimationEvent(AnimationEvent ae) {
 				PageMenu.this.properties.setHeightLocal(ae.getValue());
 				
-				if(ae.getId() == AnimationEvent.ANIMATION_ENDED) {
-					animationRunning = false;
+				if(ae.getId() == AnimationEvent.ANIMATION_STARTED) {
 					PageMenu.this.properties.setVisible(true);
+				}
+				else if(ae.getId() == AnimationEvent.ANIMATION_ENDED) {
+					animationRunning = false;
 				}
 			}
 		});
@@ -91,7 +93,7 @@ public class PageMenu extends MTClipRectangle {
 					Vector3D move = de.getTo();
 					move.subtractLocal(PageMenu.this.getCenterPointGlobal());
 					
-					if(move.y > 200 && (Math.abs(move.x) <= 100)) {
+					if(move.y > 150 && (Math.abs(move.x) <= 100)) {
 					
 						if (!animationRunning){
 							animationRunning = true;
