@@ -53,6 +53,9 @@ public class Page extends Element
 		if(e.getPropertyName() == model.Page.EVENT_PAGE_DELETED) {
 			this.destroy();
 		}
+		else if(e.getPropertyName() == model.Page.EVENT_PAGE_RENAMED) {
+			this.menu.changePageName(e.getNewValue().toString());
+		}
 	}
 
 	protected void initGesture()

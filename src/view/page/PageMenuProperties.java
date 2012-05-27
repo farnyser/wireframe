@@ -16,20 +16,21 @@ import org.mt4j.util.animation.AnimationEvent;
 import org.mt4j.util.animation.IAnimationListener;
 import org.mt4j.util.animation.MultiPurposeInterpolator;
 import org.mt4j.util.font.FontManager;
+import org.mt4j.util.font.IFont;
 import org.mt4j.util.math.Vector3D;
 
 import processing.core.PApplet;
 import view.ConfirmationSlider;
+import view.EditableText;
 
 public class PageMenuProperties extends MTClipRectangle implements PropertyChangeListener {
-	
-	protected MTTextArea deleteButton;
 	
 	final static public float HEIGHT_WHEN_OPENED = 200;
 	
 	protected boolean animationRunning = false; // for the slide up animation
 	
 	protected ConfirmationSlider _sliderConfirm;
+	protected EditableText _pageName;
 
 	PageMenuProperties(PApplet applet) {
 		super(applet, 0, 0, 0, 400, 0);
@@ -44,20 +45,67 @@ public class PageMenuProperties extends MTClipRectangle implements PropertyChang
 	protected void initGraphics() {
 		this.setFillColor(MTColor.GRAY);
 		this.setNoStroke(true);
-		
 		this.setVisible(false);
+		
+		IFont font = FontManager.getInstance().createFont(this.getRenderer(), "SansSerif", 12);
+		
+		MTTextArea pageNameLabel = new MTTextArea(this.getRenderer(), font);
+		this.addChild(pageNameLabel);
+		pageNameLabel.setAnchor(PositionAnchor.UPPER_LEFT);
+		pageNameLabel.setPositionRelativeToParent(new Vector3D(10, 15, 0));
+		pageNameLabel.setText("Nom de la page");
+		pageNameLabel.setNoFill(true);
+		pageNameLabel.setNoStroke(true);
+		pageNameLabel.setPickable(false);
+		
+		_pageName = new EditableText(this.getRenderer()) 
+		{
+			@Override
+			protected boolean handleGesture(MTGestureEvent e) {
+				//return Button.super.processGestureEvent(e);
+				return false;
+			}
 
-		MTTextArea deleteLabel = new MTTextArea(this.getRenderer(), FontManager.getInstance().createFont(this.getRenderer(), "SansSerif", 12));
+			@Override
+			protected void textUpdated(String newUnformatedText) {
+				((model.Page)((view.page.Page) PageMenuProperties.this.getParent().getParent()).getModel()).setLabel(newUnformatedText);
+			}
+
+			@Override
+			protected String getUnformatedText() {
+				if(PageMenuProperties.this.getParent() != null) {
+					return ((model.Page)((view.page.Page) PageMenuProperties.this.getParent().getParent()).getModel()).getLabel();
+				}
+				else return "";
+			}
+
+			@Override
+			protected String getFormatedText() {
+				if(PageMenuProperties.this.getParent() != null) {
+					return ((model.Page)((view.page.Page) PageMenuProperties.this.getParent().getParent()).getModel()).getLabel();
+				}
+				else return "";
+			}
+			
+		};
+	    
+		this.addChild(_pageName);
+		_pageName.setAnchor(PositionAnchor.UPPER_LEFT);
+		_pageName.setPositionRelativeToParent(new Vector3D(pageNameLabel.getPosition(TransformSpace.RELATIVE_TO_PARENT).x + pageNameLabel.getWidthXY(TransformSpace.RELATIVE_TO_PARENT) + 5, 15, 0));
+		_pageName.setFont(font);
+		
+		MTTextArea deleteLabel = new MTTextArea(this.getRenderer(), font);
 		this.addChild(deleteLabel);
 		deleteLabel.setAnchor(PositionAnchor.UPPER_LEFT);
-		deleteLabel.setPositionRelativeToParent(new Vector3D(0, 20, 0));
+		float deleteLineY = pageNameLabel.getPosition(TransformSpace.RELATIVE_TO_PARENT).y + pageNameLabel.getHeightXY(TransformSpace.RELATIVE_TO_PARENT) + 10;
+		deleteLabel.setPositionRelativeToParent(new Vector3D(10, deleteLineY, 0));
 		deleteLabel.setText("Suppression de la page");
 		deleteLabel.setNoFill(true);
 		deleteLabel.setNoStroke(true);
 		deleteLabel.setPickable(false);
 		
 		this.addChild(_sliderConfirm);
-		_sliderConfirm.setPositionRelativeToParent(new Vector3D(deleteLabel.getPosition(TransformSpace.RELATIVE_TO_PARENT).x + deleteLabel.getWidthXY(TransformSpace.RELATIVE_TO_PARENT) + 5, 20, 0));
+		_sliderConfirm.setPositionRelativeToParent(new Vector3D(deleteLabel.getPosition(TransformSpace.RELATIVE_TO_PARENT).x + deleteLabel.getWidthXY(TransformSpace.RELATIVE_TO_PARENT) + 5, deleteLineY, 0));
 	}
 	
 	protected void initGesture() {
@@ -118,4 +166,6 @@ public class PageMenuProperties extends MTClipRectangle implements PropertyChang
 			pageView.getViewNotifier().firePropertyChange(Page.EVENT_DELETE_PAGE, null, null);
 		}
 	}
+	
+	public EditableText getEditablePageName() { return _pageName; }
 }

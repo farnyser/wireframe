@@ -97,6 +97,7 @@ public class PageMenu extends MTClipRectangle {
 					
 						if (!animationRunning){
 							animationRunning = true;
+							properties.getEditablePageName().reloadText();
 							slideDownAnimation.start();
 						}
 					}
@@ -116,6 +117,11 @@ public class PageMenu extends MTClipRectangle {
 		        return PageMenu.this.processGestureEvent(ge);
 			}
 		});
+	}
+	
+	public void changePageName(String newLabel) {
+		this.textArea.setText(newLabel);
+		this.properties.getEditablePageName().reloadText();
 	}
 	
 	public float getHeight() { return this.getHeightXYGlobal(); }
