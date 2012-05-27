@@ -58,5 +58,13 @@ public class ApplicationModel {
 		}
 	}
 	
-	public Project getCurrentProject() { return _currentProject; }
+	public Project getCurrentProject() 
+	{
+		if ( _currentProject == null )
+		{
+			createProject("untitled project");
+		}
+		
+		return _currentProject; 
+	}
 }

@@ -50,10 +50,12 @@ public class Page extends Element
 	{
 		super.propertyChange(e);
 		
-		if(e.getPropertyName() == model.Page.EVENT_PAGE_DELETED) {
+		if(e.getPropertyName() == model.Page.EVENT_PAGE_DELETED) 
+		{
 			this.destroy();
 		}
-		else if(e.getPropertyName() == model.Page.EVENT_PAGE_RENAMED) {
+		else if(e.getPropertyName() == model.Page.EVENT_PAGE_RENAMED) 
+		{
 			this.menu.changePageName(e.getNewValue().toString());
 		}
 	}
@@ -151,7 +153,6 @@ public class Page extends Element
 
 		close = new MTClipRoundRect(applet, this._model.getWidth() - 10, -(menu.getHeight() + 10), 0, 20, 20, 10, 10);
 		close.setFillColor(MTColor.RED);
-		
 		this.addChild(close);
 		
 		for ( model.Element e : _model.getElements() )
@@ -165,14 +166,16 @@ public class Page extends Element
 		}
 	}
 	
-	public void setMinSize(float _w, float _h) {
+	public void setMinSize(float _w, float _h) 
+	{
 		super.setMinSize(_w, _h);
 		
 		menu.setVisible(false);
 		close.setVisible(false);
 	}
 	
-	public void setFullSize() {
+	public void setFullSize() 
+	{
 		super.setFullSize();
 		
 		menu.setVisible(true);

@@ -1,16 +1,15 @@
 package model;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 
 import utils.Slugger;
 
-public class Project implements Serializable{
-
-	/**
-	 * 
-	 */
+public class Project implements Serializable
+{
 	private static final long serialVersionUID = 1L;
 	
 	/**
@@ -28,9 +27,11 @@ public class Project implements Serializable{
 	 * The project label slugged (for save)
 	 */
 	private String _sluggedLabel;
-	
+
+	protected PropertyChangeSupport pcs = new PropertyChangeSupport(this);
+
 	public static String _path ="repository/";
-	
+
 	
 	public Project(String projectLabel) {
 		
@@ -40,14 +41,14 @@ public class Project implements Serializable{
 		_pageList = new ArrayList<Page>();
 		
 		// for initialization # debug
-		model.Page tmpPage;
-		model.widget.Widget tmpWidget;
-		for ( int i = 0 ; i < 3 ; i++ )	{
-			tmpPage = createPage("untitled document "+i);
-			tmpWidget = new model.widget.Widget(100,100,0);
-			tmpWidget.setSize(100, 100);
-			tmpPage.addElement(tmpWidget);
-		}		
+//		model.Page tmpPage;
+//		model.widget.Widget tmpWidget;
+//		for ( int i = 0 ; i < 3 ; i++ )	{
+//			tmpPage = createPage("untitled document "+i);
+//			tmpWidget = new model.widget.Widget(100,100,0);
+//			tmpWidget.setSize(100, 100);
+//			tmpPage.addElement(tmpWidget);
+//		}		
 	}
 	
 	/**
@@ -69,6 +70,7 @@ public class Project implements Serializable{
 	 */
 	public void addPage(Page page) {
 		_pageList.add(page);
+		pcs.firePropertyChange("addPage", null, page);
 	}
 	
 	/**
@@ -111,5 +113,21 @@ public class Project implements Serializable{
 			Page s = (Page) it.next();
 			System.out.println(s.getLabel());
 		}
+	}
+	
+	
+	public void addListener(PropertyChangeListener listener)
+	{
+		pcs.addPropertyChangeListener(listener);
+	}
+	
+	public void removeListener(PropertyChangeListener listener)
+	{
+		pcs.removePropertyChangeListener(listener);
+	}
+	
+	public void resetListener()
+	{
+		pcs = new PropertyChangeSupport(this);
 	}
 }

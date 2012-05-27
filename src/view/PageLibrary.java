@@ -19,12 +19,13 @@ public class PageLibrary extends Library implements PropertyChangeListener
 		create_new_model = false;
 		
 		_project = project;
+		_project.addListener(this);
 		
 		this.initViewFromModel();
 	} 
 	
-	public void initViewFromModel() {
-
+	public void initViewFromModel() 
+	{
 		for ( model.Page p : _project.getPageList() )
 		{
 			MTListCell cell = new MTListCell(this.getRenderer(), 50, 50);
@@ -37,10 +38,10 @@ public class PageLibrary extends Library implements PropertyChangeListener
 		}
 	}
 	
-	public void propertyChange(PropertyChangeEvent ev) {
-		
-		if(ev.getPropertyName() == view.page.Page.EVENT_DELETE_PAGE) {
-			
+	public void propertyChange(PropertyChangeEvent ev) 
+	{	
+		if(ev.getPropertyName() == view.page.Page.EVENT_DELETE_PAGE) 
+		{	
 			// on supprime la page
 			view.page.Page pageToDelete = (view.page.Page) ev.getSource();
 			_project.removePage((model.Page) pageToDelete.getModel());
@@ -49,5 +50,11 @@ public class PageLibrary extends Library implements PropertyChangeListener
 			this.removeAllListElements();
 			this.initViewFromModel();
 		}
+		else if(ev.getPropertyName() == "addPage") 
+		{
+			this.removeAllListElements();
+			this.initViewFromModel();
+		}
+				
 	}
 }
