@@ -44,7 +44,6 @@ public class PageLibrary extends Library implements PropertyChangeListener
 			// on supprime la page
 			view.page.Page pageToDelete = (view.page.Page) ev.getSource();
 			_project.removePage((model.Page) pageToDelete.getModel());
-			pageToDelete.destroy();
 
 			// on met a jour la PageLibrary
 			this.removeAllListElements();

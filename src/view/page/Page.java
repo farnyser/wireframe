@@ -34,7 +34,7 @@ public class Page extends Element
 	{
 		super(a, x, y, p);
 		applet = a;
-		model = p;
+		_model = p;
 		
 		_viewNotifier = new PropertyChangeSupport(this);
 	}
@@ -49,6 +49,10 @@ public class Page extends Element
 	public void propertyChange(PropertyChangeEvent e) 
 	{
 		super.propertyChange(e);
+		
+		if(e.getPropertyName() == model.Page.EVENT_PAGE_DELETED) {
+			this.destroy();
+		}
 	}
 
 	protected void initGesture()
@@ -67,7 +71,7 @@ public class Page extends Element
 				}
 				else if ( dragType == DragType.RESIZE )
 				{
-					Page.this.model.setSize(Page.this.model.getWidth() + de.getTranslationVect().x, Page.this.model.getHeight() + de.getTranslationVect().y);
+					Page.this._model.setSize(Page.this._model.getWidth() + de.getTranslationVect().x, Page.this._model.getHeight() + de.getTranslationVect().y);
 					
 					if ( de.getId() == MTGestureEvent.GESTURE_ENDED )
 						Page.this.dragType = DragType.MOVE;
@@ -123,15 +127,15 @@ public class Page extends Element
 		menu.setWidthXYGlobal(this.getWidthXYGlobal());
 		menu.setAnchor(PositionAnchor.UPPER_LEFT);
 		menu.setPositionRelativeToParent(new Vector3D(0, -menu.getHeight(), 0));
-		menu.getTextArea().setText(((model.Page) model).getLabel());
+		menu.getTextArea().setText(((model.Page) _model).getLabel());
 		menu.getTextArea().setPositionRelativeToParent(menu.getCenterPointLocal());
 
-		close = new MTClipRoundRect(applet, this.model.getWidth() - 10, -(menu.getHeight() + 10), 0, 20, 20, 10, 10);
+		close = new MTClipRoundRect(applet, this._model.getWidth() - 10, -(menu.getHeight() + 10), 0, 20, 20, 10, 10);
 		close.setFillColor(MTColor.RED);
 		
 		this.addChild(close);
 		
-		for ( model.Element e : model.getElements() )
+		for ( model.Element e : _model.getElements() )
 		{
 			view.Element w = view.Element.newInstance(applet, e);
 			this.addChild(w);
