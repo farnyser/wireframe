@@ -33,7 +33,7 @@ public class StartMenuScene extends AbstractScene{
 	{
 		super(mtApplication, name);
 		
-		this.setClearColor(MTColor.SILVER);
+		this.setClearColor(MTColor.BLACK);
 		this.registerGlobalInputProcessor(new CursorTracer(mtApplication, this));
 		
 		this.model = model;
