@@ -1,4 +1,4 @@
-package view;
+package view.page;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -19,6 +19,7 @@ import org.mt4j.util.MTColor;
 import org.mt4j.util.math.Vector3D;
 
 import processing.core.PApplet;
+import view.Element;
 
 public class Page extends Element
 {
@@ -40,7 +41,7 @@ public class Page extends Element
 	
 	public Page(Page p, Boolean create_new_model)
 	{
-		super(p,create_new_model);
+		super(p,create_new_model); 
 		
 		_viewNotifier = new PropertyChangeSupport(this);
 	}
@@ -92,7 +93,7 @@ public class Page extends Element
 		    }    
 		});
 		
-		close.removeAllGestureEventListeners(); // supprime les comportements par défaut (drag, zoom, ...)
+		close.removeAllGestureEventListeners(); // supprime les comportements par defaut (drag, zoom, ...)
 		close.registerInputProcessor(new TapProcessor(this.applet));
 		close.addGestureListener(TapProcessor.class, new IGestureEventListener()
 		{
@@ -103,7 +104,7 @@ public class Page extends Element
 					TapEvent te = (TapEvent) ge;
 					if (te.getTapID() == TapEvent.TAPPED) 
 					{
-			            view.Page.this.destroy();
+			            view.page.Page.this.destroy();
 					}
 		        }
 				
@@ -134,6 +135,10 @@ public class Page extends Element
 		{
 			view.Element w = view.Element.newInstance(applet, e);
 			this.addChild(w);
+			if ( e instanceof model.widget.Widget ) 
+			{ 
+				w.setPositionRelativeToParent(((model.widget.Widget)e).getPosition()); 
+			}
 		}
 	}
 	

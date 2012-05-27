@@ -1,8 +1,9 @@
 package view.widget;
 
 import java.beans.PropertyChangeEvent;
+import java.util.Vector;
 
-import model.widget.ButtonWidget;
+import model.widget.ListWidget;
 
 import org.mt4j.MTApplication;
 import org.mt4j.components.StateChange;
@@ -23,17 +24,17 @@ import org.mt4j.util.math.Vector3D;
 
 import processing.core.PApplet;
 
-public class Button extends Widget 
+public class List extends Widget 
 {
 	private MTTextArea texta;
 	private MTKeyboard keyboard = null;
 	  
-	public Button(PApplet applet, model.widget.Widget m) 
+	public List(PApplet applet, model.widget.Widget m) 
 	{
 		super(applet, m);
 	}	
 	
-	public Button(view.widget.Button widget, Boolean create_new_model)
+	public List(view.widget.List widget, Boolean create_new_model)
 	{
 		super(widget, create_new_model);
 	}
@@ -45,7 +46,7 @@ public class Button extends Widget
         String propertyName = e.getPropertyName();
 		if ( propertyName == "setContent" ) 
         {
-        	this.texta.setText((String) e.getNewValue());       
+			this.updateList((Vector<String> ) e.getNewValue());
         }
 	}
 
@@ -58,8 +59,8 @@ public class Button extends Widget
 		texta.setPickable(true);
 		texta.setNoFill(true);
 		texta.setNoStroke(true);
-		model.widget.ButtonWidget m = (ButtonWidget) model;
-		texta.setText(m.getContent());
+		model.widget.ListWidget m = (ListWidget) model;
+		this.updateList(m.getContent());
 		
 	    // Add Tap listener to evoke Keyboard
 		texta.removeAllGestureEventListeners(DragProcessor.class);
@@ -79,42 +80,42 @@ public class Button extends Widget
 			            if (keyboard == null) 
 			            {
 							keyboard = new MTKeyboard(applet);
-							Button.this.addChild(keyboard);
+							List.this.addChild(keyboard);
 							keyboard.addTextInputListener(new ITextInputListener()
 							{
 								@Override
 								public void appendCharByUnicode(String arg0) {
 									texta.appendCharByUnicode(arg0);
-									model.widget.ButtonWidget m = (ButtonWidget) model;
-									m.setContent(texta.getText());
+									model.widget.ListWidget m = (ListWidget) model;
+//									m.setContent(texta.getText());
 								}
 
 								@Override
 								public void appendText(String arg0) {
 									texta.appendText(arg0);
-									model.widget.ButtonWidget m = (ButtonWidget) model;
-									m.setContent(texta.getText());
+									model.widget.ListWidget m = (ListWidget) model;
+//									m.setContent(texta.getText());
 								}
 
 								@Override
 								public void clear() {
 									texta.clear();
-									model.widget.ButtonWidget m = (ButtonWidget) model;
-									m.setContent(texta.getText());
+									model.widget.ListWidget m = (ListWidget) model;
+//									m.setContent(texta.getText());
 								}
 
 								@Override
 								public void removeLastCharacter() {
 									texta.removeLastCharacter();
-									model.widget.ButtonWidget m = (ButtonWidget) model;
-									m.setContent(texta.getText());
+									model.widget.ListWidget m = (ListWidget) model;
+//									m.setContent(texta.getText());
 								}
 
 								@Override
 								public void setText(String arg0) {
 									texta.setText(arg0);
-									model.widget.ButtonWidget m = (ButtonWidget) model;
-									m.setContent(texta.getText());
+									model.widget.ListWidget m = (ListWidget) model;
+//									m.setContent(texta.getText());
 								}
 								
 							});
@@ -125,11 +126,13 @@ public class Button extends Widget
 								@Override
 								public void stateChanged(StateChangeEvent arg0) {
 									texta.setEnableCaret(false);
+									List.this.updateList(((model.widget.ListWidget)List.this.model).getContent());
 									keyboard = null;
 								}
 							});
 							
 							texta.setEnableCaret(true);
+							texta.setText(((model.widget.ListWidget)List.this.model).getContent().toString());
 			            }
 					}
 		        }
@@ -141,7 +144,7 @@ public class Button extends Widget
 		{
 			public boolean processGestureEvent(MTGestureEvent ge) 
 			{
-		        return Button.super.processGestureEvent(ge);
+		        return List.super.processGestureEvent(ge);
 			}
 		});
 		texta.registerInputProcessor(new TapAndHoldProcessor((MTApplication)applet,1000));
@@ -150,12 +153,19 @@ public class Button extends Widget
 		{
 			public boolean processGestureEvent(MTGestureEvent the) 
 			{
-		        return Button.super.processGestureEvent(the);
+		        return List.super.processGestureEvent(the);
 			}
 		});
 	    
 		this.addChild(texta);
-//		texta.setPositionRelativeToParent(new Vector3D(this.model.getWidth()/2,this.model.getHeight()/2,0));
 		texta.setPositionRelativeToParent(parentPosition);
+	}
+
+	protected void updateList(Vector<String> content) 
+	{
+		this.texta.setText("");
+		
+		for ( String element : content )
+			this.texta.appendText("* " + element + "\n");
 	}
 }

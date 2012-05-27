@@ -25,6 +25,7 @@ public class Widget extends view.Element
 	protected float fx = -1, fy = -1;
 	
 	protected boolean GRID_ENABLED = true;
+	protected int GRID_SPACING = 20;
 	
 	public Widget(PApplet a, model.widget.Widget m) 
 	{
@@ -103,12 +104,17 @@ public class Widget extends view.Element
 	
 	protected void initGraphics()
 	{
-		this.setFillColor(MTColor.randomColor());
+		this.setFillColor(MTColor.WHITE);
+		this.setStrokeColor(MTColor.BLACK);
 		
 		for ( model.Element e : model.getElements() )
 		{
 			view.Element w = view.Element.newInstance(applet, e);
 			this.addChild(w);
+			if ( e instanceof model.widget.Widget ) 
+			{ 
+				w.setPositionRelativeToParent(((model.widget.Widget)e).getPosition()); 
+			}
 		}
 	}
 	
@@ -187,34 +193,17 @@ public class Widget extends view.Element
 								// grid
 								if ( GRID_ENABLED )
 								{
-									int grid = 40;
-									int spacing = 20;
-									
 									float x = fx - Widget.this.model.getWidth()/2;
 									float y = fy - Widget.this.model.getHeight()/2;
 									
-	//								System.out.println("x%grid = " + (int)(x%grid) );
-									
-									if ( x%grid <= spacing ) 
-									{ 
-										x = (x-x%grid); 
-	//									System.out.println("snap to x=" + x); 
-									}
-									else if ( x%grid > grid-spacing ) 
-									{ 
-										x = (x-x%grid+grid); 
-	//									System.out.println("snap to x=" + x);  
-									}
-									if ( y%grid <= spacing ) 
-									{ 
-										y = (y-y%grid); 
-	//									System.out.println("snap to y=" + y);  
-									}
-									else if ( y%grid > grid-spacing ) 
-									{ 
-										y = (y-y%grid+grid);
-	//									System.out.println("snap to y=" + y);  
-									}
+									if ( x%GRID_SPACING <= (GRID_SPACING/2) ) 
+										x = (x-x%GRID_SPACING); 
+									else if ( x%GRID_SPACING > GRID_SPACING-(GRID_SPACING/2) ) 
+										x = (x-x%GRID_SPACING+GRID_SPACING); 
+									if ( y%GRID_SPACING <= (GRID_SPACING/2) ) 
+										y = (y-y%GRID_SPACING); 
+									else if ( y%GRID_SPACING > GRID_SPACING-(GRID_SPACING/2) ) 
+										y = (y-y%GRID_SPACING+GRID_SPACING);
 									
 	//								System.out.println("snap to x=" + x + ", y = " + y);
 									x += Widget.this.model.getWidth()/2;

@@ -1,4 +1,4 @@
-package view;
+package view.page;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -19,6 +19,7 @@ import org.mt4j.util.font.FontManager;
 import org.mt4j.util.math.Vector3D;
 
 import processing.core.PApplet;
+import view.ConfirmationSlider;
 
 public class PageMenuProperties extends MTClipRectangle implements PropertyChangeListener {
 	
@@ -107,7 +108,7 @@ public class PageMenuProperties extends MTClipRectangle implements PropertyChang
 		        return false;
 			}
 		});
-	}
+	} 
 
 	@Override
 	public void propertyChange(PropertyChangeEvent ev) {

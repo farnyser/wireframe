@@ -32,7 +32,7 @@ public class ConfirmationSlider extends MTRectangle {
 	
 	protected PropertyChangeSupport propertyChangeSupport;
 
-	ConfirmationSlider(PApplet applet, float width, float height, float confirmationZoneRatio) {
+	public ConfirmationSlider(PApplet applet, float width, float height, float confirmationZoneRatio) {
 		super(applet, 0, 0, width, height);
 		
 		_confirmationZoneRatio = confirmationZoneRatio;

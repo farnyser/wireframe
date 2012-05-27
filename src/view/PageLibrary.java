@@ -21,14 +21,14 @@ public class PageLibrary extends Library implements PropertyChangeListener
 		_project = project;
 		
 		this.initViewFromModel();
-	}
+	} 
 	
 	public void initViewFromModel() {
 
 		for ( model.Page p : _project.getPageList() )
 		{
 			MTListCell cell = new MTListCell(this.getRenderer(), 50, 50);
-			view.Page page = new view.Page(this.getRenderer(), 0, 0, p);
+			view.page.Page page = new view.page.Page(this.getRenderer(), 0, 0, p);
 			page.addListener(this);
 			page.setMinSize(50, 50);
 			cell.addChild(page);
@@ -39,14 +39,14 @@ public class PageLibrary extends Library implements PropertyChangeListener
 	
 	public void propertyChange(PropertyChangeEvent ev) {
 		
-		if(ev.getPropertyName() == view.Page.EVENT_DELETE_PAGE) {
+		if(ev.getPropertyName() == view.page.Page.EVENT_DELETE_PAGE) {
 			
 			// on supprime la page
-			view.Page pageToDelete = (view.Page) ev.getSource();
+			view.page.Page pageToDelete = (view.page.Page) ev.getSource();
 			_project.removePage((model.Page) pageToDelete.getModel());
 			pageToDelete.destroy();
 
-			// on met à jour la PageLibrary
+			// on met a jour la PageLibrary
 			this.removeAllListElements();
 			this.initViewFromModel();
 		}

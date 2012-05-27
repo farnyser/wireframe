@@ -19,7 +19,7 @@ public abstract class Element extends MTClipRectangle implements PropertyChangeL
 	protected boolean isMiniature = false;
 	
 	public Element(PApplet a, float x, float y, model.Element p) 
-	{
+	{ 
 		super(a, x, y, 0, p.getWidth(), p.getHeight());
 		applet = a;
 		model = p;
@@ -138,9 +138,11 @@ public abstract class Element extends MTClipRectangle implements PropertyChangeL
 		Element el = null;
 	
 		if ( e instanceof model.Page )
-			el = new view.Page(applet, 0, 0, (model.Page) e);
+			el = new view.page.Page(applet, 0, 0, (model.Page) e);
 		else if ( e instanceof model.widget.ButtonWidget )
 			el = new view.widget.Button(applet, (model.widget.ButtonWidget) e);
+		else if ( e instanceof model.widget.ListWidget )
+			el = new view.widget.List(applet, (model.widget.ListWidget) e);
 		else if ( e instanceof model.widget.ImgWidget )
 			el = new view.widget.Image(applet, (model.widget.ImgWidget) e);
 		else if ( e instanceof model.widget.Widget )

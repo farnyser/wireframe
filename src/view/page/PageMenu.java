@@ -1,4 +1,4 @@
-package view;
+package view.page;
 
 import org.mt4j.components.TransformSpace;
 import org.mt4j.components.visibleComponents.widgets.MTClipRectangle;
@@ -36,7 +36,7 @@ public class PageMenu extends MTClipRectangle {
 		initGraphics();
 		initGesture();
 	}
-	
+	 
 	protected void initGraphics() {
 		this.setFillColor(MTColor.GRAY);
 		this.setNoStroke(true);
