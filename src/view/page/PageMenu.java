@@ -122,6 +122,8 @@ public class PageMenu extends MTClipRectangle {
 	public void changePageName(String newLabel) {
 		this.textArea.setText(newLabel);
 		this.properties.getEditablePageName().reloadText();
+		
+		this.textArea.setPositionRelativeToParent(this.getCenterPointLocal());		
 	}
 	
 	public float getHeight() { return this.getHeightXYGlobal(); }
