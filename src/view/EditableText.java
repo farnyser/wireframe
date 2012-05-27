@@ -41,7 +41,8 @@ public abstract class EditableText extends MTTextArea
 	
 	public void destroy()
 	{
-		keyboard.destroy();
+		if ( keyboard != null )
+			keyboard.destroy();
 		super.destroy();
 	}
 	
