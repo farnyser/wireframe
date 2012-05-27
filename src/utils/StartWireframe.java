@@ -6,6 +6,7 @@ import org.mt4j.MTApplication;
 import org.mt4j.input.inputSources.MacTrackpadSource;
 
 
+import view.StartMenuScene;
 import view.WorkspaceScene;
 
 public class StartWireframe extends MTApplication 
@@ -26,6 +27,7 @@ public class StartWireframe extends MTApplication
 			getInputManager().registerInputSource(new MacTrackpadSource(this));
 	
 		app.createProject("untitled");
-		addScene(new WorkspaceScene(this,"Wireframe",app));
+		//addScene(new WorkspaceScene(this,"Wireframe",app));
+		addScene(new StartMenuScene(this,"Wireframe",app));
 	}
 }

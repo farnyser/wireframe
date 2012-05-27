@@ -91,7 +91,7 @@ public class Widget extends view.Element
 			
 			for (Vector3D v : newposshape) 
 			{
-				if (!ToolsGeometry.isPolygonContainsPoint(v_p, v))
+				if ( v_p.length <= 1 || !ToolsGeometry.isPolygonContainsPoint(v_p, v) )
 				{
 					inside = false;
 					break;
@@ -158,7 +158,6 @@ public class Widget extends view.Element
 					{
 						MTComponent c = Widget.this.getMTcomponent();
 						Vector3D newpos = Widget.this.getCenterPointGlobal();
-						
 						
 						if ( c != null )
 						{
