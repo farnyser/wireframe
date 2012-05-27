@@ -16,6 +16,7 @@ public abstract class Element extends MTClipRectangle implements PropertyChangeL
 	protected PApplet applet;
 	protected float mh, mw;
 	protected DragType dragType = DragType.MOVE;
+	protected model.Element.Corner resizeStart = model.Element.Corner.UPPER_LEFT;
 	protected boolean isMiniature = false;
 	
 	public Element(PApplet a, float x, float y, model.Element p) 
@@ -127,8 +128,24 @@ public abstract class Element extends MTClipRectangle implements PropertyChangeL
         {
         	if(!this.isMiniature)
         	{
+        		Vector3D oldsize = new Vector3D(this.getWidthXYRelativeToParent(), this.getHeightXYRelativeToParent(), 0);
         		Vector3D newsize = (Vector3D) e.getNewValue();
         		this.setSizeXYRelativeToParent(newsize.x, newsize.y);
+        		
+        		if ( e.getOldValue() instanceof model.Element.Corner )
+        		{
+	        		Vector3D move = new Vector3D(0,0,0);
+	        		
+	        		switch ( (model.Element.Corner)e.getOldValue() )
+	        		{
+		        		case LOWER_LEFT: move = new Vector3D(-(newsize.x - oldsize.x)/2, (newsize.y - oldsize.y)/2, 0); break;
+	        			case LOWER_RIGHT: move = new Vector3D((newsize.x - oldsize.x)/2, (newsize.y - oldsize.y)/2, 0); break;
+	        			case UPPER_LEFT: move = new Vector3D(-(newsize.x - oldsize.x)/2, -(newsize.y - oldsize.y)/2, 0); break;
+	        			case UPPER_RIGHT: move = new Vector3D((newsize.x - oldsize.x)/2, -(newsize.y - oldsize.y)/2, 0); break;
+	        		}
+	        		
+	        		this.translate(move);
+        		}
         	}
         }
     }

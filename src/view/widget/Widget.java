@@ -24,7 +24,7 @@ public class Widget extends view.Element
 	// fake position
 	protected float fx = -1, fy = -1;
 	
-	protected boolean GRID_ENABLED = true;
+	protected boolean GRID_ENABLED = false;
 	protected int GRID_SPACING = 20;
 	
 	public Widget(PApplet a, model.widget.Widget m) 
@@ -113,7 +113,11 @@ public class Widget extends view.Element
 			this.addChild(w);
 			if ( e instanceof model.widget.Widget ) 
 			{ 
-				w.setPositionRelativeToParent(((model.widget.Widget)e).getPosition()); 
+				Vector3D wpos = ((model.widget.Widget)e).getPosition();				
+				wpos.addLocal(this.getCenterPointGlobal());
+				wpos.subtractLocal(new Vector3D(this._model.getWidth()/2, this._model.getHeight()/2, 0));
+				w.setPositionGlobal(wpos); 
+				System.out.println("((pos)) " +wpos);
 			}
 		}
 	}
@@ -185,10 +189,9 @@ public class Widget extends view.Element
 									}
 	
 									// update coordinate in the model
-	//								System.out.println("-- update coordinate..");
 									model.widget.Widget mw = (model.widget.Widget) Widget.this._model;
-									mw.setPosition(Widget.this.getCenterPointRelativeToParent().x - _model.getWidth()/2, Widget.this.getCenterPointRelativeToParent().y - _model.getHeight()/2, 0);
-							}
+									mw.setPosition(c.globalToLocal(newpos));
+								}
 								
 								// grid
 								if ( GRID_ENABLED )
@@ -211,7 +214,7 @@ public class Widget extends view.Element
 									
 									Widget.this.setPositionRelativeToParent(new Vector3D(x,y,0));
 									model.widget.Widget mw = (model.widget.Widget) Widget.this._model;
-									mw.setPosition(x,y,0);
+									mw.setPosition(new Vector3D(x,y,0));
 								}
 							}	
 						}
@@ -232,7 +235,14 @@ public class Widget extends view.Element
 				}
 				else if (Widget.this.dragType == DragType.RESIZE) 
 				{
-					Widget.this._model.setSize(Widget.this._model.getWidth() + de.getTranslationVect().x, Widget.this._model.getHeight() + de.getTranslationVect().y);
+					if ( Widget.this.resizeStart == model.Element.Corner.LOWER_RIGHT )
+						Widget.this._model.setSize(Widget.this._model.getWidth() + de.getTranslationVect().x, Widget.this._model.getHeight() + de.getTranslationVect().y, Widget.this.resizeStart);
+					else if ( Widget.this.resizeStart == model.Element.Corner.LOWER_LEFT )
+						Widget.this._model.setSize(Widget.this._model.getWidth() - de.getTranslationVect().x, Widget.this._model.getHeight() + de.getTranslationVect().y, Widget.this.resizeStart);
+					else if ( Widget.this.resizeStart == model.Element.Corner.UPPER_RIGHT )
+						Widget.this._model.setSize(Widget.this._model.getWidth() + de.getTranslationVect().x, Widget.this._model.getHeight() - de.getTranslationVect().y, Widget.this.resizeStart);
+					else
+						Widget.this._model.setSize(Widget.this._model.getWidth() - de.getTranslationVect().x, Widget.this._model.getHeight() - de.getTranslationVect().y, Widget.this.resizeStart);
 					
 					if ( de.getId() == MTGestureEvent.GESTURE_ENDED )
 					{
@@ -256,7 +266,16 @@ public class Widget extends view.Element
 		        TapAndHoldEvent te = (TapAndHoldEvent)ge;
 		        if(te.getId() == TapAndHoldEvent.GESTURE_ENDED && te.getElapsedTime() >= te.getHoldTime())
 		        {
-		            System.out.println("start resizing");
+		        	Vector3D pos = te.getLocationOnScreen();
+		        	if ( pos.x <= Widget.this.getCenterPointGlobal().x && pos.y <= Widget.this.getCenterPointGlobal().y )
+		        		resizeStart = model.Element.Corner.UPPER_LEFT;
+		        	else if ( pos.x <= Widget.this.getCenterPointGlobal().x && pos.y > Widget.this.getCenterPointGlobal().y )
+		        		resizeStart = model.Element.Corner.LOWER_LEFT;
+		        	else if ( pos.x > Widget.this.getCenterPointGlobal().x && pos.y <= Widget.this.getCenterPointGlobal().y )
+		        		resizeStart = model.Element.Corner.UPPER_RIGHT;
+		        	else
+		        		resizeStart = model.Element.Corner.LOWER_RIGHT;
+		            
 		            Widget.this.dragType = DragType.RESIZE;
 		        }
 		        return false;

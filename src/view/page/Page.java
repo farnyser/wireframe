@@ -20,6 +20,7 @@ import org.mt4j.util.math.Vector3D;
 
 import processing.core.PApplet;
 import view.Element;
+import view.widget.Widget;
 
 public class Page extends Element
 {
@@ -74,7 +75,14 @@ public class Page extends Element
 				}
 				else if ( dragType == DragType.RESIZE )
 				{
-					Page.this._model.setSize(Page.this._model.getWidth() + de.getTranslationVect().x, Page.this._model.getHeight() + de.getTranslationVect().y);
+					if ( Page.this.resizeStart == model.Element.Corner.LOWER_RIGHT )
+						Page.this._model.setSize(Page.this._model.getWidth() + de.getTranslationVect().x, Page.this._model.getHeight() + de.getTranslationVect().y, Page.this.resizeStart);
+					else if ( Page.this.resizeStart == model.Element.Corner.LOWER_LEFT )
+						Page.this._model.setSize(Page.this._model.getWidth() - de.getTranslationVect().x, Page.this._model.getHeight() + de.getTranslationVect().y, Page.this.resizeStart);
+					else if ( Page.this.resizeStart == model.Element.Corner.UPPER_RIGHT )
+						Page.this._model.setSize(Page.this._model.getWidth() + de.getTranslationVect().x, Page.this._model.getHeight() - de.getTranslationVect().y, Page.this.resizeStart);
+					else
+						Page.this._model.setSize(Page.this._model.getWidth() - de.getTranslationVect().x, Page.this._model.getHeight() - de.getTranslationVect().y, Page.this.resizeStart);
 					
 					if ( de.getId() == MTGestureEvent.GESTURE_ENDED )
 						Page.this.dragType = DragType.MOVE;
@@ -93,7 +101,16 @@ public class Page extends Element
 		        TapAndHoldEvent te = (TapAndHoldEvent)ge;
 		        if(te.getId() == TapAndHoldEvent.GESTURE_ENDED && te.getElapsedTime() >= te.getHoldTime())
 		        {
-		            System.out.println("start resizing");
+		        	Vector3D pos = te.getLocationOnScreen();
+		        	if ( pos.x <= Page.this.getCenterPointGlobal().x && pos.y <= Page.this.getCenterPointGlobal().y )
+		        		resizeStart = model.Element.Corner.UPPER_LEFT;
+		        	else if ( pos.x <= Page.this.getCenterPointGlobal().x && pos.y > Page.this.getCenterPointGlobal().y )
+		        		resizeStart = model.Element.Corner.LOWER_LEFT;
+		        	else if ( pos.x > Page.this.getCenterPointGlobal().x && pos.y <= Page.this.getCenterPointGlobal().y )
+		        		resizeStart = model.Element.Corner.UPPER_RIGHT;
+		        	else
+		        		resizeStart = model.Element.Corner.LOWER_RIGHT;
+		            
 		            Page.this.dragType = DragType.RESIZE;
 		        }
 		        return false;
@@ -162,6 +179,7 @@ public class Page extends Element
 		menu.setVisible(true);
 		menu.sendToFront();
 		close.setVisible(true);
+		close.sendToFront();
 	}
 	
 	public void addListener(PropertyChangeListener listener)

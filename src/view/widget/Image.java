@@ -19,7 +19,6 @@ public class Image extends Widget
 	
 	protected void initGraphics()
 	{		
-		super.initGraphics();
 		MTLine l1 = new MTLine(applet, 0, 0, this._model.getWidth(), this._model.getHeight());
 		MTLine l2 = new MTLine(applet, this._model.getWidth(), 0, 0, this._model.getHeight());
 		l1.setStrokeColor(MTColor.BLACK);
@@ -32,5 +31,7 @@ public class Image extends Widget
 		
 		l1.setPositionRelativeToParent(this.getCenterPointGlobal());
 		l2.setPositionRelativeToParent(this.getCenterPointGlobal());
+		
+		super.initGraphics();
 	}
 }

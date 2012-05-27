@@ -10,6 +10,7 @@ import org.mt4j.util.math.Vector3D;
 public class Element  implements Serializable,Cloneable
 {
 	private static final long serialVersionUID = 5913307790282474281L;
+	public enum Corner { UPPER_LEFT, UPPER_RIGHT, LOWER_LEFT, LOWER_RIGHT };
 	
 	protected ArrayList<model.Element> childs;
 	protected float width = 600, height = 600;
@@ -64,6 +65,13 @@ public class Element  implements Serializable,Cloneable
 		this.width = f;
 		this.height = g;
 		pcs.firePropertyChange("setSize", null, new Vector3D(f, g));
+	}
+	
+	public void setSize(float f, float g, Corner resizeStart) 
+	{
+		this.width = f;
+		this.height = g;
+		pcs.firePropertyChange("setSize", resizeStart, new Vector3D(f, g));
 	}
 
 	public ArrayList<model.Element> getElements() 

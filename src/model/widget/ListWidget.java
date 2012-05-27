@@ -1,13 +1,11 @@
 package model.widget;
 
-import java.beans.PropertyChangeSupport;
-import java.util.ArrayList;
 import java.util.Vector;
-
-import model.Element;
 
 public class ListWidget extends Widget
 {
+	private static final long serialVersionUID = -6480233766945866098L;
+	
 	protected Vector<String> content = new Vector<String>();
 
 	public ListWidget()
