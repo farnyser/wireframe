@@ -20,8 +20,8 @@ public class Image extends Widget
 	protected void initGraphics()
 	{		
 		super.initGraphics();
-		MTLine l1 = new MTLine(applet, 0, 0, this.model.getWidth(), this.model.getHeight());
-		MTLine l2 = new MTLine(applet, this.model.getWidth(), 0, 0, this.model.getHeight());
+		MTLine l1 = new MTLine(applet, 0, 0, this._model.getWidth(), this._model.getHeight());
+		MTLine l2 = new MTLine(applet, this._model.getWidth(), 0, 0, this._model.getHeight());
 		l1.setStrokeColor(MTColor.BLACK);
 		l2.setStrokeColor(MTColor.BLACK);
 		l1.setPickable(false);

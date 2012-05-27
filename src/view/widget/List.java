@@ -41,7 +41,7 @@ public class List extends Widget
 		super.initGraphics();
 		Vector3D parentPosition = this.getCenterPointGlobal();
 		
-		texta = new EditableText(applet, 0, 0, this.model.getWidth(), this.model.getHeight()) 
+		texta = new EditableText(applet, 0, 0, this._model.getWidth(), this._model.getHeight()) 
 		{
 			@Override
 			protected boolean handleGesture(MTGestureEvent e) 
@@ -57,7 +57,7 @@ public class List extends Widget
 				for ( String e : newUnformatedText.split("\n") ) 
 					content.add(e);
 				
-				model.widget.ListWidget m = (ListWidget) model;
+				model.widget.ListWidget m = (ListWidget) _model;
 				m.setContent(content);
 			}
 
@@ -65,7 +65,7 @@ public class List extends Widget
 			protected String getUnformatedText() 
 			{
 				String str = "";
-				Vector<String> content = ((model.widget.ListWidget)List.this.model).getContent();
+				Vector<String> content = ((model.widget.ListWidget)List.this._model).getContent();
 				for ( String e : content)
 					str += e + "\n";
 					
@@ -77,7 +77,7 @@ public class List extends Widget
 			{
 				String str = "";
 				
-				for ( String element : ((model.widget.ListWidget)List.this.model).getContent() )
+				for ( String element : ((model.widget.ListWidget)List.this._model).getContent() )
 					str += "* " + element + "\n";
 
 				return str;

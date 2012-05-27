@@ -8,6 +8,8 @@ public class Page extends Element implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	
+	final static public String EVENT_PAGE_DELETED= "Page.event_page_deleted";
 
 	/**
 	 * The scene label
@@ -19,6 +21,10 @@ public class Page extends Element implements Serializable {
 		super();
 		
 		_label = sceneLabel;
+	}
+	
+	public void fireDeletion() {
+		this.pcs.firePropertyChange(Page.EVENT_PAGE_DELETED, null, null);
 	}
 
 	public String getLabel() { return _label; }

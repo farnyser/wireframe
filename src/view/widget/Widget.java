@@ -107,7 +107,7 @@ public class Widget extends view.Element
 		this.setFillColor(MTColor.WHITE);
 		this.setStrokeColor(MTColor.BLACK);
 		
-		for ( model.Element e : model.getElements() )
+		for ( model.Element e : _model.getElements() )
 		{
 			view.Element w = view.Element.newInstance(applet, e);
 			this.addChild(w);
@@ -158,7 +158,7 @@ public class Widget extends view.Element
 								System.out.println("Widget dragged to library"); 
 	
 								// remove from parent (model)
-								if ( Widget.this.getParent() instanceof view.Element ){ view.Element cc = (view.Element)  Widget.this.getParent(); cc.getModel().removeElement(Widget.this.model); }
+								if ( Widget.this.getParent() instanceof view.Element ){ view.Element cc = (view.Element)  Widget.this.getParent(); cc.getModel().removeElement(Widget.this._model); }
 	
 								Widget.this.destroy();
 							}
@@ -172,10 +172,10 @@ public class Widget extends view.Element
 										System.out.println("Widget dragged to page/widget");
 										
 										// remove from parent (model)
-										if ( Widget.this.getParent() instanceof view.Element ){ view.Element cc = (view.Element)  Widget.this.getParent(); cc.getModel().removeElement(Widget.this.model); }
+										if ( Widget.this.getParent() instanceof view.Element ){ view.Element cc = (view.Element)  Widget.this.getParent(); cc.getModel().removeElement(Widget.this._model); }
 										
 										// add to new parent (model)
-										{ view.Element cc = (view.Element) c; cc.getModel().addElement(Widget.this.model); }
+										{ view.Element cc = (view.Element) c; cc.getModel().addElement(Widget.this._model); }
 										
 										c.addChild(Widget.this);
 										destroy = true;
@@ -186,15 +186,15 @@ public class Widget extends view.Element
 	
 									// update coordinate in the model
 	//								System.out.println("-- update coordinate..");
-									model.widget.Widget mw = (model.widget.Widget) Widget.this.model;
-									mw.setPosition(Widget.this.getCenterPointRelativeToParent().x - model.getWidth()/2, Widget.this.getCenterPointRelativeToParent().y - model.getHeight()/2, 0);
+									model.widget.Widget mw = (model.widget.Widget) Widget.this._model;
+									mw.setPosition(Widget.this.getCenterPointRelativeToParent().x - _model.getWidth()/2, Widget.this.getCenterPointRelativeToParent().y - _model.getHeight()/2, 0);
 							}
 								
 								// grid
 								if ( GRID_ENABLED )
 								{
-									float x = fx - Widget.this.model.getWidth()/2;
-									float y = fy - Widget.this.model.getHeight()/2;
+									float x = fx - Widget.this._model.getWidth()/2;
+									float y = fy - Widget.this._model.getHeight()/2;
 									
 									if ( x%GRID_SPACING <= (GRID_SPACING/2) ) 
 										x = (x-x%GRID_SPACING); 
@@ -206,11 +206,11 @@ public class Widget extends view.Element
 										y = (y-y%GRID_SPACING+GRID_SPACING);
 									
 	//								System.out.println("snap to x=" + x + ", y = " + y);
-									x += Widget.this.model.getWidth()/2;
-									y += Widget.this.model.getHeight()/2;
+									x += Widget.this._model.getWidth()/2;
+									y += Widget.this._model.getHeight()/2;
 									
 									Widget.this.setPositionRelativeToParent(new Vector3D(x,y,0));
-									model.widget.Widget mw = (model.widget.Widget) Widget.this.model;
+									model.widget.Widget mw = (model.widget.Widget) Widget.this._model;
 									mw.setPosition(x,y,0);
 								}
 							}	
@@ -225,14 +225,14 @@ public class Widget extends view.Element
 							fx = -1;
 							
 							// remove from parent (model)
-							if ( o instanceof view.Element ){ view.Element cc = (view.Element)  o; cc.getModel().removeElement(Widget.this.model); }
+							if ( o instanceof view.Element ){ view.Element cc = (view.Element)  o; cc.getModel().removeElement(Widget.this._model); }
 						}
 	
 					}
 				}
 				else if (Widget.this.dragType == DragType.RESIZE) 
 				{
-					Widget.this.model.setSize(Widget.this.model.getWidth() + de.getTranslationVect().x, Widget.this.model.getHeight() + de.getTranslationVect().y);
+					Widget.this._model.setSize(Widget.this._model.getWidth() + de.getTranslationVect().x, Widget.this._model.getHeight() + de.getTranslationVect().y);
 					
 					if ( de.getId() == MTGestureEvent.GESTURE_ENDED )
 					{
