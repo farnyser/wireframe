@@ -14,6 +14,7 @@ import org.mt4j.input.inputProcessors.componentProcessors.dragProcessor.DragProc
 import org.mt4j.input.inputProcessors.componentProcessors.tapAndHoldProcessor.TapAndHoldProcessor;
 import org.mt4j.input.inputProcessors.componentProcessors.tapProcessor.TapEvent;
 import org.mt4j.input.inputProcessors.componentProcessors.tapProcessor.TapProcessor;
+import org.mt4j.util.math.Vector3D;
 
 import processing.core.PApplet;
 
@@ -36,6 +37,12 @@ public abstract class EditableText extends MTTextArea
 		applet = pApplet;
 		initGraphics();
 		initGesture();
+	}
+	
+	public void destroy()
+	{
+		keyboard.destroy();
+		super.destroy();
 	}
 	
 	public void reloadText()
@@ -71,7 +78,10 @@ public abstract class EditableText extends MTTextArea
 			            if (keyboard == null) 
 			            {
 							keyboard = new MTKeyboard(applet);
-							EditableText.this.addChild(keyboard);
+							EditableText.this.getRoot().addChild(keyboard);
+							keyboard.setPositionGlobal(te.getLocationOnScreen().addLocal(new Vector3D(0,150)));
+							keyboard.setHardwareInputEnabled(true);
+							keyboard.sendToFront();
 							keyboard.addTextInputListener(new ITextInputListener()
 							{
 								@Override

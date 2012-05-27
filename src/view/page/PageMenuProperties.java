@@ -62,7 +62,6 @@ public class PageMenuProperties extends MTClipRectangle implements PropertyChang
 		{
 			@Override
 			protected boolean handleGesture(MTGestureEvent e) {
-				//return Button.super.processGestureEvent(e);
 				return false;
 			}
 
@@ -81,18 +80,15 @@ public class PageMenuProperties extends MTClipRectangle implements PropertyChang
 
 			@Override
 			protected String getFormatedText() {
-				if(PageMenuProperties.this.getParent() != null) {
-					return ((model.Page)((view.page.Page) PageMenuProperties.this.getParent().getParent()).getModel()).getLabel();
-				}
-				else return "";
+				return getUnformatedText();
 			}
-			
 		};
 	    
 		this.addChild(_pageName);
 		_pageName.setAnchor(PositionAnchor.UPPER_LEFT);
 		_pageName.setPositionRelativeToParent(new Vector3D(pageNameLabel.getPosition(TransformSpace.RELATIVE_TO_PARENT).x + pageNameLabel.getWidthXY(TransformSpace.RELATIVE_TO_PARENT) + 5, 15, 0));
 		_pageName.setFont(font);
+		_pageName.setNoStroke(false);
 		
 		MTTextArea deleteLabel = new MTTextArea(this.getRenderer(), font);
 		this.addChild(deleteLabel);

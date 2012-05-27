@@ -20,7 +20,6 @@ import org.mt4j.util.math.Vector3D;
 
 import processing.core.PApplet;
 import view.Element;
-import view.widget.Widget;
 
 public class Page extends Element
 {
