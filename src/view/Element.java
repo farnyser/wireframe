@@ -10,7 +10,7 @@ import processing.core.PApplet;
 
 public abstract class Element extends MTClipRectangle implements PropertyChangeListener
 {
-	protected enum DragType { MOVE, RESIZE };
+	protected enum DragType { MOVE, RESIZE, LINK };
 	
 	protected model.Element _model;
 	protected PApplet applet;
@@ -48,11 +48,11 @@ public abstract class Element extends MTClipRectangle implements PropertyChangeL
 		_model.addListener(this);
 	}
 	
-	public Element(Element e, Boolean create_new__model)
+	public Element(Element e, Boolean create_new_model)
 	{
 		super(e.applet, 0, 0, 0, e._model.getWidth(), e._model.getHeight());
 		
-		if ( create_new__model )
+		if ( create_new_model )
 		{
 			_model = (model.Element) e._model.clone();
 		}

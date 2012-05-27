@@ -5,6 +5,10 @@ import java.util.Vector;
 
 import org.mt4j.MTApplication;
 import org.mt4j.components.MTComponent;
+import org.mt4j.components.PickResult;
+import org.mt4j.components.interfaces.IMTComponent3D;
+import org.mt4j.components.visibleComponents.shapes.MTLine;
+import org.mt4j.components.visibleComponents.widgets.MTListCell;
 import org.mt4j.input.gestureAction.TapAndHoldVisualizer;
 import org.mt4j.input.inputProcessors.IGestureEventListener;
 import org.mt4j.input.inputProcessors.MTGestureEvent;
@@ -23,6 +27,9 @@ public class Widget extends view.Element
 {
 	// fake position
 	protected float fx = -1, fy = -1;
+	
+	// linking (action)
+	protected MTLine line = null;
 	
 	protected boolean GRID_ENABLED = false;
 	protected int GRID_SPACING = 20;
@@ -250,6 +257,45 @@ public class Widget extends view.Element
 						Widget.this.dragType = DragType.MOVE;
 					}
 				}
+				else if (Widget.this.dragType == DragType.LINK) 
+				{
+					if ( line == null )
+					{
+						Vector3D start = localToGlobal( de.getDragCursor().getPosition() );
+						line = new MTLine(Widget.this.applet, start.x, start.y, start.x, start.y);
+						line.setStrokeColor(MTColor.RED);
+						line.setUserData("start", de.getFrom());
+						Widget.this.getRoot().addChild(line);
+					}
+					else
+					{
+						Vector3D start = (Vector3D) line.getUserData("start");
+						line.destroy();
+						line = new MTLine(Widget.this.applet, start.x, start.y, de.getDragCursor().getCurrentEvtPosX(), de.getDragCursor().getCurrentEvtPosY());
+						line.setStrokeColor(MTColor.RED);
+						line.setUserData("start", start);
+						Widget.this.getRoot().addChild(line);
+					}
+					
+					if ( de.getId() == MTGestureEvent.GESTURE_ENDED )
+					{
+						Vector3D p = (de.getDragCursor().getPosition());
+						
+						PickResult pk = Widget.this.getRoot().pick(p.x, p.y, true);
+						MTComponent target = pk.getNearestPickResult();
+						if ( target instanceof MTListCell ) { target = target.getChildByIndex(0); }
+						
+						if ( target instanceof view.page.Page )
+						{
+							System.out.println("create link between " + Widget.this + " and " + target);
+							// TODO
+						}
+						
+						line.destroy();
+						line = null;
+						Widget.this.dragType = DragType.MOVE;
+					}
+				}
 				
 				if ( destroy ) { Widget.this.removeFromParent(); }
 				return false;
@@ -277,6 +323,9 @@ public class Widget extends view.Element
 		        		resizeStart = model.Element.Corner.LOWER_RIGHT;
 		            
 		            Widget.this.dragType = DragType.RESIZE;
+		            
+		            //debug
+		            Widget.this.dragType = DragType.LINK;
 		        }
 		        return false;
 		    }    
