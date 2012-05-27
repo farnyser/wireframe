@@ -178,7 +178,8 @@ public class StartMenuScene extends AbstractScene{
 	    private void createNewPage()
 	    {
 	    	model.Page newAbPage = model.getCurrentProject().createPage("untitled");
-	    	view.page.Page newPage = new view.page.Page(app, 300, 100, newAbPage);
+	    	view.page.Page newPage = new view.page.Page(app, 0, 0, newAbPage);
+	    	newPage.addListener(pages);
 	    	scene.getCanvas().addChild(newPage);
 	    }
 	    
