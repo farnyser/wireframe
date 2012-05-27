@@ -178,8 +178,9 @@ public class StartMenuScene extends AbstractScene{
 	    private void createNewPage()
 	    {
 	    	model.Page newAbPage = model.getCurrentProject().createPage("untitled");
-	    	view.page.Page newPage = new view.page.Page(app, 300, 100, newAbPage);
+	    	view.page.Page newPage = new view.page.Page(app, 0, 0, newAbPage);
 	    	scene.getCanvas().addChild(newPage);
+	    	newPage.setPositionGlobal(new Vector3D(200 + newAbPage.getWidth()/2,150 + newAbPage.getHeight()/2));
 	    }
 	    
 		private void exitApplication()
