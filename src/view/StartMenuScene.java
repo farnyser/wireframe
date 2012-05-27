@@ -44,8 +44,8 @@ public class StartMenuScene extends AbstractScene{
 		
 		//Create Menu Items
 		List<MenuItem> menus = new ArrayList<MenuItem>();
-		menus.add(new MenuItem("Scenes", new gestureListener("Scenes",this)));
 		menus.add(new MenuItem("Widgets", new gestureListener("Widgets",this)));
+		menus.add(new MenuItem("Scenes", new gestureListener("Scenes",this)));
 		menus.add(new MenuItem("Load", new gestureListener("Load",this)));
 		menus.add(new MenuItem(newPageIcon, new gestureListener("New page",this)));
 		menus.add(new MenuItem("Exit", new gestureListener("Exit",this)));
@@ -205,7 +205,7 @@ public class StartMenuScene extends AbstractScene{
 		{
 			if ( pages == null )
 			{
-				pages = new PageLibrary(app, 800, 0, 200, 200, model.getCurrentProject());
+				pages = new PageLibrary(app, 800, 0, 200, 200, model);
 				scene.getCanvas().addChild(pages);
 			}
 			else

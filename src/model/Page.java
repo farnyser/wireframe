@@ -9,6 +9,7 @@ public class Page extends Element implements Serializable
 	protected Vector<model.widget.Widget> linkeds = new Vector<model.widget.Widget>();
 	
 	final static public String EVENT_PAGE_DELETED = "Page.event_page_deleted";
+	final static public String EVENT_PAGE_CLOSED = "Page.event_page_closed";
 	final static public String EVENT_PAGE_RENAMED = "Page.event_page_renamed"; 
 
 	/**
@@ -26,6 +27,10 @@ public class Page extends Element implements Serializable
 	public void fireDeletion() {
 		this.pcs.firePropertyChange(Page.EVENT_PAGE_DELETED, null, null);
 	}
+
+	public void fireClose() {
+		this.pcs.firePropertyChange(Page.EVENT_PAGE_CLOSED, null, null);
+	}
 	
 	public void setLabel(String newLabel) {
 		_label = newLabel;
@@ -39,5 +44,4 @@ public class Page extends Element implements Serializable
 		if ( linkeds.contains(widget) == false )
 			linkeds.add(widget);
 	}
-
 }

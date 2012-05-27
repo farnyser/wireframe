@@ -130,9 +130,7 @@ public class NewProjectMenu extends MTRectangle {
 				{
 					TapEvent te = (TapEvent) ge;
 					if (te.getTapID() == TapEvent.TAPPED) 
-					{
-						System.out.println("TAPPED");
-						
+					{						
 			            if (keyboard == null) 
 			            {
 							keyboard = new MTKeyboard(applet);

@@ -28,22 +28,18 @@ public class Page extends Element
 	protected MTClipRoundRect close;
 	protected PageMenu menu;
 	
-	protected PropertyChangeSupport _viewNotifier;
+	protected PropertyChangeSupport _viewNotifier  = new PropertyChangeSupport(this);
 	
 	public Page(PApplet a, float x, float y, model.Page p) 
 	{
 		super(a, x, y, p);
 		applet = a;
 		_model = p;
-		
-		_viewNotifier = new PropertyChangeSupport(this);
 	}
 	
 	public Page(Page p, Boolean create_new_model)
 	{
 		super(p,create_new_model); 
-		
-		_viewNotifier = new PropertyChangeSupport(this);
 	}
 	
 	public void propertyChange(PropertyChangeEvent e) 
@@ -57,6 +53,10 @@ public class Page extends Element
 		else if(e.getPropertyName() == model.Page.EVENT_PAGE_RENAMED) 
 		{
 			this.menu.changePageName(e.getNewValue().toString());
+		}
+		else if ( e.getPropertyName() == model.Page.EVENT_PAGE_CLOSED )
+		{
+			this.destroy();
 		}
 	}
 

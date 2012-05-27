@@ -1,5 +1,7 @@
 package model;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -15,9 +17,15 @@ public class ApplicationModel {
 	 */
 	private Project _currentProject;
 	
+	protected PropertyChangeSupport _pcs = new PropertyChangeSupport(this);
+
+	
 	public void createProject(String projectLabel) {
+		if ( _currentProject != null )
+			_currentProject.close();
 		
 		_currentProject = new Project(projectLabel);
+		_pcs.firePropertyChange("newProject", null, _currentProject);
 	}
 	
 	/**
@@ -44,6 +52,9 @@ public class ApplicationModel {
 	 * @param filePath
 	 */
 	public void loadProject(String filePath) {
+		if ( _currentProject != null )
+			_currentProject.close();		
+
 		try {
 			File file = new File(filePath);
 			ObjectInputStream in = new ObjectInputStream(new FileInputStream(file));
@@ -66,5 +77,20 @@ public class ApplicationModel {
 		}
 		
 		return _currentProject; 
+	}
+	
+	public void addListener(PropertyChangeListener listener)
+	{
+		_pcs.addPropertyChangeListener(listener);
+	}
+	
+	public void removeListener(PropertyChangeListener listener)
+	{
+		_pcs.removePropertyChangeListener(listener);
+	}
+	
+	public void resetListener()
+	{
+		_pcs = new PropertyChangeSupport(this);
 	}
 }

@@ -26,7 +26,6 @@ public class StartWireframe extends MTApplication
 		if(System.getProperty("os.name").equals("Mac OS X"))
 			getInputManager().registerInputSource(new MacTrackpadSource(this));
 	
-		app.createProject("untitled");
 		//addScene(new WorkspaceScene(this,"Wireframe",app));
 		addScene(new StartMenuScene(this,"Wireframe",app));
 	}

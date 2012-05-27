@@ -28,7 +28,7 @@ public class Project implements Serializable
 	 */
 	private String _sluggedLabel;
 
-	protected PropertyChangeSupport pcs = new PropertyChangeSupport(this);
+	protected PropertyChangeSupport _pcs = new PropertyChangeSupport(this);
 
 	public static String _path ="repository/";
 
@@ -52,7 +52,18 @@ public class Project implements Serializable
 	}
 	
 	/**
-	 * Createe a page
+	 * Close project
+	 */
+	public void close() {
+		System.out.println("close project " + this);
+		_pcs.firePropertyChange("closeProject",null,this);
+		
+		for(model.Page p : _pageList)
+			p.fireClose();
+	}
+	
+	/**
+	 * Create a page
 	 * @param pageLabel
 	 * @return the created page
 	 */
@@ -70,7 +81,7 @@ public class Project implements Serializable
 	 */
 	public void addPage(Page page) {
 		_pageList.add(page);
-		pcs.firePropertyChange("addPage", null, page);
+		_pcs.firePropertyChange("addPage", null, page);
 	}
 	
 	/**
@@ -115,19 +126,18 @@ public class Project implements Serializable
 		}
 	}
 	
-	
 	public void addListener(PropertyChangeListener listener)
 	{
-		pcs.addPropertyChangeListener(listener);
+		_pcs.addPropertyChangeListener(listener);
 	}
 	
 	public void removeListener(PropertyChangeListener listener)
 	{
-		pcs.removePropertyChangeListener(listener);
+		_pcs.removePropertyChangeListener(listener);
 	}
 	
 	public void resetListener()
 	{
-		pcs = new PropertyChangeSupport(this);
+		_pcs = new PropertyChangeSupport(this);
 	}
 }

@@ -21,9 +21,8 @@ public class WorkspaceScene extends AbstractScene
 		//Show touches
 		this.registerGlobalInputProcessor(new CursorTracer(mtApplication, this));
 		
-		Project project = model.getCurrentProject();
 		WidgetLibrary widgets = new WidgetLibrary(mtApplication, 0, 0, 200, 200);
-		PageLibrary pages = new PageLibrary(mtApplication, 800, 0, 200, 200, project);
+		PageLibrary pages = new PageLibrary(mtApplication, 800, 0, 200, 200, model);
 		
 		this.getCanvas().addChild(widgets);
 		this.getCanvas().addChild(pages);

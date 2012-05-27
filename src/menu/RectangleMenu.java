@@ -119,8 +119,8 @@ public class RectangleMenu extends MTRectangle implements CSSStylableComponent{
 					MTTextArea menuItem = new MTTextArea(app);
 					menuItem.setText(t);
 					menuItem.setCssForceDisable(true);
-					menuItem.setFillColor(new MTColor(0, 0, 0, 0));
-					menuItem.setStrokeColor(new MTColor(0, 0, 0, 0));
+					menuItem.setNoFill(true);
+					menuItem.setNoStroke(true);
 					menuItem.setPickable(false);
 					container.addChild(menuItem);
 

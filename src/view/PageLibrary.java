@@ -10,23 +10,24 @@ import processing.core.PApplet;
 
 public class PageLibrary extends Library implements PropertyChangeListener
 {
-	protected model.Project _project;
+	protected model.ApplicationModel _application;
 	
-	public PageLibrary(PApplet applet, float x, float y, float width, float height, model.Project project)
+	public PageLibrary(PApplet applet, float x, float y, float width, float height, model.ApplicationModel app)
 	{
 		super(applet, x, y, width, height);
 		clones = new HashMap<MTListCell, Element>();
 		create_new_model = false;
+		_application = app;
 		
-		_project = project;
-		_project.addListener(this);
+		_application.addListener(this);
+		_application.getCurrentProject().addListener(this);
 		
 		this.initViewFromModel();
 	} 
 	
 	public void initViewFromModel() 
 	{
-		for ( model.Page p : _project.getPageList() )
+		for ( model.Page p : _application.getCurrentProject().getPageList() )
 		{
 			MTListCell cell = new MTListCell(this.getRenderer(), 50, 50);
 			view.page.Page page = new view.page.Page(this.getRenderer(), 0, 0, p);
@@ -44,7 +45,7 @@ public class PageLibrary extends Library implements PropertyChangeListener
 		{	
 			// on supprime la page
 			view.page.Page pageToDelete = (view.page.Page) ev.getSource();
-			_project.removePage((model.Page) pageToDelete.getModel());
+			_application.getCurrentProject().removePage((model.Page) pageToDelete.getModel());
 
 			// on met a jour la PageLibrary
 			this.removeAllListElements();
@@ -55,6 +56,11 @@ public class PageLibrary extends Library implements PropertyChangeListener
 			this.removeAllListElements();
 			this.initViewFromModel();
 		}
-				
+		else if(ev.getPropertyName() == "newProject") 
+		{
+			((model.Project)ev.getNewValue()).addListener(this);
+			this.removeAllListElements();
+			this.initViewFromModel();
+		}
 	}
 }
