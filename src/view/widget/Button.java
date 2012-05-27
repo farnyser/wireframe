@@ -18,15 +18,14 @@ import org.mt4j.input.inputProcessors.componentProcessors.dragProcessor.DragProc
 import org.mt4j.input.inputProcessors.componentProcessors.tapAndHoldProcessor.TapAndHoldProcessor;
 import org.mt4j.input.inputProcessors.componentProcessors.tapProcessor.TapEvent;
 import org.mt4j.input.inputProcessors.componentProcessors.tapProcessor.TapProcessor;
-import org.mt4j.util.MTColor;
 import org.mt4j.util.math.Vector3D;
 
 import processing.core.PApplet;
+import view.EditableText;
 
 public class Button extends Widget 
 {
-	private MTTextArea texta;
-	private MTKeyboard keyboard = null;
+	private EditableText texta;
 	  
 	public Button(PApplet applet, model.widget.Widget m) 
 	{
@@ -54,108 +53,31 @@ public class Button extends Widget
 		super.initGraphics();
 		Vector3D parentPosition = this.getCenterPointGlobal();
 		
-		texta = new MTTextArea(applet, 0, 0, this.model.getWidth(), this.model.getHeight());
-		texta.setPickable(true);
-		texta.setNoFill(true);
-		texta.setNoStroke(true);
-		model.widget.ButtonWidget m = (ButtonWidget) model;
-		texta.setText(m.getContent());
-		
-	    // Add Tap listener to evoke Keyboard
-		texta.removeAllGestureEventListeners(DragProcessor.class);
-		texta.setGestureAllowance(TapProcessor.class, true);
-		TapProcessor tp = new TapProcessor(this.applet);
-		tp.setEnableDoubleTap(true);
-		texta.registerInputProcessor(tp);
-		texta.addGestureListener(TapProcessor.class, new IGestureEventListener()
+		texta = new EditableText(applet, 0, 0, this.model.getWidth(), this.model.getHeight()) 
 		{
-			public boolean processGestureEvent(MTGestureEvent ge) 
-			{
-				if (ge instanceof TapEvent) 
-				{
-					TapEvent te = (TapEvent) ge;
-					if (te.getTapID() == TapEvent.DOUBLE_TAPPED) 
-					{
-			            if (keyboard == null) 
-			            {
-							keyboard = new MTKeyboard(applet);
-							Button.this.addChild(keyboard);
-							keyboard.addTextInputListener(new ITextInputListener()
-							{
-								@Override
-								public void appendCharByUnicode(String arg0) {
-									texta.appendCharByUnicode(arg0);
-									model.widget.ButtonWidget m = (ButtonWidget) model;
-									m.setContent(texta.getText());
-								}
-
-								@Override
-								public void appendText(String arg0) {
-									texta.appendText(arg0);
-									model.widget.ButtonWidget m = (ButtonWidget) model;
-									m.setContent(texta.getText());
-								}
-
-								@Override
-								public void clear() {
-									texta.clear();
-									model.widget.ButtonWidget m = (ButtonWidget) model;
-									m.setContent(texta.getText());
-								}
-
-								@Override
-								public void removeLastCharacter() {
-									texta.removeLastCharacter();
-									model.widget.ButtonWidget m = (ButtonWidget) model;
-									m.setContent(texta.getText());
-								}
-
-								@Override
-								public void setText(String arg0) {
-									texta.setText(arg0);
-									model.widget.ButtonWidget m = (ButtonWidget) model;
-									m.setContent(texta.getText());
-								}
-								
-							});
-							keyboard.addStateChangeListener(
-						      StateChange.COMPONENT_DESTROYED,
-						      new StateChangeListener() {
-								
-								@Override
-								public void stateChanged(StateChangeEvent arg0) {
-									texta.setEnableCaret(false);
-									keyboard = null;
-								}
-							});
-							
-							texta.setEnableCaret(true);
-			            }
-					}
-		        }
-				
-		        return false;
+			@Override
+			protected boolean handleGesture(MTGestureEvent e) {
+				return Button.super.processGestureEvent(e);
 			}
-		});
-		texta.addGestureListener(DragProcessor.class, new IGestureEventListener()
-		{
-			public boolean processGestureEvent(MTGestureEvent ge) 
-			{
-		        return Button.super.processGestureEvent(ge);
+
+			@Override
+			protected void textUpdated(String newUnformatedText) {
+				((model.widget.ButtonWidget)Button.this.getModel()).setContent(newUnformatedText);
 			}
-		});
-		texta.registerInputProcessor(new TapAndHoldProcessor((MTApplication)applet,1000));
-		texta.addGestureListener(TapAndHoldProcessor.class,new TapAndHoldVisualizer((MTApplication)applet, this));
-		texta.addGestureListener(TapAndHoldProcessor.class, new IGestureEventListener()
-		{
-			public boolean processGestureEvent(MTGestureEvent the) 
-			{
-		        return Button.super.processGestureEvent(the);
+
+			@Override
+			protected String getUnformatedText() {
+				return ((model.widget.ButtonWidget)Button.this.getModel()).getContent();
 			}
-		});
+
+			@Override
+			protected String getFormatedText() {
+				return ((model.widget.ButtonWidget)Button.this.getModel()).getContent();
+			}
+			
+		};
 	    
 		this.addChild(texta);
-//		texta.setPositionRelativeToParent(new Vector3D(this.model.getWidth()/2,this.model.getHeight()/2,0));
 		texta.setPositionRelativeToParent(parentPosition);
 	}
 }
