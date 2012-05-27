@@ -99,15 +99,19 @@ public class Widget extends view.Element
 
 						Vector3D[] v_p = p.getBounds().getVectorsGlobal();
 
-						
-						for (Vector3D v : newposshape) 
+						if ( v_p.length > 1 )
 						{
-							if (!ToolsGeometry.isPolygonContainsPoint(v_p, v))
+							for (Vector3D v : newposshape) 
 							{
-								inside = false;
-								break;
+								if (!ToolsGeometry.isPolygonContainsPoint(v_p, v))
+								{
+									inside = false;
+									break;
+								}
 							}
 						}
+						else
+							inside = false;
 						
 						if ( inside )
 						{
