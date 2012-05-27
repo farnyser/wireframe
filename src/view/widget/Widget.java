@@ -6,7 +6,6 @@ import java.util.Vector;
 import org.mt4j.MTApplication;
 import org.mt4j.components.MTComponent;
 import org.mt4j.components.PickResult;
-import org.mt4j.components.interfaces.IMTComponent3D;
 import org.mt4j.components.visibleComponents.shapes.MTLine;
 import org.mt4j.components.visibleComponents.widgets.MTListCell;
 import org.mt4j.input.gestureAction.TapAndHoldVisualizer;
@@ -288,7 +287,8 @@ public class Widget extends view.Element
 						if ( target instanceof view.page.Page )
 						{
 							System.out.println("create link between " + Widget.this + " and " + target);
-							// TODO
+							((model.Page)((view.page.Page)target).getModel()).addLinked((model.widget.Widget) Widget.this.getModel());
+							((model.widget.Widget)Widget.this.getModel()).addLink((model.Page) ((view.page.Page)target).getModel());
 						}
 						
 						line.destroy();
