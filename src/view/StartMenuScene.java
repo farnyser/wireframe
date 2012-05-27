@@ -181,6 +181,7 @@ public class StartMenuScene extends AbstractScene{
 	    	view.page.Page newPage = new view.page.Page(app, 0, 0, newAbPage);
 	    	newPage.addListener(pages);
 	    	scene.getCanvas().addChild(newPage);
+	    	newPage.setPositionGlobal(new Vector3D(200 + newAbPage.getWidth()/2,150 + newAbPage.getHeight()/2));
 	    }
 	    
 		private void exitApplication()
