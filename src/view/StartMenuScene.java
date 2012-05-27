@@ -40,6 +40,11 @@ public class StartMenuScene extends AbstractScene{
 		this.app = mtApplication;
 		this.getCanvas().setFrustumCulling(true); //?
 		
+		// on le créé par défaut pour que la PageLibrary capte les événements des view.Page
+		this.pages = new PageLibrary(app, 800, 0, 200, 200, model);
+		this.pages.setVisible(false);
+		this.getCanvas().addChild(pages);
+		
 		PImage newPageIcon = app.loadImage("data/Plus.jpg");
 		
 		//Create Menu Items
@@ -205,16 +210,7 @@ public class StartMenuScene extends AbstractScene{
 		
 		private void openScenesLibrary()
 		{
-			if ( pages == null )
-			{
-				pages = new PageLibrary(app, 800, 0, 200, 200, model);
-				scene.getCanvas().addChild(pages);
-			}
-			else
-			{
-				pages.destroy();
-				pages = null;
-			}
+			pages.setVisible(!pages.isVisible());
 		}
 	}
 
