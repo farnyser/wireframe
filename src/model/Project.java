@@ -76,6 +76,7 @@ public class Project implements Serializable{
 	 * @param page
 	 */
 	public void removePage(Page page) {
+		page.fireDeletion();
 		_pageList.remove(page);
 	}
 	

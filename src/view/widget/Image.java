@@ -1,6 +1,7 @@
 package view.widget;
 
 import org.mt4j.components.visibleComponents.shapes.MTLine;
+import org.mt4j.util.MTColor;
 
 import processing.core.PApplet;
 
@@ -11,20 +12,26 @@ public class Image extends Widget
 		super(applet, m);
 	}
 	
-	public Image(view.widget.Image widget)
+	public Image(view.widget.Image widget,Boolean create_new_model)
 	{
-		super(widget);
+		super(widget,create_new_model);
 	}
 	
 	protected void initGraphics()
 	{		
-		super.initGraphics();
-		MTLine l1 = new MTLine(applet, 0, 0, this.model.getWidth(), this.model.getHeight());
-		MTLine l2 = new MTLine(applet, this.model.getWidth(), 0, 0, this.model.getHeight());
+		MTLine l1 = new MTLine(applet, 0, 0, this._model.getWidth(), this._model.getHeight());
+		MTLine l2 = new MTLine(applet, this._model.getWidth(), 0, 0, this._model.getHeight());
+		l1.setStrokeColor(MTColor.BLACK);
+		l2.setStrokeColor(MTColor.BLACK);
 		l1.setPickable(false);
 		l2.setPickable(false);
 		
 		this.addChild(l1);
 		this.addChild(l2);
+		
+		l1.setPositionRelativeToParent(this.getCenterPointGlobal());
+		l2.setPositionRelativeToParent(this.getCenterPointGlobal());
+		
+		super.initGraphics();
 	}
 }

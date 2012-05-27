@@ -18,7 +18,6 @@ import org.mt4j.util.math.Vector3D;
 import org.mt4jx.components.visibleComponents.widgets.menus.MenuItem;
 
 import processing.core.PImage;
-import view.Page;
 import view.PageLibrary;
 import view.WidgetLibrary;
 
@@ -174,7 +173,7 @@ public class StartMenuScene extends AbstractScene{
 	    private void createNewPage()
 	    {
 	    	model.Page newAbPage = model.getCurrentProject().createPage("default");
-	    	Page newPage = new Page(app, 300, 100, newAbPage);
+	    	view.page.Page newPage = new view.page.Page(app, 300, 100, newAbPage);
 	    	scene.getCanvas().addChild(newPage);
 	    }
 	    

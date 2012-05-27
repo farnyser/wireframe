@@ -10,28 +10,33 @@ import processing.core.PApplet;
 
 public abstract class Element extends MTClipRectangle implements PropertyChangeListener
 {
-	protected model.Element model;
+	protected enum DragType { MOVE, RESIZE, LINK };
+	
+	protected model.Element _model;
 	protected PApplet applet;
 	protected float mh, mw;
+	protected DragType dragType = DragType.MOVE;
+	protected model.Element.Corner resizeStart = model.Element.Corner.UPPER_LEFT;
+	protected boolean isMiniature = false;
 	
 	public Element(PApplet a, float x, float y, model.Element p) 
-	{
+	{ 
 		super(a, x, y, 0, p.getWidth(), p.getHeight());
 		applet = a;
-		model = p;
+		_model = p;
 		mw = p.getWidth();
 		mh =  p.getHeight();
 		initGraphics();
 		initGesture();
 		
-		model.addListener(this);
+		_model.addListener(this);
 	}
 	
 	public Element(Element e)
 	{
-		super(e.applet, 0, 0, 0, e.model.getWidth(), e.model.getHeight());
+		super(e.applet, 0, 0, 0, e._model.getWidth(), e._model.getHeight());
 		applet = e.applet;
-		model = e.model;
+		_model = e._model;
 		mh = e.mh; 
 		mw = e.mw;
 		initGraphics();
@@ -40,31 +45,59 @@ public abstract class Element extends MTClipRectangle implements PropertyChangeL
 		this.setMinSize(e.mw, e.mh);
 		this.setFillColor(e.getFillColor());
 		
-//		model.resetListener();
-		model.addListener(this);
+		_model.addListener(this);
 	}
 	
+	public Element(Element e, Boolean create_new_model)
+	{
+		super(e.applet, 0, 0, 0, e._model.getWidth(), e._model.getHeight());
+		
+		if ( create_new_model )
+		{
+			_model = (model.Element) e._model.clone();
+		}
+		else
+		{
+			_model = e._model;
+		}
+		
+		applet = e.applet;
+		mh = e.mh; 
+		mw = e.mw;
+		initGraphics();
+		initGesture();
+		this.setPositionGlobal(new Vector3D(e.getCenterPointGlobal().x, e.getCenterPointGlobal().y, 0));
+		this.setMinSize(e.mw, e.mh);
+		this.setFillColor(e.getFillColor());
+		
+		_model.addListener(this);
+	}
 
 	public void setMinSize(float _w, float _h)
 	{
 		this.mh = _h;
 		this.mw = _w;
 		
+		this.isMiniature = true;
+		
 		Vector3D pos = this.getCenterPointGlobal();
 		this.setSizeXYGlobal(mw, mh);
-		pos.x = pos.x - (model.getWidth() - mw)/2;
-		pos.y = pos.y - (model.getHeight() - mh)/2;
+		pos.x = pos.x - (_model.getWidth() - mw)/2;
+		pos.y = pos.y - (_model.getHeight() - mh)/2;
 		this.setPositionGlobal(pos);
 	}
 	
 	public void setFullSize()
 	{
-		this.setSizeXYGlobal(model.getWidth(), model.getHeight());
+		this.isMiniature = false;
+		this.mw = _model.getWidth();
+		this.mh = _model.getHeight();
+		this.setSizeXYGlobal(_model.getWidth(), _model.getHeight());
 	}
 	
 	public model.Element getModel() 
 	{
-		return model;
+		return _model;
 	}
 
 	public void propertyChange(PropertyChangeEvent e) 
@@ -73,7 +106,7 @@ public abstract class Element extends MTClipRectangle implements PropertyChangeL
         
         if ( propertyName == "addElement" ) 
         {
-			view.Element el = view.Element.newInstance(applet, (model.Element)e.getNewValue());
+			view.Element el = view.Element.newInstance(applet, (model.Element) e.getNewValue());
 			this.addChild(el);
         }
         else if ( propertyName == "removeElement" ) 
@@ -91,6 +124,30 @@ public abstract class Element extends MTClipRectangle implements PropertyChangeL
         		}
         	}
         }
+        else if ( propertyName == "setSize" ) 
+        {
+        	if(!this.isMiniature)
+        	{
+        		Vector3D oldsize = new Vector3D(this.getWidthXYRelativeToParent(), this.getHeightXYRelativeToParent(), 0);
+        		Vector3D newsize = (Vector3D) e.getNewValue();
+        		this.setSizeXYRelativeToParent(newsize.x, newsize.y);
+        		
+        		if ( e.getOldValue() instanceof model.Element.Corner )
+        		{
+	        		Vector3D move = new Vector3D(0,0,0);
+	        		
+	        		switch ( (model.Element.Corner)e.getOldValue() )
+	        		{
+		        		case LOWER_LEFT: move = new Vector3D(-(newsize.x - oldsize.x)/2, (newsize.y - oldsize.y)/2, 0); break;
+	        			case LOWER_RIGHT: move = new Vector3D((newsize.x - oldsize.x)/2, (newsize.y - oldsize.y)/2, 0); break;
+	        			case UPPER_LEFT: move = new Vector3D(-(newsize.x - oldsize.x)/2, -(newsize.y - oldsize.y)/2, 0); break;
+	        			case UPPER_RIGHT: move = new Vector3D((newsize.x - oldsize.x)/2, -(newsize.y - oldsize.y)/2, 0); break;
+	        		}
+	        		
+	        		this.translate(move);
+        		}
+        	}
+        }
     }
 	
 	protected static Element newInstance(PApplet applet, model.Element e) 
@@ -98,9 +155,11 @@ public abstract class Element extends MTClipRectangle implements PropertyChangeL
 		Element el = null;
 	
 		if ( e instanceof model.Page )
-			el = new view.Page(applet, 0, 0, (model.Page) e);
+			el = new view.page.Page(applet, 0, 0, (model.Page) e);
 		else if ( e instanceof model.widget.ButtonWidget )
 			el = new view.widget.Button(applet, (model.widget.ButtonWidget) e);
+		else if ( e instanceof model.widget.ListWidget )
+			el = new view.widget.List(applet, (model.widget.ListWidget) e);
 		else if ( e instanceof model.widget.ImgWidget )
 			el = new view.widget.Image(applet, (model.widget.ImgWidget) e);
 		else if ( e instanceof model.widget.Widget )
@@ -111,5 +170,4 @@ public abstract class Element extends MTClipRectangle implements PropertyChangeL
 
 	protected abstract void initGesture();
 	protected abstract void initGraphics();
-
 }
