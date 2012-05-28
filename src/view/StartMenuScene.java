@@ -240,9 +240,12 @@ public class StartMenuScene extends AbstractScene{
 		
 		private void exitApplication()
 	    {
-	    	model.saveCurrentProject(Project._path);
-			model.getCurrentProject().close();
-			app.exit();
+	    	if(model.getCurrentProject() != null)
+	    	{
+				model.saveCurrentProject(Project._path);
+				model.getCurrentProject().close();
+	    	}
+	    	app.exit();
 	    }
 		
 		private void redoOperation()
