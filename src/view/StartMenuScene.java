@@ -191,7 +191,7 @@ public class StartMenuScene extends AbstractScene{
 	    
 		private void exitApplication()
 	    {
-	    	
+	    	app.destroy();
 	    }
 		
 		private void openWidgetLibrary()
