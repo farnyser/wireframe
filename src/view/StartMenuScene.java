@@ -3,13 +3,17 @@ package view;
 import java.util.ArrayList;
 import java.util.List;
 
+import menu.MessageBox;
 import menu.NewProjectMenu;
 import menu.HexagonMenu;
 import menu.ExistProjectMenu;
 import menu.RectangleMenu;
 import model.ApplicationModel;
+import model.Project;
 
 import org.mt4j.AbstractMTApplication;
+import org.mt4j.components.MTComponent;
+import org.mt4j.components.visibleComponents.shapes.MTRectangle.PositionAnchor;
 import org.mt4j.input.inputProcessors.IGestureEventListener;
 import org.mt4j.input.inputProcessors.MTGestureEvent;
 import org.mt4j.input.inputProcessors.componentProcessors.tapProcessor.TapEvent;
@@ -110,31 +114,22 @@ public class StartMenuScene extends AbstractScene{
 					{
 						openWidgetLibrary();
 					}
+					if(string.equals("Redo"))
+					{
+						redoOperation();
+					}
+					if(string.equals("Undo"))
+					{
+						undoOperation();
+					}
 				}
 			}
 			return false;
 		}
 		
-		private void clearLoadMenu()
-		{
-			/*if(rMenu != null)
-			{
-				System.out.println("Supprimer le retangle menu");
-				
-				for (MTComponent c : rMenu.getChildren())
-				{
-					c.destroy();
-				}
-				rMenu.removeAllChildren();
-				rMenu.removeFromParent();
-				
-			}*/
-			
-		}	
 		
 		private void createLoadMenu()
 		{
-			clearLoadMenu(); 
 			
 			List<MenuItem> menuLoad = new ArrayList<MenuItem>();
 			menuLoad.add(new MenuItem("New projet", new gestureListener("New project",this.scene)));
@@ -147,19 +142,19 @@ public class StartMenuScene extends AbstractScene{
 	
 		private void createNewProject()
 		{
-			clearLoadMenu(); 
+			
 			System.out.println("new project");
 			
 			if(nameArea != null) nameArea.destroy();
 			
-			nameArea = new NewProjectMenu(app, model, 640, 450, 380, 100);
+			nameArea = new NewProjectMenu(app, model, 0, 0, 380, 100);
+			nameArea.setPositionGlobal(new Vector3D(app.width/2, app.height/2));
 			scene.getCanvas().addChild(nameArea);
 	
 		}
 		
 		private void loadFromExistingProject()
 		{
-			clearLoadMenu();
 			System.out.println("Existing project");
 			
 			int preferredIconHeight = 192;
@@ -167,7 +162,7 @@ public class StartMenuScene extends AbstractScene{
 			int displayHeightOfReflection = (int) (preferredIconHeight * 0.6f);
 			int listWidth = preferredIconHeight + displayHeightOfReflection + gapBetweenIconAndReflection;
 			int listHeight = app.width;
-			
+
 			if(projectList != null) projectList.destroy();
 			
 			projectList = new ExistProjectMenu(app, model, 0, 0, (float)listWidth, listHeight, 40);
@@ -177,44 +172,88 @@ public class StartMenuScene extends AbstractScene{
 	
 	    private void createNewPage()
 	    {
-	    	model.Page newAbPage = model.getCurrentProject().createPage("untitled");
-	    	view.page.Page newPage = new view.page.Page(app, 0, 0, newAbPage);
-	    	scene.getCanvas().addChild(newPage);
-	    	newPage.setPositionGlobal(new Vector3D(200 + newAbPage.getWidth()/2,150 + newAbPage.getHeight()/2));
-	    }
-	    
-		private void exitApplication()
-	    {
+	    	if(model.getCurrentProject() == null)
+			{	
+	    		MessageBox m = new MessageBox(app, 0, 0, 200, 60);
+				m.setMessage("Please first load a project");
+				scene.getCanvas().addChild(m);
+				m.setPositionRelativeToParent(new Vector3D(app.width/2, app.height/2));	
+			}
+	    	else
+	    	{
+	    		model.Page newAbPage = model.getCurrentProject().createPage("untitled");
+		    	view.page.Page newPage = new view.page.Page(app, 0, 0, newAbPage);
+		    	scene.getCanvas().addChild(newPage);
+		    	newPage.setPositionGlobal(new Vector3D(200 + newAbPage.getWidth()/2,150 + newAbPage.getHeight()/2));
+	    	}
 	    	
 	    }
 		
 		private void openWidgetLibrary()
 		{
-			if ( widgets == null )
-			{
-				widgets = new WidgetLibrary(app, 0, 0, 200, 200);
-				scene.getCanvas().addChild(widgets);
+			if(model.getCurrentProject() == null)
+			{	
+				MessageBox m = new MessageBox(app, 0, 0, 200, 60);
+				m.setMessage("Please first load a project");
+				scene.getCanvas().addChild(m);
+				m.setPositionRelativeToParent(new Vector3D(app.width/2, app.height/2));	
 			}
 			else
 			{
-				widgets.destroy();
-				widgets = null;
+				if ( widgets == null )
+				{
+					widgets = new WidgetLibrary(app, 0, 0, 200, 200);
+					scene.getCanvas().addChild(widgets);
+				}
+				else
+				{
+					widgets.destroy();
+					widgets = null;	
+				}
 			}
+			
 		}
 		
 		private void openScenesLibrary()
 		{
-			if ( pages == null )
+			if(model.getCurrentProject() == null)
 			{
-				pages = new PageLibrary(app, 800, 0, 200, 200, model);
-				scene.getCanvas().addChild(pages);
+				MessageBox m = new MessageBox(app, 0, 0, 200, 60);
+				m.setMessage("Please first load a project");
+				scene.getCanvas().addChild(m);
+				m.setPositionRelativeToParent(new Vector3D(app.width/2, app.height/2));
 			}
 			else
 			{
-				pages.destroy();
-				pages = null;
+				if ( pages == null )
+				{
+					pages = new PageLibrary(app, 800, 0, 200, 200, model);
+					scene.getCanvas().addChild(pages);
+				}
+				else
+				{
+					pages.destroy();
+					pages = null;
+				}
 			}
 		}
+		
+		private void exitApplication()
+	    {
+	    	model.saveCurrentProject(Project._path);
+			model.getCurrentProject().close();
+			app.exit();
+	    }
+		
+		private void redoOperation()
+	    {
+	    	
+	    }
+		
+		private void undoOperation()
+	    {
+	    	
+	    }
 	}
 
 }

@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 
 public class ApplicationModel {
 
@@ -16,6 +17,7 @@ public class ApplicationModel {
 	 * The current project
 	 */
 	private Project _currentProject;
+	private ArrayList<Project> _projectList = new ArrayList<Project>();
 	
 	protected PropertyChangeSupport _pcs = new PropertyChangeSupport(this);
 
@@ -25,7 +27,9 @@ public class ApplicationModel {
 			_currentProject.close();
 		
 		_currentProject = new Project(projectLabel);
+		_projectList.add(_currentProject);
 		_pcs.firePropertyChange("newProject", null, _currentProject);
+		saveCurrentProject(Project._path);
 	}
 	
 	/**
@@ -71,12 +75,17 @@ public class ApplicationModel {
 	
 	public Project getCurrentProject() 
 	{
-		if ( _currentProject == null )
+		/*if ( _currentProject == null )
 		{
 			createProject("untitled project");
-		}
+		}*/
 		
 		return _currentProject; 
+	}
+	
+	public ArrayList<Project> getProjectList()
+	{
+		return _projectList;
 	}
 	
 	public void addListener(PropertyChangeListener listener)
