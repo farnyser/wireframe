@@ -25,7 +25,6 @@ public class Page extends Element
 {
 	final static public String EVENT_DELETE_PAGE = "event_delete_page";
 	
-	protected MTClipRoundRect close;
 	protected PageMenu menu;
 	
 	protected PropertyChangeSupport _viewNotifier  = new PropertyChangeSupport(this);
@@ -118,24 +117,6 @@ public class Page extends Element
 		    }    
 		});
 		
-		close.removeAllGestureEventListeners(); // supprime les comportements par defaut (drag, zoom, ...)
-		close.registerInputProcessor(new TapProcessor(this.applet));
-		close.addGestureListener(TapProcessor.class, new IGestureEventListener()
-		{
-			public boolean processGestureEvent(MTGestureEvent ge) 
-			{
-				if (ge instanceof TapEvent) 
-				{
-					TapEvent te = (TapEvent) ge;
-					if (te.getTapID() == TapEvent.TAPPED) 
-					{
-			            view.page.Page.this.destroy();
-					}
-		        }
-				
-		        return false;
-			}
-		});
 	}
 
 	@Override
@@ -150,10 +131,6 @@ public class Page extends Element
 		menu.setPositionRelativeToParent(new Vector3D(0, -menu.getHeight(), 0));
 		menu.getTextArea().setText(((model.Page) _model).getLabel());
 		menu.getTextArea().setPositionRelativeToParent(menu.getCenterPointLocal());
-
-		close = new MTClipRoundRect(applet, this._model.getWidth() - 10, -(menu.getHeight() + 10), 0, 20, 20, 10, 10);
-		close.setFillColor(MTColor.RED);
-		this.addChild(close);
 		
 		for ( model.Element e : _model.getElements() )
 		{
@@ -171,7 +148,6 @@ public class Page extends Element
 		super.setMinSize(_w, _h);
 		
 		menu.setVisible(false);
-		close.setVisible(false);
 	}
 	
 	public void setFullSize() 
@@ -180,8 +156,6 @@ public class Page extends Element
 		
 		menu.setVisible(true);
 		menu.sendToFront();
-		close.setVisible(true);
-		close.sendToFront();
 	}
 	
 	public void addListener(PropertyChangeListener listener)

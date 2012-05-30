@@ -2,11 +2,14 @@ package view.page;
 
 import org.mt4j.components.TransformSpace;
 import org.mt4j.components.visibleComponents.widgets.MTClipRectangle;
+import org.mt4j.components.visibleComponents.widgets.MTClipRoundRect;
 import org.mt4j.components.visibleComponents.widgets.MTTextArea;
 import org.mt4j.input.inputProcessors.IGestureEventListener;
 import org.mt4j.input.inputProcessors.MTGestureEvent;
 import org.mt4j.input.inputProcessors.componentProcessors.dragProcessor.DragEvent;
 import org.mt4j.input.inputProcessors.componentProcessors.dragProcessor.DragProcessor;
+import org.mt4j.input.inputProcessors.componentProcessors.tapProcessor.TapEvent;
+import org.mt4j.input.inputProcessors.componentProcessors.tapProcessor.TapProcessor;
 import org.mt4j.util.MTColor;
 import org.mt4j.util.animation.Animation;
 import org.mt4j.util.animation.AnimationEvent;
@@ -15,13 +18,15 @@ import org.mt4j.util.animation.MultiPurposeInterpolator;
 import org.mt4j.util.math.Vector3D;
 
 import processing.core.PApplet;
+import view.EditableText;
 
 public class PageMenu extends MTClipRectangle {
 	
-	protected MTTextArea textArea;
+	protected EditableText textArea;
 	protected PageMenuProperties properties;
 	protected MTClipRectangle arrowDown;
 	protected PApplet applet;
+	protected MTClipRoundRect close;
 	
 	private boolean animationRunning = false; // for the slide down animation	
 
@@ -29,7 +34,32 @@ public class PageMenu extends MTClipRectangle {
 		super(applet, 0, 0, 0, 400, 25);
 
 		this.applet = applet;
-		textArea = new MTTextArea(applet);
+		textArea = new EditableText(applet) 
+		{
+			@Override
+			protected boolean handleGesture(MTGestureEvent e) {
+				return PageMenu.this.processGestureEvent(e);
+			}
+
+			@Override
+			protected void textUpdated(String newUnformatedText) {
+				((model.Page)((view.page.Page) PageMenu.this.getParent()).getModel()).setLabel(newUnformatedText);
+			}
+
+			@Override
+			protected String getUnformatedText() {
+				if(PageMenu.this.getParent() != null) {
+					return ((model.Page)((view.page.Page) PageMenu.this.getParent()).getModel()).getLabel();
+				}
+				else return "";
+			}
+
+			@Override
+			protected String getFormatedText() {
+				return getUnformatedText();
+			}
+			
+		};
 		properties = new PageMenuProperties(applet);
 		arrowDown = new MTClipRectangle(applet, 0, 0, 0, 10, 10);
 
@@ -57,6 +87,11 @@ public class PageMenu extends MTClipRectangle {
 		arrowDown.rotateZ(arrowDown.getCenterPointLocal(), 45, TransformSpace.LOCAL);
 		
 		textArea.sendToFront();
+		
+		close = new MTClipRoundRect(applet, 0, 0, 0, 20, 20, 10, 10);
+		close.setFillColor(MTColor.RED);
+		close.setPositionRelativeToParent(new Vector3D(this.getWidth(), 0, 0));
+		this.addChild(close);
 	}
 	
 	protected void initGesture() {
@@ -110,12 +145,25 @@ public class PageMenu extends MTClipRectangle {
 		
 		arrowDown.removeAllGestureEventListeners();
 		
-		textArea.removeAllGestureEventListeners();
-		textArea.addGestureListener(DragProcessor.class, new IGestureEventListener()
+		close.removeAllGestureEventListeners(); // supprime les comportements par defaut (drag, zoom, ...)
+		close.registerInputProcessor(new TapProcessor(this.applet));
+		close.addGestureListener(TapProcessor.class, new IGestureEventListener()
 		{
 			public boolean processGestureEvent(MTGestureEvent ge) 
 			{
-		        return PageMenu.this.processGestureEvent(ge);
+				if (ge instanceof TapEvent) 
+				{
+					TapEvent te = (TapEvent) ge;
+					if (te.getTapID() == TapEvent.TAPPED) 
+					{
+						if ( view.page.PageMenu.this.getParent() != null )
+						{
+							view.page.PageMenu.this.getParent().destroy();
+						}
+					}
+		        }
+				
+		        return false;
 			}
 		});
 	}
