@@ -3,8 +3,6 @@ package view;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
-import model.widget.Widget;
-
 import org.mt4j.components.MTComponent;
 import org.mt4j.components.visibleComponents.widgets.MTClipRectangle;
 import org.mt4j.util.math.Vector3D;

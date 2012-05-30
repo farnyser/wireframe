@@ -5,7 +5,6 @@ import java.util.List;
 
 import menu.ExistProjectMenu;
 import menu.HexagonMenu;
-import menu.MessageBox;
 import menu.NewProjectMenu;
 import menu.RectangleMenu;
 import model.ApplicationModel;
@@ -44,7 +43,7 @@ public class StartMenuScene extends AbstractScene{
 		this.getCanvas().setFrustumCulling(true); //?
 		
 		// on le cree par defaut pour que la PageLibrary capte les evenements des view.Page
-		this.pages = new PageLibrary(app, 800, 0, 200, 200, model);
+		this.pages = new PageLibrary(app, app.getWidth()-75, 0, 75, app.getHeight(), model);
 		this.pages.setVisible(false);
 		this.getCanvas().addChild(pages);
 		
@@ -54,7 +53,7 @@ public class StartMenuScene extends AbstractScene{
 		List<MenuItem> menus = new ArrayList<MenuItem>();
 		menus.add(new MenuItem("Widgets", new gestureListener("Widgets",this)));
 		menus.add(new MenuItem("Scenes", new gestureListener("Scenes",this)));
-		menus.add(new MenuItem("Load", new gestureListener("Load",this)));
+		menus.add(new MenuItem("Project", new gestureListener("Load",this)));
 		menus.add(new MenuItem(newPageIcon, new gestureListener("New page",this)));
 		menus.add(new MenuItem("Exit", new gestureListener("Exit",this)));
 		menus.add(new MenuItem("Undo", new gestureListener("Undo",this)));
@@ -134,6 +133,7 @@ public class StartMenuScene extends AbstractScene{
 		
 		private void createLoadMenu()
 		{
+			if ( rMenu != null ) rMenu.destroy();
 			
 			List<MenuItem> menuLoad = new ArrayList<MenuItem>();
 			menuLoad.add(new MenuItem("New projet", new gestureListener("New project",this.scene)));
@@ -141,12 +141,10 @@ public class StartMenuScene extends AbstractScene{
 			
 			rMenu = new RectangleMenu(app, new Vector3D(320,180) , menuLoad, 170);
 			scene.getCanvas().addChild(rMenu);
-			
 		}
 	
 		private void createNewProject()
 		{
-			
 			System.out.println("new project");
 			
 			if(nameArea != null) nameArea.destroy();
@@ -185,27 +183,16 @@ public class StartMenuScene extends AbstractScene{
 	    		
 		private void openWidgetLibrary()
 		{
-			if(model.getCurrentProject() == null)
-			{	
-				MessageBox m = new MessageBox(app, 0, 0, 200, 60);
-				m.setMessage("Please first load a project");
-				scene.getCanvas().addChild(m);
-				m.setPositionRelativeToParent(new Vector3D(app.width/2, app.height/2));	
+			if ( widgets == null )
+			{
+				widgets = new WidgetLibrary(app, 0, 0, 75, app.getHeight());
+				scene.getCanvas().addChild(widgets);
 			}
 			else
 			{
-				if ( widgets == null )
-				{
-					widgets = new WidgetLibrary(app, 0, 0, 200, 200);
-					scene.getCanvas().addChild(widgets);
-				}
-				else
-				{
-					widgets.destroy();
-					widgets = null;	
-				}
+				widgets.destroy();
+				widgets = null;	
 			}
-			
 		}
 		
 		private void openScenesLibrary()

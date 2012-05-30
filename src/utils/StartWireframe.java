@@ -5,9 +5,7 @@ import model.ApplicationModel;
 import org.mt4j.MTApplication;
 import org.mt4j.input.inputSources.MacTrackpadSource;
 
-
 import view.StartMenuScene;
-import view.WorkspaceScene;
 
 public class StartWireframe extends MTApplication 
 {
