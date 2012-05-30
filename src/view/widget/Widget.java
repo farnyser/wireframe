@@ -44,6 +44,11 @@ public class Widget extends view.Element
 		super(widget, create_new_model);
 	}
 	
+	public model.widget.Widget getModel() 
+	{
+		return (model.widget.Widget) _model;
+	}
+
 	public void propertyChange(PropertyChangeEvent e) 
 	{
 		super.propertyChange(e);

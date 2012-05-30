@@ -133,12 +133,14 @@ public abstract class Element extends MTClipRectangle implements PropertyChangeL
         	{
         		Vector3D oldsize = new Vector3D(this.getWidthXYRelativeToParent(), this.getHeightXYRelativeToParent(), 0);
         		Vector3D newsize = (Vector3D) e.getNewValue();
-        		this.setSizeXYRelativeToParent(newsize.x, newsize.y);
         		Vector3D move = new Vector3D(0,0,0);
+        		if ( newsize.x < 20 ) newsize.x = 20;
+        		if ( newsize.y < 20 ) newsize.y = 20;
 
+        		this.setSizeXYRelativeToParent(newsize.x, newsize.y);
+        		
         		if ( e.getOldValue() instanceof model.Element.Corner )
         		{
-	        		
 	        		switch ( (model.Element.Corner)e.getOldValue() )
 	        		{
 		        		case LOWER_LEFT: move = new Vector3D(-1, 1, 0); break;
