@@ -13,6 +13,7 @@ import org.mt4j.input.inputProcessors.IGestureEventListener;
 import org.mt4j.input.inputProcessors.MTGestureEvent;
 import org.mt4j.input.inputProcessors.componentProcessors.dragProcessor.DragEvent;
 import org.mt4j.input.inputProcessors.componentProcessors.dragProcessor.DragProcessor;
+import org.mt4j.input.inputProcessors.componentProcessors.panProcessor.PanProcessorTwoFingers;
 import org.mt4j.input.inputProcessors.componentProcessors.tapAndHoldProcessor.TapAndHoldEvent;
 import org.mt4j.input.inputProcessors.componentProcessors.tapAndHoldProcessor.TapAndHoldProcessor;
 import org.mt4j.util.MTColor;
@@ -251,7 +252,6 @@ public class Widget extends view.Element
 					
 					if ( de.getId() == MTGestureEvent.GESTURE_ENDED )
 					{
-						System.out.println("end of resize");
 						Widget.this.dragType = DragType.MOVE;
 					}
 				}
@@ -302,7 +302,7 @@ public class Widget extends view.Element
 		});
 		
 		this.registerInputProcessor(new TapAndHoldProcessor((MTApplication)applet,1000));
-		this.addGestureListener(TapAndHoldProcessor.class,new TapAndHoldVisualizer((MTApplication)applet, this));
+		this.addGestureListener(TapAndHoldProcessor.class, new TapAndHoldVisualizer((MTApplication)applet, this));
 		this.addGestureListener(TapAndHoldProcessor.class, new IGestureEventListener() 
 		{
 		    @Override
@@ -324,10 +324,22 @@ public class Widget extends view.Element
 		            Widget.this.dragType = DragType.RESIZE;
 		            
 		            //debug
-		            Widget.this.dragType = DragType.LINK;
+		            //Widget.this.dragType = DragType.LINK;
 		        }
 		        return false;
 		    }    
+		});
+		
+		// 2 doigts
+		this.addGestureListener(PanProcessorTwoFingers.class, new IGestureEventListener()
+		{
+			@Override
+			public boolean processGestureEvent(MTGestureEvent arg0) {
+	            Widget.this.dragType = DragType.LINK;
+	            System.out.println("pan 2 fingers");
+				return false;
+			} 
+				
 		});
 	}
 }

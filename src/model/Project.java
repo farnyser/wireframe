@@ -30,7 +30,7 @@ public class Project implements Serializable
 
 	protected PropertyChangeSupport _pcs = new PropertyChangeSupport(this);
 
-	public static String _path ="repository/";
+	public static String _path = "repository/";
 
 	
 	public Project(String projectLabel) {
