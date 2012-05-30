@@ -156,7 +156,7 @@ public abstract class Element extends MTClipRectangle implements PropertyChangeL
         		{
             		if ( cp instanceof view.widget.Widget )
             		{
-            			model.widget.Widget em = (Widget) ((view.widget.Widget) cp).getModel();
+            			model.widget.Widget em = ((view.widget.Widget) cp).getModel();
 //            			Vector3D movebis = ((view.widget.Widget) cp).getCenterPointGlobal();
             			((view.Element) cp).setSizeXYGlobal(em.getWidth(), em.getHeight());
 //            			((view.Element) cp).setPositionGlobal(movebis);

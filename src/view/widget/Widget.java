@@ -26,12 +26,12 @@ import view.Library;
 public class Widget extends view.Element
 {
 	// fake position
-	protected float fx = -1, fy = -1;
+	protected float fx = -1, fy = -1, fw = -1, fh = -1;
 	
 	// linking (action)
 	protected MTLine line = null;
 	
-	protected boolean GRID_ENABLED = false;
+	protected boolean GRID_ENABLED = true;
 	protected int GRID_SPACING = 20;
 	
 	public Widget(PApplet a, model.widget.Widget m) 
@@ -146,11 +146,15 @@ public class Widget extends view.Element
 				
 				if ( dragType == DragType.MOVE )
 				{
-					
 					if ( fx == -1 || fy == -1 ) 
 					{ 
 						fx = Widget.this.getCenterPointRelativeToParent().x; 
 						fy = Widget.this.getCenterPointRelativeToParent().y; 
+					};					
+					if ( fw == -1 || fh == -1 ) 
+					{ 
+						fw = Widget.this.getModel().getWidth(); 
+						fh = Widget.this.getModel().getHeight(); 
 					};
 					Widget.this.fx += de.getTranslationVect().x;
 					Widget.this.fy += de.getTranslationVect().y;
@@ -175,7 +179,7 @@ public class Widget extends view.Element
 								// remove from parent (model)
 								if ( Widget.this.getParent() instanceof view.Element ){ view.Element cc = (view.Element)  Widget.this.getParent(); cc.getModel().removeElement(Widget.this._model); }
 	
-								Widget.this.destroy();
+								destroy = true;
 							}
 							// dragged to page/widget
 							else if ( c instanceof view.Element ) 
@@ -246,19 +250,28 @@ public class Widget extends view.Element
 				}
 				else if (Widget.this.dragType == DragType.RESIZE) 
 				{
-					if ( Widget.this.resizeStart == model.Element.Corner.LOWER_RIGHT )
-						Widget.this._model.setSize(Widget.this._model.getWidth() + de.getTranslationVect().x, Widget.this._model.getHeight() + de.getTranslationVect().y, Widget.this.resizeStart);
-					else if ( Widget.this.resizeStart == model.Element.Corner.LOWER_LEFT )
-						Widget.this._model.setSize(Widget.this._model.getWidth() - de.getTranslationVect().x, Widget.this._model.getHeight() + de.getTranslationVect().y, Widget.this.resizeStart);
-					else if ( Widget.this.resizeStart == model.Element.Corner.UPPER_RIGHT )
-						Widget.this._model.setSize(Widget.this._model.getWidth() + de.getTranslationVect().x, Widget.this._model.getHeight() - de.getTranslationVect().y, Widget.this.resizeStart);
-					else
-						Widget.this._model.setSize(Widget.this._model.getWidth() - de.getTranslationVect().x, Widget.this._model.getHeight() - de.getTranslationVect().y, Widget.this.resizeStart);
+					Vector3D direction = null;
 					
+					if ( Widget.this.resizeStart == model.Element.Corner.LOWER_RIGHT )
+						direction = new Vector3D(1,1);
+					else if ( Widget.this.resizeStart == model.Element.Corner.LOWER_LEFT )
+						direction = new Vector3D(-1,1);
+					else if ( Widget.this.resizeStart == model.Element.Corner.UPPER_RIGHT )
+						direction = new Vector3D(1,-1);
+					else
+						direction = new Vector3D(-1,-1);
+					
+					fw += direction.x * de.getTranslationVect().x;
+					fh += direction.y * de.getTranslationVect().y;
+					
+					if ( GRID_ENABLED )
+						Widget.this._model.setSize(fw-fw%GRID_SPACING, fh-fh%GRID_SPACING, Widget.this.resizeStart);
+					else
+						Widget.this._model.setSize(fw, fh, Widget.this.resizeStart);
+					
+					// retour en mode "deplacement"
 					if ( de.getId() == MTGestureEvent.GESTURE_ENDED )
-					{
 						Widget.this.dragType = DragType.MOVE;
-					}
 				}
 				else if (Widget.this.dragType == DragType.LINK) 
 				{
@@ -291,8 +304,8 @@ public class Widget extends view.Element
 						if ( target instanceof view.page.Page )
 						{
 							System.out.println("create link between " + Widget.this + " and " + target);
-							((model.Page)((view.page.Page)target).getModel()).addLinked((model.widget.Widget) Widget.this.getModel());
-							((model.widget.Widget)Widget.this.getModel()).addLink((model.Page) ((view.page.Page)target).getModel());
+							((view.page.Page)target).getModel().addLinked(Widget.this.getModel());
+							Widget.this.getModel().addLink(((view.page.Page)target).getModel());
 						}
 						
 						line.destroy();
