@@ -1,5 +1,7 @@
 package menu;
 
+import java.util.ArrayList;
+
 import model.ApplicationModel;
 import model.Project;
 
@@ -9,7 +11,6 @@ import org.mt4j.components.visibleComponents.shapes.MTPolygon;
 import org.mt4j.components.visibleComponents.widgets.MTList;
 import org.mt4j.components.visibleComponents.widgets.MTListCell;
 import org.mt4j.components.visibleComponents.widgets.MTTextArea;
-import org.mt4j.components.visibleComponents.widgets.buttons.MTImageButton;
 import org.mt4j.input.inputProcessors.IGestureEventListener;
 import org.mt4j.input.inputProcessors.MTGestureEvent;
 import org.mt4j.input.inputProcessors.componentProcessors.tapProcessor.TapEvent;
@@ -28,6 +29,7 @@ import processing.core.PApplet;
 import processing.core.PConstants;
 import processing.core.PImage;
 import utils.Slugger;
+import view.page.Page;
 
 public class ExistProjectMenu extends MTList{
 	
@@ -62,8 +64,8 @@ public class ExistProjectMenu extends MTList{
 		this.app = (AbstractMTApplication) applet;
 		this.model = m;
 		
-		preferredIconWidth = 256;
-		preferredIconHeight = 192;
+		preferredIconWidth = 192;
+		preferredIconHeight = 256;
 		gapBetweenIconAndReflection = 9;
 		displayHeightOfReflection = preferredIconHeight * 0.6f;
 		
@@ -76,18 +78,96 @@ public class ExistProjectMenu extends MTList{
 		
 		font = FontManager.getInstance().createFont(app, "SansSerif", 18, MTColor.WHITE);
 		
-		this.addScene("Project 1", cropImage(app.loadImage("data/Penguins.jpg"),preferredIconWidth,preferredIconHeight));
-		this.addScene("Project 2", cropImage(app.loadImage("data/Koala.jpg"),preferredIconWidth,preferredIconHeight));
-		this.addScene("Project 3", cropImage(app.loadImage("data/Hydrangeas.jpg"),preferredIconWidth,preferredIconHeight));
-		this.addScene("Project 4", cropImage(app.loadImage("data/Lighthouse.jpg"),preferredIconWidth,preferredIconHeight));
-		this.addScene("Project 5", cropImage(app.loadImage("data/Tulips.jpg"),preferredIconWidth,preferredIconHeight));
+		this.loadProjectList();
 		
 		this.rotateZ(this.getCenterPointLocal(), -90, TransformSpace.LOCAL);
 		this.setPositionGlobal(new Vector3D(app.width/2f, app.height/2f));
 	
 	}
 	
-	public void addScene(String title, PImage icon){
+	private void loadProjectList()
+	{
+		ArrayList<Project> list = model.getProjectList();
+		
+		if(list.size() == 0)
+		{
+			MessageBox m = new MessageBox(app, 0, 0, 260, 60);
+			m.setMessage("No existing projects available");
+			this.addChild(m);
+			m.rotateZ(m.getCenterPointLocal(), 90, TransformSpace.LOCAL);
+			m.setPositionGlobal(getCenterPointGlobal());
+		}
+		else
+		{
+			for(Project p : list)
+			{
+				if(p.getPageList().size() == 0)
+				{
+					System.out.println("Project without pages");
+					this.addScene(p.getLabel(), cropImage(app.loadImage("data/Tulips.jpg"),preferredIconHeight,preferredIconWidth));
+				}
+				else
+				{
+					this.addProjectScene(p.getLabel(), p);
+				}
+			}
+		}
+		
+	}
+	
+	private void addProjectScene(String title, Project p)
+	{
+		Page firstPage = new Page(this.getRenderer(), 0, 0, p.getPageList().get(0));
+		firstPage.setMinSize(preferredIconWidth, preferredIconWidth);
+		firstPage.rotateZ(firstPage.getCenterPointLocal(), 90, TransformSpace.LOCAL);
+			
+		float border = 1;
+		float bothBorders = 2*border;
+		float topShift = 30;
+		
+		float listCellWidth = listWidth;		
+		float realListCellWidth = listCellWidth - bothBorders;
+
+		float listCellHeight = preferredIconWidth ;
+		
+		MTListCell cell = new MTListCell(app ,realListCellWidth, listCellHeight);
+		cell.setNoFill(true);
+		cell.setNoStroke(true);
+		cell.setName(title);
+		
+		
+		Vertex[] vertices = new Vertex[]{
+				new Vertex(realListCellWidth-topShift, 				border,		  		0, 0,0),
+				new Vertex(realListCellWidth-topShift, 				 listCellHeight -border,	0, 1,0),
+				new Vertex(realListCellWidth-topShift - preferredIconWidth/2 , listCellHeight -border,	0, 1,1),
+				new Vertex(realListCellWidth-topShift - preferredIconWidth/2,	border,		  		0, 0,1),
+				new Vertex(realListCellWidth-topShift, 				border,		  		0, 0,0),
+		};
+		MTPolygon po = new MTPolygon(app, vertices);
+		po.addChild(firstPage);
+		firstPage.setPositionRelativeToParent(po.getCenterPointLocal());
+		po.setStrokeColor(new MTColor(80,80,80, 255));
+		po.setNoStroke(true);
+		cell.addChild(po);
+		po.setPositionRelativeToParent(cell.getCenterPointLocal());
+			
+		this.addListElement(cell);
+		this.addTapProcessor(cell);
+			
+		MTTextArea text = new MTTextArea(app, font);
+		text.setFillColor(new MTColor(150,150,250,200));
+		text.setNoFill(true);
+		text.setNoStroke(true);
+		text.setText(title);
+		text.rotateZ(text.getCenterPointLocal(), 90, TransformSpace.LOCAL);
+		cell.addChild(text);
+			
+		text.setPositionRelativeToParent(cell.getCenterPointLocal());
+		text.translate(new Vector3D(realListCellWidth*0.5f - text.getHeightXY(TransformSpace.LOCAL)*0.5f, 0));
+
+	}
+	
+	private void addScene(String title, PImage icon){
 
 		PImage reflection = this.getReflection(app, icon);
 		
@@ -235,7 +315,8 @@ public class ExistProjectMenu extends MTList{
 	
 	private void setData(String name)
 	{
-		model.loadProject(Project._path+Slugger.toSlug(name));
+		model.saveCurrentProject(Project._path);
+		model.loadProject(Project._path+Slugger.toSlug(name)+".wire");
 	}
 	
 	private void close(){

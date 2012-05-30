@@ -39,16 +39,6 @@ public class Project implements Serializable
 		_sluggedLabel = Slugger.toSlug(projectLabel);
 
 		_pageList = new ArrayList<Page>();
-		
-		// for initialization # debug
-//		model.Page tmpPage;
-//		model.widget.Widget tmpWidget;
-//		for ( int i = 0 ; i < 3 ; i++ )	{
-//			tmpPage = createPage("untitled document "+i);
-//			tmpWidget = new model.widget.Widget(100,100,0);
-//			tmpWidget.setSize(100, 100);
-//			tmpPage.addElement(tmpWidget);
-//		}		
 	}
 	
 	/**

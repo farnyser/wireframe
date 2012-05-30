@@ -1,6 +1,7 @@
 package menu;
 
 import model.ApplicationModel;
+import model.Project;
 
 import org.mt4j.components.StateChange;
 import org.mt4j.components.StateChangeEvent;
@@ -20,8 +21,6 @@ import org.mt4j.util.animation.AnimationEvent;
 import org.mt4j.util.animation.IAnimation;
 import org.mt4j.util.animation.IAnimationListener;
 import org.mt4j.util.animation.ani.AniAnimation;
-import org.mt4j.util.font.FontManager;
-import org.mt4j.util.font.IFont;
 import org.mt4j.util.math.Vector3D;
 import org.mt4j.util.math.Vertex;
 
@@ -125,7 +124,6 @@ public class NewProjectMenu extends MTRectangle {
 		{
 			public boolean processGestureEvent(MTGestureEvent ge) 
 			{
-				System.out.println("tapped");
 				if (ge instanceof TapEvent) 
 				{
 					TapEvent te = (TapEvent) ge;
@@ -135,7 +133,7 @@ public class NewProjectMenu extends MTRectangle {
 			            {
 							keyboard = new MTKeyboard(applet);
 							NewProjectMenu.this.addChild(keyboard);
-							keyboard.setPositionRelativeToParent(new Vector3D(posx, (float) (1.5*posy)));
+							keyboard.setPositionGlobal(new Vector3D(applet.width/2, applet.height/4*3));
 							keyboard.addTextInputListener(texta);
 							keyboard.addStateChangeListener(
 						      StateChange.COMPONENT_DESTROYED,
@@ -160,7 +158,7 @@ public class NewProjectMenu extends MTRectangle {
 	
 	private void setCancelIcon()
 	{
-		int s = (int)w/8;
+		int s = (int)w/16;
 		PImage cancelImage = applet.loadImage("data/Cancel.jpg");;
 		cancelImage = cropImage(cancelImage, s ,true);
 		
@@ -197,7 +195,7 @@ public class NewProjectMenu extends MTRectangle {
 	
 	private void setOKIcon()
 	{
-		int s = (int)w/8;
+		int s = (int)w/16;
 		PImage OKImage = applet.loadImage("data/OK.jpg");;
 		OKImage = cropImage(OKImage, s ,true);
 		
@@ -207,7 +205,7 @@ public class NewProjectMenu extends MTRectangle {
 		ok.setChildClip(new Clip(ok));
 		ok.setPickable(true);
 		this.addChild(ok);
-		ok.setPositionRelativeToParent(new Vector3D(posx+w/2+s/2,posy+h/2));
+		ok.setPositionRelativeToParent(new Vector3D(posx+w/2+s/2,posy+h/2-s/2));
 		
 		ok.removeAllGestureEventListeners(TapProcessor.class);
 		ok.setGestureAllowance(TapProcessor.class, true);
@@ -222,9 +220,7 @@ public class NewProjectMenu extends MTRectangle {
 					TapEvent te = (TapEvent) ge;
 					if (te.getTapID() == TapEvent.TAPPED) 
 					{
-						System.out.println("OK");
 						setData();//Model
-						close();
 					}
 		        }
 				
@@ -313,7 +309,25 @@ public class NewProjectMenu extends MTRectangle {
 	
 	private void setData(){
 		
-		 model.createProject(texta.getText());
+		if(texta.getText() != null && !texta.getText().equals(""))
+		{
+			System.out.println("Set new project name:" + texta.getText());
+			
+			model.saveCurrentProject(Project._path);
+			model.createProject(texta.getText());
+			close();
+		}
+		else
+		{
+			System.out.println("New project name is empty");
+			
+			MessageBox m = new MessageBox(applet, 0, 0, 300, 60);
+			m.setMessage("Sorry, the new project name is empty");
+			m.setAnchor(PositionAnchor.CENTER);
+			this.addChild(m);
+			m.setPositionRelativeToParent(new Vector3D(0,0));	
+		}
+		
 	}
 }
 

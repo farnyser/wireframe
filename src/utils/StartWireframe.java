@@ -29,4 +29,5 @@ public class StartWireframe extends MTApplication
 		//addScene(new WorkspaceScene(this,"Wireframe",app));
 		addScene(new StartMenuScene(this,"Wireframe",app));
 	}
+
 }
