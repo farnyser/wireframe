@@ -8,6 +8,8 @@ import processing.core.PApplet;
 
 public class WidgetLibrary extends Library 
 {
+	private static int SPACING = 20;
+	
 	public WidgetLibrary(PApplet applet, float x, float y, float width, float height)
 	{
 		super(applet, x, y, width, height);
@@ -44,9 +46,12 @@ public class WidgetLibrary extends Library
 	
 	public void addWidget(PApplet applet, view.widget.Widget widget)
 	{
-		MTListCell cell = new MTListCell(applet, 50, 50);		
-		widget.setMinSize(50, 50);
+		MTListCell cell = new MTListCell(applet, this.getWidthXYGlobal(), this.getWidthXYGlobal() - SPACING);		
+		cell.setNoFill(true);
+		cell.setNoStroke(true);
+		widget.setMinSize(this.getWidthXYGlobal() - SPACING, this.getWidthXYGlobal() - SPACING);
 		cell.addChild(widget);
+		widget.setPositionRelativeToParent(cell.getCenterPointLocal());
 		this.addListElement(cell);
 		this.addDragProcessor(cell);
 	}
