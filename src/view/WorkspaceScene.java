@@ -5,8 +5,6 @@ import org.mt4j.input.inputProcessors.globalProcessors.CursorTracer;
 import org.mt4j.sceneManagement.AbstractScene;
 import org.mt4j.util.MTColor;
 
-import widget.Widget;
-
 
 public class WorkspaceScene extends AbstractScene {
 

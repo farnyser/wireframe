@@ -3,19 +3,16 @@ package widget;
 import org.mt4j.components.StateChange;
 import org.mt4j.components.StateChangeEvent;
 import org.mt4j.components.StateChangeListener;
-import org.mt4j.components.TransformSpace;
 import org.mt4j.components.visibleComponents.widgets.MTTextArea;
 import org.mt4j.components.visibleComponents.widgets.keyboard.MTKeyboard;
 import org.mt4j.input.inputProcessors.IGestureEventListener;
 import org.mt4j.input.inputProcessors.MTGestureEvent;
-import org.mt4j.input.inputProcessors.componentProcessors.dragProcessor.DragEvent;
 import org.mt4j.input.inputProcessors.componentProcessors.dragProcessor.DragProcessor;
 import org.mt4j.input.inputProcessors.componentProcessors.tapProcessor.TapEvent;
 import org.mt4j.input.inputProcessors.componentProcessors.tapProcessor.TapProcessor;
 import org.mt4j.util.MTColor;
 
 import processing.core.PApplet;
-import view.Page;
 
 public class Button extends Widget 
 {

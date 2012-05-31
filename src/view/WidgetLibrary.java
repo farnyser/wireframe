@@ -1,6 +1,5 @@
 package view;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 
 import org.mt4j.components.visibleComponents.widgets.MTListCell;
@@ -8,7 +7,6 @@ import org.mt4j.input.inputProcessors.IGestureEventListener;
 import org.mt4j.input.inputProcessors.MTGestureEvent;
 import org.mt4j.input.inputProcessors.componentProcessors.dragProcessor.DragEvent;
 import org.mt4j.input.inputProcessors.componentProcessors.dragProcessor.DragProcessor;
-
 
 import processing.core.PApplet;
 

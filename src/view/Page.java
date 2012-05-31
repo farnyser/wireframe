@@ -1,19 +1,14 @@
 package view;
 
-import java.util.Vector;
-
-import org.mt4j.components.MTComponent;
 import org.mt4j.components.visibleComponents.widgets.MTClipRectangle;
 import org.mt4j.input.inputProcessors.IGestureEventListener;
 import org.mt4j.input.inputProcessors.MTGestureEvent;
 import org.mt4j.input.inputProcessors.componentProcessors.dragProcessor.DragEvent;
 import org.mt4j.input.inputProcessors.componentProcessors.dragProcessor.DragProcessor;
 import org.mt4j.util.MTColor;
-import org.mt4j.util.math.ToolsGeometry;
 import org.mt4j.util.math.Vector3D;
 
 import processing.core.PApplet;
-import widget.Widget;
 
 public class Page extends MTClipRectangle
 {
