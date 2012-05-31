@@ -25,9 +25,11 @@ public class ApplicationModel {
 		String filePath = Project._path;
 		File dir = new File(filePath);
 		
-		for ( String s : dir.list() )
-			this.loadProject(filePath + "/" + s);
-		
+		if(dir.list() != null) {
+			
+			for ( String s : dir.list() )
+				this.loadProject(filePath + "/" + s);
+		}
 		_currentProject = null;
 	}
 	
