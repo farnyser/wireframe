@@ -5,6 +5,7 @@ import java.beans.PropertyChangeListener;
 import java.util.HashMap;
 
 import org.mt4j.components.visibleComponents.widgets.MTListCell;
+import org.mt4j.util.MTColor;
 
 import processing.core.PApplet;
 

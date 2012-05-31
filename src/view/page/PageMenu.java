@@ -1,5 +1,7 @@
 package view.page;
 
+import java.util.Random;
+
 import org.mt4j.components.TransformSpace;
 import org.mt4j.components.visibleComponents.widgets.MTClipRectangle;
 import org.mt4j.components.visibleComponents.widgets.MTClipRoundRect;
@@ -30,7 +32,8 @@ public class PageMenu extends MTClipRectangle {
 	
 	private boolean animationRunning = false; // for the slide down animation	
 
-	PageMenu(PApplet applet) {
+	public PageMenu(PApplet applet) 
+	{
 		super(applet, 0, 0, 0, 400, 25);
 
 		this.applet = applet;
@@ -173,6 +176,13 @@ public class PageMenu extends MTClipRectangle {
 		this.properties.getEditablePageName().reloadText();
 		
 		this.textArea.setPositionRelativeToParent(this.getCenterPointLocal());		
+	}
+	
+	public void setColor(MTColor c) 
+	{
+		this.setFillColor(c);
+		arrowDown.setFillColor(c);
+		properties.setFillColor(c);
 	}
 	
 	public float getHeight() { return this.getHeightXYGlobal(); }

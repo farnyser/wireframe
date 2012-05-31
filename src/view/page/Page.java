@@ -3,6 +3,7 @@ package view.page;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.util.Random;
 
 import org.mt4j.MTApplication;
 import org.mt4j.input.gestureAction.TapAndHoldVisualizer;
@@ -133,6 +134,7 @@ public class Page extends Element
 		menu.setPositionRelativeToParent(new Vector3D(0, -menu.getHeight(), 0));
 		menu.getTextArea().setText(((model.Page) _model).getLabel());
 		menu.getTextArea().setPositionRelativeToParent(menu.getCenterPointLocal());
+		menu.setColor(getColorFromId());
 		
 		for ( model.Element e : _model.getElements() )
 		{
@@ -148,6 +150,7 @@ public class Page extends Element
 	public void setMinSize(float _w, float _h) 
 	{
 		super.setMinSize(_w, _h);
+		this.setFillColor(this.getColorFromId());
 		
 		menu.setVisible(false);
 	}
@@ -155,6 +158,7 @@ public class Page extends Element
 	public void setFullSize() 
 	{
 		super.setFullSize();
+		this.setFillColor(MTColor.WHITE);
 		
 		menu.setVisible(true);
 		menu.sendToFront();
@@ -176,4 +180,13 @@ public class Page extends Element
 	}
 	
 	public PropertyChangeSupport getViewNotifier() { return _viewNotifier; }
+	
+	public MTColor getColorFromId()
+	{
+		Random rand = new Random(_model.hashCode());
+		int r = rand.nextInt(200) + 55;
+		int g = rand.nextInt(200) + 55;
+		int b = rand.nextInt(200) + 55;
+		return new MTColor(r,g,b);
+	}
 }
