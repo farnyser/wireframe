@@ -11,6 +11,8 @@ import org.mt4j.input.gestureAction.TapAndHoldVisualizer;
 import org.mt4j.input.inputProcessors.IGestureEventListener;
 import org.mt4j.input.inputProcessors.MTGestureEvent;
 import org.mt4j.input.inputProcessors.componentProcessors.dragProcessor.DragProcessor;
+import org.mt4j.input.inputProcessors.componentProcessors.rotateProcessor.RotateProcessor;
+import org.mt4j.input.inputProcessors.componentProcessors.scaleProcessor.ScaleProcessor;
 import org.mt4j.input.inputProcessors.componentProcessors.tapAndHoldProcessor.TapAndHoldProcessor;
 import org.mt4j.input.inputProcessors.componentProcessors.tapProcessor.TapEvent;
 import org.mt4j.input.inputProcessors.componentProcessors.tapProcessor.TapProcessor;
@@ -140,6 +142,22 @@ public abstract class EditableText extends MTTextArea
 		
 		// drag event passed to other widget
 		this.addGestureListener(DragProcessor.class, new IGestureEventListener()
+		{
+			public boolean processGestureEvent(MTGestureEvent ge) 
+			{
+		        return EditableText.this.handleGesture(ge);
+			}
+		});
+		// scale event passed to other widget
+		this.addGestureListener(ScaleProcessor.class, new IGestureEventListener()
+		{
+			public boolean processGestureEvent(MTGestureEvent ge) 
+			{
+		        return EditableText.this.handleGesture(ge);
+			}
+		});
+		// rotate event passed to other widget
+		this.addGestureListener(RotateProcessor.class, new IGestureEventListener()
 		{
 			public boolean processGestureEvent(MTGestureEvent ge) 
 			{
