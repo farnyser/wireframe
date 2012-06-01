@@ -13,7 +13,8 @@ import org.mt4j.input.inputProcessors.IGestureEventListener;
 import org.mt4j.input.inputProcessors.MTGestureEvent;
 import org.mt4j.input.inputProcessors.componentProcessors.dragProcessor.DragEvent;
 import org.mt4j.input.inputProcessors.componentProcessors.dragProcessor.DragProcessor;
-import org.mt4j.input.inputProcessors.componentProcessors.panProcessor.PanProcessorTwoFingers;
+import org.mt4j.input.inputProcessors.componentProcessors.rotateProcessor.RotateProcessor;
+import org.mt4j.input.inputProcessors.componentProcessors.scaleProcessor.ScaleEvent;
 import org.mt4j.input.inputProcessors.componentProcessors.scaleProcessor.ScaleProcessor;
 import org.mt4j.input.inputProcessors.componentProcessors.tapAndHoldProcessor.TapAndHoldEvent;
 import org.mt4j.input.inputProcessors.componentProcessors.tapAndHoldProcessor.TapAndHoldProcessor;
@@ -286,46 +287,6 @@ public class Widget extends view.Element
 					if ( de.getId() == MTGestureEvent.GESTURE_ENDED )
 						Widget.this.dragType = DragType.MOVE;
 				}
-				else if (Widget.this.dragType == DragType.LINK) 
-				{
-					if ( line == null )
-					{
-						Vector3D start = localToGlobal( de.getDragCursor().getPosition() );
-						line = new MTLine(Widget.this.applet, start.x, start.y, start.x, start.y);
-						line.setStrokeColor(MTColor.RED);
-						line.setUserData("start", de.getFrom());
-						Widget.this.getRoot().addChild(line);
-					}
-					else
-					{
-						Vector3D start = (Vector3D) line.getUserData("start");
-						line.destroy();
-						line = new MTLine(Widget.this.applet, start.x, start.y, de.getDragCursor().getCurrentEvtPosX(), de.getDragCursor().getCurrentEvtPosY());
-						line.setStrokeColor(MTColor.RED);
-						line.setUserData("start", start);
-						Widget.this.getRoot().addChild(line);
-					}
-					
-					if ( de.getId() == MTGestureEvent.GESTURE_ENDED )
-					{
-						Vector3D p = (de.getDragCursor().getPosition());
-						
-						PickResult pk = Widget.this.getRoot().pick(p.x, p.y, true);
-						MTComponent target = pk.getNearestPickResult();
-						if ( target instanceof MTListCell ) { target = target.getChildByIndex(0); }
-						
-						if ( target instanceof view.page.Page )
-						{
-							System.out.println("create link between " + Widget.this + " and " + target);
-							((view.page.Page)target).getModel().addLinked(Widget.this.getModel());
-							Widget.this.getModel().addLink(((view.page.Page)target).getModel());
-						}
-						
-						line.destroy();
-						line = null;
-						Widget.this.dragType = DragType.MOVE;
-					}
-				}
 				
 				if ( destroy ) { Widget.this.removeFromParent(); }
 				return false;
@@ -361,14 +322,54 @@ public class Widget extends view.Element
 		    }    
 		});
 		
-		// 2 doigts
-		this.removeAllGestureEventListeners(ScaleProcessor.class); 
-		this.addGestureListener(PanProcessorTwoFingers.class, new IGestureEventListener()
+		// 2 doigts pour creer les liens
+		this.removeAllGestureEventListeners(RotateProcessor.class);
+		this.removeAllGestureEventListeners(ScaleProcessor.class);
+		this.addGestureListener(ScaleProcessor.class, new IGestureEventListener()
 		{
 			@Override
-			public boolean processGestureEvent(MTGestureEvent arg0) {
-	            Widget.this.dragType = DragType.LINK;
-	            System.out.println("pan 2 fingers");
+			public boolean processGestureEvent(MTGestureEvent arg0) 
+			{
+	            ScaleEvent de = (ScaleEvent) arg0;
+	            
+				if ( line == null )
+				{
+					Vector3D start = localToGlobal( de.getFirstCursor().getPosition() );
+					Vector3D stop = localToGlobal( de.getSecondCursor().getPosition() );
+					line = new MTLine(Widget.this.applet, start.x, start.y, stop.x, stop.y);
+					line.setStrokeColor(MTColor.RED);
+					line.setUserData("start", de.getFirstCursor().getPosition());
+					Widget.this.getRoot().addChild(line);
+				}
+				else
+				{
+					Vector3D start = (Vector3D) line.getUserData("start");
+					line.destroy();
+					line = new MTLine(Widget.this.applet, start.x, start.y, de.getSecondCursor().getCurrentEvtPosX(), de.getSecondCursor().getCurrentEvtPosY());
+					line.setStrokeColor(MTColor.RED);
+					line.setUserData("start", start);
+					Widget.this.getRoot().addChild(line);
+				}
+				
+				if ( de.getId() == MTGestureEvent.GESTURE_ENDED )
+				{
+					Vector3D p = (de.getSecondCursor().getPosition());
+					
+					PickResult pk = Widget.this.getRoot().pick(p.x, p.y, true);
+					MTComponent target = pk.getNearestPickResult();
+					if ( target instanceof MTListCell ) { target = target.getChildByIndex(0); }
+					
+					if ( target instanceof view.page.Page )
+					{
+						System.out.println("create link between " + Widget.this + " and " + target);
+						((view.page.Page)target).getModel().addLinked(Widget.this.getModel());
+						Widget.this.getModel().addLink(((view.page.Page)target).getModel());
+					}
+					
+					line.destroy();
+					line = null;
+				}
+
 				return false;
 			} 
 				
