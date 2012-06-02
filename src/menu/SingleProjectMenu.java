@@ -1,5 +1,6 @@
 package menu;
 
+
 import model.ApplicationModel;
 import model.Project;
 
@@ -7,9 +8,7 @@ import org.mt4j.components.StateChange;
 import org.mt4j.components.StateChangeEvent;
 import org.mt4j.components.StateChangeListener;
 import org.mt4j.components.TransformSpace;
-import org.mt4j.components.visibleComponents.shapes.AbstractShape;
 import org.mt4j.components.visibleComponents.shapes.MTPolygon;
-import org.mt4j.components.visibleComponents.shapes.MTRectangle;
 import org.mt4j.components.visibleComponents.widgets.MTListCell;
 import org.mt4j.components.visibleComponents.widgets.MTTextArea;
 import org.mt4j.components.visibleComponents.widgets.keyboard.MTKeyboard;
@@ -18,10 +17,6 @@ import org.mt4j.input.inputProcessors.MTGestureEvent;
 import org.mt4j.input.inputProcessors.componentProcessors.tapProcessor.TapEvent;
 import org.mt4j.input.inputProcessors.componentProcessors.tapProcessor.TapProcessor;
 import org.mt4j.util.MTColor;
-import org.mt4j.util.animation.AnimationEvent;
-import org.mt4j.util.animation.IAnimation;
-import org.mt4j.util.animation.IAnimationListener;
-import org.mt4j.util.animation.ani.AniAnimation;
 import org.mt4j.util.font.FontManager;
 import org.mt4j.util.font.IFont;
 import org.mt4j.util.math.Vector3D;
@@ -31,6 +26,7 @@ import processing.core.PApplet;
 import processing.core.PConstants;
 import processing.core.PImage;
 import utils.Slugger;
+import view.EditableText;
 import view.page.Page;
 
 public class SingleProjectMenu extends MTListCell{
@@ -39,6 +35,7 @@ public class SingleProjectMenu extends MTListCell{
 	private ApplicationModel model;
 	private MTPolygon image;
 	private MTTextArea deleteButton;
+	private MTPolygon okArrow;
 	private MTTextArea titleArea;
 	private Project project;
 	
@@ -52,10 +49,18 @@ public class SingleProjectMenu extends MTListCell{
 		IFont font = FontManager.getInstance().createFont(applet, "SansSerif", 18, MTColor.WHITE);
 		deleteButton = new MTTextArea(applet, font);
 		titleArea = new MTTextArea(applet, font);
+		Vertex[] v = new Vertex[]{
+	       		new Vertex(0,0,0),
+	       		new Vertex(0,30,0),
+	       		new Vertex(15,15,0),
+		};
+		okArrow = new MTPolygon(applet,v);
 		
 		setTitle();
+		setOKArrow();
 		setImage();
-		setDeleteButton();	
+		setDeleteButton();
+
 	}
 	
 	private void setImage()
@@ -171,15 +176,41 @@ public class SingleProjectMenu extends MTListCell{
 						  new StateChangeListener() {
 								@Override
 							public void stateChanged(StateChangeEvent arg0) {
-									titleArea.setEnableCaret(false);	
+									titleArea.setEnableCaret(false);
+									okArrow.setPositionRelativeToParent(new Vector3D(titleArea.getWidthXY(TransformSpace.LOCAL),
+											titleArea.getHeightXY(TransformSpace.LOCAL)/2));
 							}
 						  }
-					);		
+					);	
+					titleArea.setEnableCaret(true);
 			     }
-				/*titleArea.setEnableCaret(true);
-				image.setName(titleArea.getText());
-				project.setLabel(titleArea.getText());
-				model.saveProject(project);*/
+				return false;
+			}
+		});
+		
+	}
+	
+	private void setOKArrow()
+	{
+		okArrow.setFillColor(new MTColor(154,192,205));
+		okArrow.setNoStroke(true);
+		titleArea.addChild(okArrow);
+		okArrow.setPositionRelativeToParent(new Vector3D(titleArea.getWidthXY(TransformSpace.LOCAL),titleArea.getHeightXY(TransformSpace.LOCAL)/2));
+		
+		okArrow.removeAllGestureEventListeners(TapProcessor.class);
+		okArrow.setGestureAllowance(TapProcessor.class, true);
+		TapProcessor tp2 = new TapProcessor(this.applet);
+		okArrow.registerInputProcessor(tp2);
+		okArrow.addGestureListener(TapProcessor.class, new IGestureEventListener() {
+			public boolean processGestureEvent(MTGestureEvent ge) {
+				TapEvent te = (TapEvent)ge;
+				if (te.isTapped())
+				{	
+					System.out.println("Project renamed :" + titleArea.getText());
+					
+					image.setName(titleArea.getText());
+					model.renameProject(project,titleArea.getText());
+			    }
 				return false;
 			}
 		});

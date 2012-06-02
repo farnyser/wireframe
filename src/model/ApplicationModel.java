@@ -72,7 +72,6 @@ public class ApplicationModel {
 		String newfilePath = Project._path + p.getSluggedLabel()+".wire";
 		try {
 			File f = new File(newfilePath);
-			f.mkdirs();
 			ObjectOutput out = new ObjectOutputStream(new FileOutputStream(newfilePath));
 			out.writeObject(p);
 			out.close();
@@ -84,6 +83,13 @@ public class ApplicationModel {
 		}
 	}
 	
+	
+	public void renameProject(Project p, String name)
+	{
+		this.deleteProjectFile(p.getSluggedLabel());
+		p.setLabel(name);
+		this.saveProject(p);
+	}
 	/**
 	 * Loads the project at the specified path
 	 * @param filePath

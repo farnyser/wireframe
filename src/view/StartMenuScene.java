@@ -76,9 +76,6 @@ public class StartMenuScene extends AbstractScene{
 	public class gestureListener implements IGestureEventListener {
 		String string;
 		AbstractScene scene;
-		/*RectangleMenu rMenu;
-		NewProjectMenu nameArea;
-		ExistProjectMenu projectList;*/
 		
 		public gestureListener(String string, AbstractScene scene) {
 			super();
