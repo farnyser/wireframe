@@ -98,6 +98,7 @@ public class PageMenu extends MTClipRectangle {
 						if (!animationRunning){
 							animationRunning = true;
 							properties.getEditablePageName().reloadText();
+							PageMenu.this.sendToFront();
 							slideDownAnimation.start();
 						}
 					}

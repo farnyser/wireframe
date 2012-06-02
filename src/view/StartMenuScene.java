@@ -44,6 +44,10 @@ public class StartMenuScene extends AbstractScene{
 		this.app = mtApplication;
 		this.getCanvas().setFrustumCulling(true); //?
 		
+		this.pages = new PageLibrary(app, 800, 0, 200, 200, model);
+		this.pages.setVisible(false);
+		this.getCanvas().addChild(pages);
+		
 		PImage newPageIcon = app.loadImage("data/Plus.jpg");
 		
 		//Create Menu Items
@@ -180,22 +184,14 @@ public class StartMenuScene extends AbstractScene{
 	
 	    private void createNewPage()
 	    {
-	    	if(model.getCurrentProject() == null)
-			{	
-	    		MessageBox m = new MessageBox(app, 0, 0, 200, 60);
-				m.setMessage("Please first load a project");
-				scene.getCanvas().addChild(m);
-				m.setPositionRelativeToParent(new Vector3D(app.width/2, app.height/2));	
-			}
-	    	else
-	    	{
-	    		model.Page newAbPage = model.getCurrentProject().createPage("untitled");
-		    	view.page.Page newPage = new view.page.Page(app, 0, 0, newAbPage);
-		    	scene.getCanvas().addChild(newPage);
-		    	newPage.setPositionGlobal(new Vector3D(200 + newAbPage.getWidth()/2,150 + newAbPage.getHeight()/2));
-	    	}
-	    	
+
+	    	model.Page newAbPage = model.getCurrentProject().createPage("untitled");
+	    	view.page.Page newPage = new view.page.Page(app, 0, 0, newAbPage);
+	    	newPage.addListener(pages);
+	    	scene.getCanvas().addChild(newPage);
+	    	newPage.setPositionGlobal(new Vector3D(200 + newAbPage.getWidth()/2,150 + newAbPage.getHeight()/2));
 	    }
+	 
 		
 		private void openWidgetLibrary()
 		{
@@ -224,26 +220,7 @@ public class StartMenuScene extends AbstractScene{
 		
 		private void openScenesLibrary()
 		{
-			if(model.getCurrentProject() == null)
-			{
-				MessageBox m = new MessageBox(app, 0, 0, 200, 60);
-				m.setMessage("Please first load a project");
-				scene.getCanvas().addChild(m);
-				m.setPositionRelativeToParent(new Vector3D(app.width/2, app.height/2));
-			}
-			else
-			{
-				if ( pages == null )
-				{
-					pages = new PageLibrary(app, 800, 0, 200, 200, model);
-					scene.getCanvas().addChild(pages);
-				}
-				else
-				{
-					pages.destroy();
-					pages = null;
-				}
-			}
+			pages.setVisible(!pages.isVisible());
 		}
 		
 		private void exitApplication()
