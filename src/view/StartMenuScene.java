@@ -135,9 +135,17 @@ public class StartMenuScene extends AbstractScene{
 			menuLoad.add(new MenuItem("New projet", new gestureListener("New project",this.scene)));
 			menuLoad.add(new MenuItem("From an exsiting projet", new gestureListener("Existing project", this.scene)));
 			
-			rMenu = new RectangleMenu(app, new Vector3D(320,180) , menuLoad, 170);
-			scene.getCanvas().addChild(rMenu);
-			
+			if(rMenu != null)
+			{
+				rMenu.destroy();
+				rMenu = null;
+			}
+			else
+			{
+				rMenu = new RectangleMenu(app, new Vector3D(320,180) , menuLoad, 170);
+				scene.getCanvas().addChild(rMenu);
+			}
+
 		}
 	
 		private void createNewProject()
