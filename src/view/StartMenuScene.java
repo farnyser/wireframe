@@ -142,11 +142,18 @@ public class StartMenuScene extends AbstractScene{
 			
 			if(nameArea != null) nameArea.destroy();
 			if(projectList != null) projectList.destroy();
-			if(rMenu != null )rMenu.destroy();
 			
-			rMenu = new RectangleMenu(app, new Vector3D(320,180) , menuLoad, 170);
-			scene.getCanvas().addChild(rMenu);
-			
+			if ( rMenu == null )
+			{
+				rMenu = new RectangleMenu(app, new Vector3D(320,180) , menuLoad, 170);
+				scene.getCanvas().addChild(rMenu);
+			}
+			else
+			{
+				rMenu.destroy();
+				rMenu = null;
+			}
+
 		}
 	
 		private void createNewProject()
