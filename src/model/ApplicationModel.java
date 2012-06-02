@@ -50,7 +50,7 @@ public class ApplicationModel {
 	public void saveCurrentProject(String path) {
 		
 		if(_currentProject == null) return;
-
+		
 		String filePath = path+_currentProject.getSluggedLabel()+".wire";
 		try {
 			File f = new File(path);
@@ -121,6 +121,11 @@ public class ApplicationModel {
 		}
 		
 		return _currentProject; 
+	}
+	
+	public void deleteProject(Project p)
+	{
+		_projectList.remove(p);
 	}
 	
 	public ArrayList<Project> getProjectList()

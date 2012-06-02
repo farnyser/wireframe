@@ -6,11 +6,15 @@ import model.ApplicationModel;
 import model.Project;
 
 import org.mt4j.AbstractMTApplication;
+import org.mt4j.components.StateChange;
+import org.mt4j.components.StateChangeEvent;
+import org.mt4j.components.StateChangeListener;
 import org.mt4j.components.TransformSpace;
 import org.mt4j.components.visibleComponents.shapes.MTPolygon;
 import org.mt4j.components.visibleComponents.widgets.MTList;
 import org.mt4j.components.visibleComponents.widgets.MTListCell;
 import org.mt4j.components.visibleComponents.widgets.MTTextArea;
+import org.mt4j.components.visibleComponents.widgets.keyboard.MTKeyboard;
 import org.mt4j.input.inputProcessors.IGestureEventListener;
 import org.mt4j.input.inputProcessors.MTGestureEvent;
 import org.mt4j.input.inputProcessors.componentProcessors.tapProcessor.TapEvent;
@@ -66,14 +70,11 @@ public class ExistProjectMenu extends MTList{
 		
 		preferredIconWidth = 192;
 		preferredIconHeight = 256;
-		gapBetweenIconAndReflection = 9;
-		displayHeightOfReflection = preferredIconHeight * 0.6f;
 		
 		listWidth = width;
 		listHeight = height;
 		
 		this.setFillColor(new MTColor(150,150,150,200));
-		this.setNoFill(true);
 		this.setNoStroke(true);
 		
 		font = FontManager.getInstance().createFont(app, "SansSerif", 18, MTColor.WHITE);
@@ -101,26 +102,18 @@ public class ExistProjectMenu extends MTList{
 		{
 			for(Project p : list)
 			{
-				if(p.getPageList().size() == 0)
-				{
-					System.out.println("Project without pages");
-					this.addScene(p.getLabel(), cropImage(app.loadImage("data/Tulips.jpg"),preferredIconHeight,preferredIconWidth));
-				}
-				else
-				{
-					this.addProjectScene(p.getLabel(), p);
-				}
+				this.addProjectScene(p);
 			}
 		}
 		
 	}
 	
-	private void addProjectScene(String title, Project p)
+	private void addProjectScene(Project p)
 	{
-		Page firstPage = new Page(this.getRenderer(), 0, 0, p.getPageList().get(0));
-		firstPage.setMinSize(preferredIconWidth, preferredIconWidth);
-		firstPage.rotateZ(firstPage.getCenterPointLocal(), 90, TransformSpace.LOCAL);
-			
+		Page firstPage = null;
+		PImage defaultImage = null;
+		MTPolygon po = null;
+		
 		float border = 1;
 		float bothBorders = 2*border;
 		float topShift = 30;
@@ -130,29 +123,73 @@ public class ExistProjectMenu extends MTList{
 
 		float listCellHeight = preferredIconWidth ;
 		
-		MTListCell cell = new MTListCell(app ,realListCellWidth, listCellHeight);
+		//MTListCell cell = new MTListCell(app ,realListCellWidth, listCellHeight);
+		SingleProjectMenu cell = new SingleProjectMenu(app,model,realListCellWidth, listCellHeight,p);
 		cell.setNoFill(true);
 		cell.setNoStroke(true);
-		cell.setName(title);
+		this.addListElement(cell);
 		
+		/*if(p.getPageList().size() != 0)
+		{
+			firstPage = new Page(this.getRenderer(), 0, 0, p.getPageList().get(0));
+			firstPage.setMinSize(preferredIconWidth, preferredIconWidth);
+			firstPage.rotateZ(firstPage.getCenterPointLocal(), 90, TransformSpace.LOCAL);
+			
+			Vertex[] vertices = new Vertex[]{
+					new Vertex(realListCellWidth-topShift, 				border,		  		0, 0,0),
+					new Vertex(realListCellWidth-topShift, 				 listCellHeight -border,	0, 1,0),
+					new Vertex(realListCellWidth-topShift - preferredIconWidth/2 , listCellHeight -border,	0, 1,1),
+					new Vertex(realListCellWidth-topShift - preferredIconWidth/2,	border,		  		0, 0,1),
+					new Vertex(realListCellWidth-topShift, 				border,		  		0, 0,0),
+			};
+			po = new MTPolygon(app, vertices);
+			po.addChild(firstPage);
+			firstPage.setPositionRelativeToParent(po.getCenterPointLocal());
+		}
+		else
+		{
+			System.out.println("Project without pages");
+			
+			defaultImage = cropImage(app.loadImage("data/noImageAvailable.jpg"),preferredIconHeight,preferredIconWidth);
 		
-		Vertex[] vertices = new Vertex[]{
-				new Vertex(realListCellWidth-topShift, 				border,		  		0, 0,0),
-				new Vertex(realListCellWidth-topShift, 				 listCellHeight -border,	0, 1,0),
-				new Vertex(realListCellWidth-topShift - preferredIconWidth/2 , listCellHeight -border,	0, 1,1),
-				new Vertex(realListCellWidth-topShift - preferredIconWidth/2,	border,		  		0, 0,1),
-				new Vertex(realListCellWidth-topShift, 				border,		  		0, 0,0),
-		};
-		MTPolygon po = new MTPolygon(app, vertices);
-		po.addChild(firstPage);
-		firstPage.setPositionRelativeToParent(po.getCenterPointLocal());
+			Vertex[] vertices = new Vertex[]{
+					new Vertex(realListCellWidth-topShift, 				border,		  		0, 0,0),
+					new Vertex(realListCellWidth-topShift, 				 listCellHeight -border,	0, 1,0),
+					new Vertex(realListCellWidth-topShift - defaultImage.height, listCellHeight -border,	0, 1,1),
+					new Vertex(realListCellWidth-topShift - defaultImage.height,	border,		  		0, 0,1),
+					new Vertex(realListCellWidth-topShift, 				border,		  		0, 0,0),
+			};
+			po = new MTPolygon(app, vertices);
+			po.setTexture(defaultImage);
+		}				
+			
 		po.setStrokeColor(new MTColor(80,80,80, 255));
 		po.setNoStroke(true);
+		po.setName(title);
 		cell.addChild(po);
 		po.setPositionRelativeToParent(cell.getCenterPointLocal());
-			
+		po.registerInputProcessor(new TapProcessor(app, 15));
+		po.addGestureListener(TapProcessor.class, new IGestureEventListener(){
+			public boolean processGestureEvent(MTGestureEvent ge) 
+			{
+				if (ge instanceof TapEvent) 
+				{
+					TapEvent te = (TapEvent) ge;
+					if (te.getTapID() == TapEvent.TAPPED) 
+					{
+						System.out.println("Selected :" + te.getTarget().getName());
+						setData(te.getTarget().getName());//Model
+						close();
+					}
+		        }
+				
+		        return false;
+			}
+		});
+		
+		
 		this.addListElement(cell);
-		this.addTapProcessor(cell);
+		//this.addTapProcessor(cell);
 			
 		MTTextArea text = new MTTextArea(app, font);
 		text.setFillColor(new MTColor(150,150,250,200));
@@ -165,71 +202,13 @@ public class ExistProjectMenu extends MTList{
 		text.setPositionRelativeToParent(cell.getCenterPointLocal());
 		text.translate(new Vector3D(realListCellWidth*0.5f - text.getHeightXY(TransformSpace.LOCAL)*0.5f, 0));
 
+		//this.addImageTapProcessor(po);
+		//this.addTextTapProcessor(text);
+
+		 */
 	}
 	
-	private void addScene(String title, PImage icon){
-
-		PImage reflection = this.getReflection(app, icon);
-		
-		float border = 1;
-		float bothBorders = 2*border;
-		float topShift = 30;
-		float reflectionDistanceFromImage = topShift + gapBetweenIconAndReflection; //Gap width between image and reflection
-		
-		float listCellWidth = listWidth;		
-		float realListCellWidth = listCellWidth - bothBorders;
-
-		float listCellHeight = preferredIconWidth ;
-		
-		MTListCell cell = new MTListCell(app , realListCellWidth, listCellHeight);
-		cell.setNoFill(true);
-		cell.setNoStroke(true);
-		
-		Vertex[] vertices = new Vertex[]{
-				new Vertex(realListCellWidth-topShift, 				border,		  		0, 0,0),
-				new Vertex(realListCellWidth-topShift, 				 listCellHeight -border,	0, 1,0),
-				new Vertex(realListCellWidth-topShift - icon.height, listCellHeight -border,	0, 1,1),
-				new Vertex(realListCellWidth-topShift - icon.height,	border,		  		0, 0,1),
-				new Vertex(realListCellWidth-topShift, 				border,		  		0, 0,0),
-		};
-		MTPolygon p = new MTPolygon(app, vertices);
-		p.setTexture(icon);
-		p.setStrokeColor(new MTColor(80,80,80, 255));
-		
-		Vertex[] verticesRef = new Vertex[]{
-				new Vertex(listCellWidth - icon.height - reflectionDistanceFromImage, 				 					border,	0, 	0,0),
-				new Vertex(listCellWidth - icon.height - reflectionDistanceFromImage,						listCellHeight -border,	0, 	1,0),
-				new Vertex(listCellWidth - icon.height - reflection.height - reflectionDistanceFromImage, 	listCellHeight -border,	0, 	1,1),
-				new Vertex(listCellWidth - icon.height - reflection.height - reflectionDistanceFromImage,				border,	0, 	0,1),
-				new Vertex(listCellWidth - icon.height - reflectionDistanceFromImage, 									border,	0, 	0,0),
-		};
-		MTPolygon pRef = new MTPolygon(app, verticesRef);
-		pRef.setTexture(reflection);
-		pRef.setNoStroke(true);
-		
-		cell.setName(title);
-		cell.addChild(p);
-		cell.addChild(pRef);
-		
-		this.addListElement(cell);
-		this.addTapProcessor(cell);
-
-		
-		///Add scene title
-		MTTextArea text = new MTTextArea(app, font);
-		text.setFillColor(new MTColor(150,150,250,200));
-		text.setNoFill(true);
-		text.setNoStroke(true);
-		text.setText(title);
-		text.rotateZ(text.getCenterPointLocal(), 90, TransformSpace.LOCAL);
-		cell.addChild(text);
-		
-		text.setPositionRelativeToParent(cell.getCenterPointLocal());
-		text.translate(new Vector3D(realListCellWidth*0.5f - text.getHeightXY(TransformSpace.LOCAL)*0.5f, 0));
-		///
-	}
-
-	private PImage cropImage(PImage image, int w, int h) {
+/*	private PImage cropImage(PImage image, int w, int h) {
 		PImage workingCopy;
 		try {
 			workingCopy= (PImage) image.clone();
@@ -266,36 +245,6 @@ public class ExistProjectMenu extends MTList{
 		return returnImage;
 	}
 	
-	private PImage getReflection(PApplet pa, PImage image) {
-		int width =  image.width; 
-		int height = image.height;
-		
-		PImage copyOfImage = pa.createImage(image.width, image.height, PApplet.ARGB);
-		image.loadPixels();
-		copyOfImage.loadPixels();
-		   
-		for (int y = 0; y < height; y++) {
-			for (int x = 0; x < width; x++) {
-				int imageIndex = y*image.width+x;
-				int currR = (image.pixels[imageIndex] >> 16) & 0xFF;
-			    int currG = (image.pixels[imageIndex] >> 8) & 0xFF;
-			    int currB = image.pixels[imageIndex] & 0xFF;
-			    
-			    int col = image.pixels[imageIndex];
-			    float alpha = pa.alpha(col);
-			    
-			    int reflectImageIndex = (image.height-y-1) * image.width+x;
-
-			    if (alpha <= 0.0f){
-			    	copyOfImage.pixels[reflectImageIndex] = pa.color(currR , currG , currB , 0.0f); 
-			    }else{
-			    	copyOfImage.pixels[reflectImageIndex] = pa.color(currR , currG , currB , Math.round(y*y*y * (0.00003f) - 60)); //WORKS	
-			    }
-			}
-		} 
-		copyOfImage.updatePixels();
-		return copyOfImage;
-	}
 	
 	private void addTapProcessor(MTListCell cell){
 		cell.registerInputProcessor(new TapProcessor(app, 15));
@@ -303,11 +252,56 @@ public class ExistProjectMenu extends MTList{
 			public boolean processGestureEvent(MTGestureEvent ge) {
 				TapEvent te = (TapEvent)ge;
 				if (te.isTapped()){
-					
 					System.out.println("Selected :" + te.getTarget().getName());
 					setData(te.getTarget().getName());//Model
 					close();
 				}
+				return false;
+			}
+		});
+	}
+	
+	private void addImageTapProcessor(MTPolygon p){
+		p.removeAllGestureEventListeners(TapProcessor.class);
+		p.setGestureAllowance(TapProcessor.class, true);
+		TapProcessor tp = new TapProcessor(this.app);
+		p.registerInputProcessor(tp);
+		
+		p.addGestureListener(TapProcessor.class, new IGestureEventListener() {
+			public boolean processGestureEvent(MTGestureEvent ge) {
+				TapEvent te = (TapEvent)ge;
+				if (te.isTapped()){
+					System.out.println("Selected :" + te.getTarget().getClass());
+					setData(te.getTarget().getName());//Model
+					close();
+				}
+				return false;
+			}
+		});
+	}
+	
+	private void addTextTapProcessor(final MTTextArea t){
+		t.registerInputProcessor(new TapProcessor(app, 15));
+		t.addGestureListener(TapProcessor.class, new IGestureEventListener() {
+			public boolean processGestureEvent(MTGestureEvent ge) {
+				TapEvent te = (TapEvent)ge;
+				if (te.isTapped())
+				{	
+					MTKeyboard keyboard = new MTKeyboard(app);
+					ExistProjectMenu.this.addChild(keyboard);
+					keyboard.setPositionGlobal(new Vector3D(app.width/2, app.height/4*3));
+					keyboard.addTextInputListener(t);
+					keyboard.addStateChangeListener(
+						  StateChange.COMPONENT_DESTROYED,
+						  new StateChangeListener() {
+								@Override
+							public void stateChanged(StateChangeEvent arg0) {
+								t.setEnableCaret(false);	
+							}
+						  }
+					);		
+							t.setEnableCaret(true);
+			            }
 				return false;
 			}
 		});
@@ -342,6 +336,6 @@ public class ExistProjectMenu extends MTList{
 		});
 		closeAnim.start();
 	}
-	
+	*/
 	
 }

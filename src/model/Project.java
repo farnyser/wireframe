@@ -36,7 +36,7 @@ public class Project implements Serializable
 	public Project(String projectLabel) {
 		
 		_label = projectLabel;
-		_sluggedLabel = Slugger.toSlug(projectLabel);
+		_sluggedLabel = Slugger.toSlug(_label);
 
 		_pageList = new ArrayList<Page>();
 	}
@@ -96,6 +96,8 @@ public class Project implements Serializable
 	public ArrayList<Page> getPageList() { return _pageList; }
 	
 	public String getLabel() {	return _label;	}
+	
+	public void setLabel(String label) { _label = label; _sluggedLabel = Slugger.toSlug(_label); }
 
 	public String getSluggedLabel() { return this._sluggedLabel; }
 	

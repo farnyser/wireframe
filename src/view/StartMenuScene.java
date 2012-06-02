@@ -29,6 +29,9 @@ public class StartMenuScene extends AbstractScene{
 	private ApplicationModel model;
 	WidgetLibrary widgets = null;
 	PageLibrary pages = null;
+	RectangleMenu rMenu = null;
+	NewProjectMenu nameArea = null;
+	ExistProjectMenu projectList = null;
 	
 	public StartMenuScene(AbstractMTApplication mtApplication, String name, ApplicationModel model)
 	{
@@ -53,7 +56,7 @@ public class StartMenuScene extends AbstractScene{
 		List<MenuItem> menus = new ArrayList<MenuItem>();
 		menus.add(new MenuItem("Widgets", new gestureListener("Widgets",this)));
 		menus.add(new MenuItem("Scenes", new gestureListener("Scenes",this)));
-		menus.add(new MenuItem("Project", new gestureListener("Load",this)));
+		menus.add(new MenuItem("Project", new gestureListener("Project",this)));
 		menus.add(new MenuItem(newPageIcon, new gestureListener("New page",this)));
 		menus.add(new MenuItem("Exit", new gestureListener("Exit",this)));
 		menus.add(new MenuItem("Undo", new gestureListener("Undo",this)));
@@ -73,9 +76,9 @@ public class StartMenuScene extends AbstractScene{
 	public class gestureListener implements IGestureEventListener {
 		String string;
 		AbstractScene scene;
-		RectangleMenu rMenu;
+		/*RectangleMenu rMenu;
 		NewProjectMenu nameArea;
-		ExistProjectMenu projectList;
+		ExistProjectMenu projectList;*/
 		
 		public gestureListener(String string, AbstractScene scene) {
 			super();
@@ -89,15 +92,15 @@ public class StartMenuScene extends AbstractScene{
 				TapEvent te = (TapEvent) ge;
 				if (te.getTapID() == TapEvent.TAPPED) {
 					
-					if(string.equals("Load"))
+					if(string.equals("Project"))
 					{
-						createLoadMenu();
+						openProject();
 					}
 					if(string.equals("New project"))
 					{
 						createNewProject();
 					}
-					if(string.equals("Existing project"))
+					if(string.equals("Existing projects"))
 					{
 						loadFromExistingProject();
 					}
@@ -131,16 +134,19 @@ public class StartMenuScene extends AbstractScene{
 		}
 		
 		
-		private void createLoadMenu()
+		private void openProject()
 		{
-			if ( rMenu != null ) rMenu.destroy();
-			
 			List<MenuItem> menuLoad = new ArrayList<MenuItem>();
 			menuLoad.add(new MenuItem("New projet", new gestureListener("New project",this.scene)));
-			menuLoad.add(new MenuItem("From an exsiting projet", new gestureListener("Existing project", this.scene)));
+			menuLoad.add(new MenuItem("Exsiting projets", new gestureListener("Existing projects", this.scene)));	
+			
+			if(nameArea != null) nameArea.destroy();
+			if(projectList != null) projectList.destroy();
+			if(rMenu != null )rMenu.destroy();
 			
 			rMenu = new RectangleMenu(app, new Vector3D(320,180) , menuLoad, 170);
 			scene.getCanvas().addChild(rMenu);
+			
 		}
 	
 		private void createNewProject()
@@ -157,16 +163,16 @@ public class StartMenuScene extends AbstractScene{
 		
 		private void loadFromExistingProject()
 		{
-			System.out.println("Existing project");
+			System.out.println("Existing projects");
 			
 			int preferredIconHeight = 192;
 			int gapBetweenIconAndReflection = 9;
-			int displayHeightOfReflection = (int) (preferredIconHeight * 0.6f);
+			int displayHeightOfReflection = (int) (preferredIconHeight * 0.5f);
 			int listWidth = preferredIconHeight + displayHeightOfReflection + gapBetweenIconAndReflection;
 			int listHeight = app.width;
 
 			if(projectList != null) projectList.destroy();
-			
+
 			projectList = new ExistProjectMenu(app, model, 0, 0, (float)listWidth, listHeight, 40);
 			scene.getCanvas().addChild(projectList);
 			scene.getCanvas().setFrustumCulling(true); 
@@ -207,12 +213,12 @@ public class StartMenuScene extends AbstractScene{
 				model.saveCurrentProject(Project._path);
 				model.getCurrentProject().close();
 	    	}
-	    	app.exit();
+			app.exit();
 	    }
 		
 		private void redoOperation()
 	    {
-	    	
+			
 	    }
 		
 		private void undoOperation()

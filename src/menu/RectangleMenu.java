@@ -466,12 +466,13 @@ public class RectangleMenu extends MTRectangle implements CSSStylableComponent{
 			//Set Stroke/Border
 			/*rect.setStrokeColor(vss.getBorderColor());
 			rect.setStrokeWeight(vss.getBorderWidth());*/
-			rect.setStrokeColor(MTColor.WHITE);
-			rect.setStrokeWeight(2);
+			rect.setStrokeColor(MTColor.BLACK);
+			rect.setStrokeWeight(1);
 
 			// Set Font and Position for the child MTTextAreas
 			if (((MTRectangle) c).getTexture() == null) {
-				rect.setFillColor(vss.getBackgroundColor());
+				//rect.setFillColor(vss.getBackgroundColor());
+				rect.setFillColor(new MTColor(154,192,205));
 				
 				for (MTComponent d : c.getChildren()) {
 					if (d instanceof MTTextArea) {

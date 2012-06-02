@@ -22,7 +22,7 @@ public class MessageBox extends MTRectangle{
 	public MessageBox(PApplet pApplet, float x, float y, float width , float height) {
 		
 		super(pApplet, x, y, width, height);
-		this.setFillColor(MTColor.BLACK);
+		this.setFillColor(new MTColor(150,150,150,200));
 		this.setStrokeColor(MTColor.WHITE);
 		this.sendToFront();
 		
