@@ -7,7 +7,9 @@ import org.mt4j.components.StateChange;
 import org.mt4j.components.StateChangeEvent;
 import org.mt4j.components.StateChangeListener;
 import org.mt4j.components.TransformSpace;
+import org.mt4j.components.visibleComponents.shapes.AbstractShape;
 import org.mt4j.components.visibleComponents.shapes.MTPolygon;
+import org.mt4j.components.visibleComponents.shapes.MTRectangle;
 import org.mt4j.components.visibleComponents.widgets.MTListCell;
 import org.mt4j.components.visibleComponents.widgets.MTTextArea;
 import org.mt4j.components.visibleComponents.widgets.keyboard.MTKeyboard;
@@ -45,6 +47,7 @@ public class SingleProjectMenu extends MTListCell{
 		this.applet = applet;
 		this.model = m;
 		this.project = p;
+		this.setComposite(false);
 		
 		IFont font = FontManager.getInstance().createFont(applet, "SansSerif", 18, MTColor.WHITE);
 		deleteButton = new MTTextArea(applet, font);
@@ -126,8 +129,9 @@ public class SingleProjectMenu extends MTListCell{
 					if (te.getTapID() == TapEvent.TAPPED) 
 					{
 						System.out.println("Selected :" + te.getTarget().getName());
-						openSelectedProject(te.getTarget().getName());//Model
-						close();
+						openSelectedProject(te.getTarget().getName());
+						ExistProjectMenu parent = (ExistProjectMenu)SingleProjectMenu.this.getParent().getParent();
+						parent.close();
 					}
 		        }	
 		        return false;
@@ -158,6 +162,7 @@ public class SingleProjectMenu extends MTListCell{
 				if (te.isTapped())
 				{	
 					MTKeyboard keyboard = new MTKeyboard(applet);
+					keyboard.rotateZ(titleArea.getCenterPointLocal(), 90, TransformSpace.LOCAL);
 					SingleProjectMenu.this.addChild(keyboard);
 					keyboard.setPositionGlobal(new Vector3D(applet.width/2, applet.height/4*3));
 					keyboard.addTextInputListener(titleArea);
@@ -170,10 +175,11 @@ public class SingleProjectMenu extends MTListCell{
 							}
 						  }
 					);		
-					titleArea.setEnableCaret(true);
-					image.setName(titleArea.getText());
-					project.setLabel(titleArea.getText());
 			     }
+				/*titleArea.setEnableCaret(true);
+				image.setName(titleArea.getText());
+				project.setLabel(titleArea.getText());
+				model.saveProject(project);*/
 				return false;
 			}
 		});
@@ -202,9 +208,8 @@ public class SingleProjectMenu extends MTListCell{
 				TapEvent te = (TapEvent)ge;
 				if (te.isTapped())
 				{	
-					System.out.println("Delete project :" + titleArea.getText());
 					deleteProject();
-			     }
+			    }
 				return false;
 			}
 		});
@@ -259,40 +264,16 @@ public class SingleProjectMenu extends MTListCell{
 		if(project.equals(model.getCurrentProject()))
 		{
 			MessageBox m = new MessageBox(applet, 0, 0, 260, 60);
-			m.setMessage("Cannot delete current project");
+			m.setMessage("Cannot delete the current project");
 			this.addChild(m);
 			m.rotateZ(m.getCenterPointLocal(), 90, TransformSpace.LOCAL);
-			m.setPositionGlobal(getCenterPointGlobal());
+			m.setPositionGlobal(new Vector3D(applet.width/2, applet.height/2));
 		}
 		else
 		{
 			model.deleteProject(project);
+			this.destroy();
 		}
 	}
-	
-	private void close(){
-		float width = this.getWidthXY(TransformSpace.RELATIVE_TO_PARENT);
-		IAnimation closeAnim = new AniAnimation(width, 1, 350, AniAnimation.SINE_IN, this);
-		closeAnim.addAnimationListener(new IAnimationListener(){
-			public void processAnimationEvent(AnimationEvent ae) {
-				switch (ae.getId()) {
-				case AnimationEvent.ANIMATION_STARTED:
-				case AnimationEvent.ANIMATION_UPDATED:
-					float currentVal = ae.getAnimation().getValue();
-					setWidthXYRelativeToParent(currentVal);
-					rotateZ(getCenterPointRelativeToParent(), -ae.getDelta()*0.3f);
-					break;
-				case AnimationEvent.ANIMATION_ENDED:
-					setVisible(false);
-					destroy();
-					break;	
-				default:
-					break;
-				}//switch
-			}//processanimation
-		});
-		closeAnim.start();
-	}
-	
 
 }
