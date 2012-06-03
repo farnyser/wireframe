@@ -32,12 +32,18 @@ public class PageMenuProperties extends MTClipRectangle implements PropertyChang
 	protected ConfirmationSlider _sliderConfirm;
 	protected EditableText _pageName;
 	protected MTClipRectangle _feedback;
+	protected MTTextArea _pageNameLabel;
+	protected MTTextArea _deleteLabel;
 
 	PageMenuProperties(PApplet applet) {
 		super(applet, 0, 0, 0, 400, 0);
 
 		_sliderConfirm = new ConfirmationSlider(applet, 200, 20, 15);
 		_sliderConfirm.addPropertyChangeListener(ConfirmationSlider.EVENT_CONFIRMATION, this);
+		
+		IFont font = FontManager.getInstance().createFont(this.getRenderer(), "SansSerif", 12);
+		_pageNameLabel = new MTTextArea(this.getRenderer(), font);
+		_deleteLabel = new MTTextArea(this.getRenderer(), font);
 		
 		_feedback = new MTClipRectangle(applet, 0, this.getHeightXY(TransformSpace.LOCAL), 0, 400, 20);
 		
@@ -50,17 +56,14 @@ public class PageMenuProperties extends MTClipRectangle implements PropertyChang
 		this.setNoStroke(true);
 		this.setVisible(false);
 		
-		IFont font = FontManager.getInstance().createFont(this.getRenderer(), "SansSerif", 12);
 		
-		MTTextArea pageNameLabel = new MTTextArea(this.getRenderer(), font);
-		this.addChild(pageNameLabel);
-		pageNameLabel.setAnchor(PositionAnchor.UPPER_LEFT);
-		pageNameLabel.setPositionRelativeToParent(new Vector3D(10, 15, 0));
-		pageNameLabel.setText("Nom de la page");
-		pageNameLabel.setNoFill(true);
-		pageNameLabel.setNoStroke(true);
-		pageNameLabel.setPickable(false);
-		pageNameLabel.setVisible(false);
+		this.addChild(_pageNameLabel);
+		_pageNameLabel.setAnchor(PositionAnchor.UPPER_LEFT);
+		_pageNameLabel.setPositionRelativeToParent(new Vector3D(10, 15, 0));
+		_pageNameLabel.setText("Nom de la page");
+		_pageNameLabel.setNoFill(true);
+		_pageNameLabel.setNoStroke(true);
+		_pageNameLabel.setPickable(false);
 		
 		_pageName = new EditableText(this.getRenderer()) 
 		{
@@ -90,25 +93,21 @@ public class PageMenuProperties extends MTClipRectangle implements PropertyChang
 	    
 		this.addChild(_pageName);
 		_pageName.setAnchor(PositionAnchor.UPPER_LEFT);
-		_pageName.setPositionRelativeToParent(new Vector3D(pageNameLabel.getPosition(TransformSpace.RELATIVE_TO_PARENT).x + pageNameLabel.getWidthXY(TransformSpace.RELATIVE_TO_PARENT) + 5, 15, 0));
-		_pageName.setFont(font);
+		_pageName.setPositionRelativeToParent(new Vector3D(_pageNameLabel.getPosition(TransformSpace.RELATIVE_TO_PARENT).x + _pageNameLabel.getWidthXY(TransformSpace.RELATIVE_TO_PARENT) + 5, 15, 0));
+		_pageName.setFont(_pageNameLabel.getFont());
 		_pageName.setNoStroke(false);
-		_pageName.setVisible(false);
 		
-		MTTextArea deleteLabel = new MTTextArea(this.getRenderer(), font);
-		this.addChild(deleteLabel);
-		deleteLabel.setAnchor(PositionAnchor.UPPER_LEFT);
-		float deleteLineY = pageNameLabel.getPosition(TransformSpace.RELATIVE_TO_PARENT).y + pageNameLabel.getHeightXY(TransformSpace.RELATIVE_TO_PARENT) + 10;
-		deleteLabel.setPositionRelativeToParent(new Vector3D(10, deleteLineY, 0));
-		deleteLabel.setText("Suppression de la page");
-		deleteLabel.setNoFill(true);
-		deleteLabel.setNoStroke(true);
-		deleteLabel.setPickable(false);
-		deleteLabel.setVisible(false);
+		this.addChild(_deleteLabel);
+		_deleteLabel.setAnchor(PositionAnchor.UPPER_LEFT);
+		float deleteLineY = _pageNameLabel.getPosition(TransformSpace.RELATIVE_TO_PARENT).y + _pageNameLabel.getHeightXY(TransformSpace.RELATIVE_TO_PARENT) + 10;
+		_deleteLabel.setPositionRelativeToParent(new Vector3D(10, deleteLineY, 0));
+		_deleteLabel.setText("Suppression de la page");
+		_deleteLabel.setNoFill(true);
+		_deleteLabel.setNoStroke(true);
+		_deleteLabel.setPickable(false);
 		
 		this.addChild(_sliderConfirm);
-		_sliderConfirm.setPositionRelativeToParent(new Vector3D(deleteLabel.getPosition(TransformSpace.RELATIVE_TO_PARENT).x + deleteLabel.getWidthXY(TransformSpace.RELATIVE_TO_PARENT) + 5, deleteLineY, 0));
-		_sliderConfirm.setVisible(false);
+		_sliderConfirm.setPositionRelativeToParent(new Vector3D(_deleteLabel.getPosition(TransformSpace.RELATIVE_TO_PARENT).x + _deleteLabel.getWidthXY(TransformSpace.RELATIVE_TO_PARENT) + 5, deleteLineY, 0));
 		
 		this.addChild(_feedback);
 		_feedback.setFillColor(MTColor.BLACK);
@@ -191,6 +190,12 @@ public class PageMenuProperties extends MTClipRectangle implements PropertyChang
 
 		// on set la barre de feedback au bon Y
 		_feedback.setPositionRelativeToParent(new Vector3D(0, this.getHeightXY(TransformSpace.LOCAL), 0));
+		
+		// on affiche ou non les composants
+		_pageNameLabel.setVisible(_pageNameLabel.getPosition(TransformSpace.RELATIVE_TO_PARENT).y + _pageNameLabel.getHeightXY(TransformSpace.LOCAL) <= height);
+		_deleteLabel.setVisible(_deleteLabel.getPosition(TransformSpace.RELATIVE_TO_PARENT).y + _deleteLabel.getHeightXY(TransformSpace.LOCAL) <= height);
+		_pageName.setVisible(_pageName.getPosition(TransformSpace.RELATIVE_TO_PARENT).y + _pageName.getHeightXY(TransformSpace.LOCAL) <= height);
+		_sliderConfirm.setVisible(_sliderConfirm.getPosition(TransformSpace.RELATIVE_TO_PARENT).y + _sliderConfirm.getHeightXY(TransformSpace.LOCAL) <= height);
 	}
 	
 	public float getFeedBackHeight() {
