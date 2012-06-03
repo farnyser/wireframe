@@ -1,7 +1,6 @@
 package view;
 
 import model.ApplicationModel;
-import model.Project;
 
 import org.mt4j.AbstractMTApplication;
 import org.mt4j.input.inputProcessors.globalProcessors.CursorTracer;

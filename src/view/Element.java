@@ -3,6 +3,7 @@ package view;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
+import org.mt4j.components.MTComponent;
 import org.mt4j.components.visibleComponents.widgets.MTClipRectangle;
 import org.mt4j.util.math.Vector3D;
 
@@ -130,21 +131,37 @@ public abstract class Element extends MTClipRectangle implements PropertyChangeL
         	{
         		Vector3D oldsize = new Vector3D(this.getWidthXYRelativeToParent(), this.getHeightXYRelativeToParent(), 0);
         		Vector3D newsize = (Vector3D) e.getNewValue();
+        		Vector3D move = new Vector3D(0,0,0);
+        		if ( newsize.x < 20 ) newsize.x = 20;
+        		if ( newsize.y < 20 ) newsize.y = 20;
+
         		this.setSizeXYRelativeToParent(newsize.x, newsize.y);
         		
         		if ( e.getOldValue() instanceof model.Element.Corner )
         		{
-	        		Vector3D move = new Vector3D(0,0,0);
-	        		
 	        		switch ( (model.Element.Corner)e.getOldValue() )
 	        		{
-		        		case LOWER_LEFT: move = new Vector3D(-(newsize.x - oldsize.x)/2, (newsize.y - oldsize.y)/2, 0); break;
-	        			case LOWER_RIGHT: move = new Vector3D((newsize.x - oldsize.x)/2, (newsize.y - oldsize.y)/2, 0); break;
-	        			case UPPER_LEFT: move = new Vector3D(-(newsize.x - oldsize.x)/2, -(newsize.y - oldsize.y)/2, 0); break;
-	        			case UPPER_RIGHT: move = new Vector3D((newsize.x - oldsize.x)/2, -(newsize.y - oldsize.y)/2, 0); break;
+		        		case LOWER_LEFT: move = new Vector3D(-1, 1, 0); break;
+	        			case LOWER_RIGHT: move = new Vector3D(1, 1, 0); break;
+	        			case UPPER_LEFT: move = new Vector3D(-1, -1, 0); break;
+	        			case UPPER_RIGHT: move = new Vector3D(1, -1, 0); break;
 	        		}
 	        		
-	        		this.translate(move);
+	        		this.translate(new Vector3D(move.x*(newsize.x - oldsize.x)/2, move.y*(newsize.y - oldsize.y)/2));
+        		}
+        		
+        		for ( MTComponent cp : this.getChildren() )
+        		{
+            		if ( cp instanceof view.widget.Widget )
+            		{
+            			model.widget.Widget em = ((view.widget.Widget) cp).getModel();
+//            			Vector3D movebis = ((view.widget.Widget) cp).getCenterPointGlobal();
+            			((view.Element) cp).setSizeXYGlobal(em.getWidth(), em.getHeight());
+//            			((view.Element) cp).setPositionGlobal(movebis);
+
+            			
+    	        		cp.translate(new Vector3D(-move.x*(newsize.x - oldsize.x)/2, -move.y*(newsize.y - oldsize.y)/2));
+            		}
         		}
         	}
         }

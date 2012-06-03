@@ -1,14 +1,18 @@
 package menu;
 
 import model.ApplicationModel;
+import model.Project;
 
+import org.mt4j.AbstractMTApplication;
 import org.mt4j.components.StateChange;
 import org.mt4j.components.StateChangeEvent;
 import org.mt4j.components.StateChangeListener;
 import org.mt4j.components.TransformSpace;
 import org.mt4j.components.clipping.Clip;
+import org.mt4j.components.css.style.CSSFont;
+import org.mt4j.components.css.util.CSSFontManager;
+import org.mt4j.components.css.util.CSSKeywords.CSSFontWeight;
 import org.mt4j.components.visibleComponents.shapes.MTRectangle;
-import org.mt4j.components.visibleComponents.shapes.MTRectangle.PositionAnchor;
 import org.mt4j.components.visibleComponents.widgets.MTTextArea;
 import org.mt4j.components.visibleComponents.widgets.keyboard.MTKeyboard;
 import org.mt4j.input.inputProcessors.IGestureEventListener;
@@ -21,7 +25,6 @@ import org.mt4j.util.animation.AnimationEvent;
 import org.mt4j.util.animation.IAnimation;
 import org.mt4j.util.animation.IAnimationListener;
 import org.mt4j.util.animation.ani.AniAnimation;
-import org.mt4j.util.font.FontManager;
 import org.mt4j.util.font.IFont;
 import org.mt4j.util.math.Vector3D;
 import org.mt4j.util.math.Vertex;
@@ -58,9 +61,11 @@ public class NewProjectMenu extends MTRectangle {
 	private void initMenu()
 	{
 		this.setCssForceDisable(true);
-		this.setFillColor(new MTColor(154,192,205));
-		this.setNoStroke(true);
-
+		//this.setFillColor(new MTColor(154,192,205));
+		//this.setNoStroke(true);
+		this.setFillColor(MTColor.BLACK);
+		this.setStrokeColor(MTColor.BLACK);
+	
 		this.setMovablePosition();
 		this.setLabel();
 		this.setNameTextArea();
@@ -100,25 +105,35 @@ public class NewProjectMenu extends MTRectangle {
 	
 	private void setLabel()
 	{
+		CSSFont cf = this.getCssHelper().getVirtualStyleSheet().getCssfont().clone();
+		cf.setFontsize(14);
+		cf.setWeight(CSSFontWeight.BOLD);
+
+		CSSFontManager cfm = new CSSFontManager((AbstractMTApplication) applet);
+		IFont font = cfm.selectFont(cf);
+		
 		label = new MTTextArea(applet, 0, 0, this.w, this.h/4);
 		label.setText("Enter the new project name :");
-		label.setNoStroke(true);
+		label.setFont(font);
+		label.setStrokeColor(MTColor.BLACK);
+		label.setStrokeWeight(1);
 		label.setPickable(false);
 		label.setFillColor(new MTColor(154,192,205));
 		this.addChild(label);
-		label.setPositionRelativeToParent(new Vector3D(posx,posy-h/2));
+		label.setPositionRelativeToParent(new Vector3D(posx,posy-h/2+this.h/8));
 	}
 	
 	private void setNameTextArea()
 	{
 		texta = new MTTextArea(applet, 0, 0, this.w, this.h/2);
-		texta.setNoStroke(true);
+		texta.setStrokeColor(MTColor.BLACK);
+		texta.setStrokeWeight(1);
 		texta.setPickable(true);
 		this.addChild(texta);
 		texta.setPositionRelativeToParent(new Vector3D(posx, posy));
 		
 	    // Add Tap listener to evoke Keyboard
-		texta.removeAllGestureEventListeners(DragProcessor.class);
+		texta.removeAllGestureEventListeners(TapProcessor.class);
 		texta.setGestureAllowance(TapProcessor.class, true);
 		TapProcessor tp = new TapProcessor(this.applet);
 		texta.registerInputProcessor(tp);
@@ -126,7 +141,6 @@ public class NewProjectMenu extends MTRectangle {
 		{
 			public boolean processGestureEvent(MTGestureEvent ge) 
 			{
-				System.out.println("tapped");
 				if (ge instanceof TapEvent) 
 				{
 					TapEvent te = (TapEvent) ge;
@@ -171,7 +185,7 @@ public class NewProjectMenu extends MTRectangle {
 		cancel.setChildClip(new Clip(cancel));
 		cancel.setPickable(true);
 		this.addChild(cancel);
-		cancel.setPositionRelativeToParent(new Vector3D(posx+w/2+s/2,posy-h/2));
+		cancel.setPositionRelativeToParent(new Vector3D(posx+w/2-2*s,posy+h/2-s/2));
 		
 		cancel.removeAllGestureEventListeners(TapProcessor.class);
 		cancel.setGestureAllowance(TapProcessor.class, true);
@@ -208,7 +222,7 @@ public class NewProjectMenu extends MTRectangle {
 		ok.setChildClip(new Clip(ok));
 		ok.setPickable(true);
 		this.addChild(ok);
-		ok.setPositionRelativeToParent(new Vector3D(posx+w/2+s/2,posy+h/2-s/2));
+		ok.setPositionRelativeToParent(new Vector3D(posx+w/2-s/2,posy+h/2-s/2));
 		
 		ok.removeAllGestureEventListeners(TapProcessor.class);
 		ok.setGestureAllowance(TapProcessor.class, true);
@@ -223,7 +237,6 @@ public class NewProjectMenu extends MTRectangle {
 					TapEvent te = (TapEvent) ge;
 					if (te.getTapID() == TapEvent.TAPPED) 
 					{
-						System.out.println("OK");
 						setData();//Model
 					}
 		        }
@@ -317,6 +330,7 @@ public class NewProjectMenu extends MTRectangle {
 		{
 			System.out.println("Set new project name:" + texta.getText());
 			
+			model.saveCurrentProject(Project._path);
 			model.createProject(texta.getText());
 			close();
 		}

@@ -30,25 +30,15 @@ public class Project implements Serializable
 
 	protected PropertyChangeSupport _pcs = new PropertyChangeSupport(this);
 
-	public static String _path ="repository/";
+	public static String _path = "repository/";
 
 	
 	public Project(String projectLabel) {
 		
 		_label = projectLabel;
-		_sluggedLabel = Slugger.toSlug(projectLabel);
+		_sluggedLabel = Slugger.toSlug(_label);
 
 		_pageList = new ArrayList<Page>();
-		
-		// for initialization # debug
-//		model.Page tmpPage;
-//		model.widget.Widget tmpWidget;
-//		for ( int i = 0 ; i < 3 ; i++ )	{
-//			tmpPage = createPage("untitled document "+i);
-//			tmpWidget = new model.widget.Widget(100,100,0);
-//			tmpWidget.setSize(100, 100);
-//			tmpPage.addElement(tmpWidget);
-//		}		
 	}
 	
 	/**
@@ -106,6 +96,8 @@ public class Project implements Serializable
 	public ArrayList<Page> getPageList() { return _pageList; }
 	
 	public String getLabel() {	return _label;	}
+	
+	public void setLabel(String label) { _label = label; _sluggedLabel = Slugger.toSlug(_label); }
 
 	public String getSluggedLabel() { return this._sluggedLabel; }
 	

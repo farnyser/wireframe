@@ -10,47 +10,48 @@ public class Widget extends Element
 {
 	private static final long serialVersionUID = -8215736840679294259L;
 	
-	protected Vector3D position;
+	protected float x, y, z;
 	protected Vector<model.Page> links = new Vector<model.Page>();
 	
 	public Widget()
 	{
-		this.position = new Vector3D(0,0,0);
+		this.x = 0;
+		this.y = 0;
+		this.z = 0;
 	}
 	
 	public Widget(Vector3D _position)
 	{
-		this.position = _position;
+		this.x = _position.x;
+		this.y = _position.y;
+		this.z = _position.z;
 	}
 	
 	public Widget(float x, float y, float z)
 	{
-		this.position = new Vector3D(x,y,z);
+		this.x = x;
+		this.y = y;
+		this.z = z;
 	}
 	
 	public Vector3D getPosition()
 	{
-		return this.position;
+		return new Vector3D(x,y,z);
 	}
 	
-	public void getPosition(Vector3D _position)
-	{
-		this.position = _position;
-	}
-
 	public void setPosition(float x, float y, float z)
 	{
-		System.out.println("=== " + this + "setPos old " + this.position);
-		this.position = new Vector3D(x,y,z);
-		System.out.println("=== " + this + "setPos to " + this.position);
+		this.x = x;
+		this.y = y;
+		this.z = z;
 		this.pcs.firePropertyChange("setPosition", null, this);
 	}
 	
 	public void setPosition(Vector3D p)
 	{
-		System.out.println("=== " + this + "setPos old " + this.position);
-		this.position = p;
-		System.out.println("=== " + this + "setPos to " + this.position);
+		this.x = p.x;
+		this.y = p.y;
+		this.z = p.z;
 		this.pcs.firePropertyChange("setPosition", null, this);
 	}
 	

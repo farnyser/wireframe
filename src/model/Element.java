@@ -7,8 +7,6 @@ import java.util.ArrayList;
 
 import org.mt4j.util.math.Vector3D;
 
-import view.page.Page;
-
 public class Element  implements Serializable,Cloneable
 {
 	private static final long serialVersionUID = 5913307790282474281L;

@@ -3,9 +3,10 @@ package view.page;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.util.Random;
 
 import org.mt4j.MTApplication;
-import org.mt4j.components.visibleComponents.widgets.MTClipRoundRect;
+import org.mt4j.components.MTComponent;
 import org.mt4j.input.gestureAction.TapAndHoldVisualizer;
 import org.mt4j.input.inputProcessors.IGestureEventListener;
 import org.mt4j.input.inputProcessors.MTGestureEvent;
@@ -13,8 +14,6 @@ import org.mt4j.input.inputProcessors.componentProcessors.dragProcessor.DragEven
 import org.mt4j.input.inputProcessors.componentProcessors.dragProcessor.DragProcessor;
 import org.mt4j.input.inputProcessors.componentProcessors.tapAndHoldProcessor.TapAndHoldEvent;
 import org.mt4j.input.inputProcessors.componentProcessors.tapAndHoldProcessor.TapAndHoldProcessor;
-import org.mt4j.input.inputProcessors.componentProcessors.tapProcessor.TapEvent;
-import org.mt4j.input.inputProcessors.componentProcessors.tapProcessor.TapProcessor;
 import org.mt4j.util.MTColor;
 import org.mt4j.util.math.Vector3D;
 
@@ -25,7 +24,6 @@ public class Page extends Element
 {
 	final static public String EVENT_DELETE_PAGE = "event_delete_page";
 	
-	protected MTClipRoundRect close;
 	protected PageMenu menu;
 	
 	protected PropertyChangeSupport _viewNotifier  = new PropertyChangeSupport(this);
@@ -42,6 +40,11 @@ public class Page extends Element
 		super(p,create_new_model); 
 	}
 	
+	public model.Page getModel() 
+	{
+		return (model.Page) _model;
+	}
+
 	public void propertyChange(PropertyChangeEvent e) 
 	{
 		super.propertyChange(e);
@@ -118,24 +121,6 @@ public class Page extends Element
 		    }    
 		});
 		
-		close.removeAllGestureEventListeners(); // supprime les comportements par defaut (drag, zoom, ...)
-		close.registerInputProcessor(new TapProcessor(this.applet));
-		close.addGestureListener(TapProcessor.class, new IGestureEventListener()
-		{
-			public boolean processGestureEvent(MTGestureEvent ge) 
-			{
-				if (ge instanceof TapEvent) 
-				{
-					TapEvent te = (TapEvent) ge;
-					if (te.getTapID() == TapEvent.TAPPED) 
-					{
-			            view.page.Page.this.destroy();
-					}
-		        }
-				
-		        return false;
-			}
-		});
 	}
 
 	@Override
@@ -150,10 +135,7 @@ public class Page extends Element
 		menu.setPositionRelativeToParent(new Vector3D(0, -menu.getHeight(), 0));
 		menu.getTextArea().setText(((model.Page) _model).getLabel());
 		menu.getTextArea().setPositionRelativeToParent(menu.getCenterPointLocal());
-
-		close = new MTClipRoundRect(applet, this._model.getWidth() - 10, -(menu.getHeight() + 10), 0, 20, 20, 10, 10);
-		close.setFillColor(MTColor.RED);
-		this.addChild(close);
+		menu.setColor(getColorFromId());
 		
 		for ( model.Element e : _model.getElements() )
 		{
@@ -169,19 +151,16 @@ public class Page extends Element
 	public void setMinSize(float _w, float _h) 
 	{
 		super.setMinSize(_w, _h);
-		
+		this.setFillColor(this.getColorFromId());
 		menu.setVisible(false);
-		close.setVisible(false);
 	}
 	
 	public void setFullSize() 
 	{
 		super.setFullSize();
-		
+		this.setFillColor(MTColor.WHITE);
 		menu.setVisible(true);
 		menu.sendToFront();
-		close.setVisible(true);
-		close.sendToFront();
 	}
 	
 	public void addListener(PropertyChangeListener listener)
@@ -200,4 +179,13 @@ public class Page extends Element
 	}
 	
 	public PropertyChangeSupport getViewNotifier() { return _viewNotifier; }
+	
+	public MTColor getColorFromId()
+	{
+		Random rand = new Random(_model.hashCode());
+		int r = rand.nextInt(200) + 55;
+		int g = rand.nextInt(200) + 55;
+		int b = rand.nextInt(200) + 55;
+		return new MTColor(r,g,b);
+	}
 }
