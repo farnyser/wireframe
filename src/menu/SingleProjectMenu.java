@@ -82,7 +82,7 @@ public class SingleProjectMenu extends MTListCell{
 		
 		if(project.getPageList().size() != 0)
 		{
-			firstPage = new Page(this.getRenderer(), 0, 0, project.getPageList().get(0));
+			firstPage = new Page(this.getRenderer(), project.getPageList().get(0));
 			firstPage.setMinSize(preferredIconWidth, preferredIconWidth);
 			firstPage.setComposite(true);
 			firstPage.setPickable(false);

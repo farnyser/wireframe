@@ -33,7 +33,7 @@ public class PageLibrary extends Library implements PropertyChangeListener
 			MTListCell cell = new MTListCell(this.getRenderer(), this.getWidthXYGlobal(), this.getWidthXYGlobal() - SPACING);
 			cell.setNoFill(true);
 			cell.setNoStroke(true);
-			view.page.Page page = new view.page.Page(this.getRenderer(), 0, 0, p);
+			view.page.Page page = new view.page.Page(this.getRenderer(), p);
 			page.addListener(this);
 			page.setMinSize(this.getWidthXYGlobal() - SPACING, this.getWidthXYGlobal() - SPACING);
 			cell.addChild(page);

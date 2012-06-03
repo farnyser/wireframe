@@ -64,11 +64,26 @@ public class Widget extends view.Element
         String propertyName = e.getPropertyName();
 		if ( propertyName == "setPosition" ) 
         {
-			model.widget.Widget wm = (model.widget.Widget) e.getNewValue();
-        	this.setPositionRelativeToParent(wm.getPosition());
+        	this.setPositionRelativeToParent(this.getModel().getPosition());
         }
 	}
 	
+	/**
+	 * Enable or Disable Delete Effect
+	 * @param visible
+	 */
+	protected void setDelEffect(boolean visible)
+	{
+		this.delEffect.setVisible(visible);
+		for ( MTComponent cm : this.getChildren() ) 
+			if ( cm instanceof view.widget.Widget )
+				((view.widget.Widget)cm).setDelEffect(visible);
+	}
+	
+	/**
+	 * Get all MTComponent on scene
+	 * @return List of components
+	 */
 	protected Vector<MTComponent> getMTcomponents()
 	{
 		Vector<MTComponent> mtcs= new Vector<MTComponent>();
@@ -86,6 +101,10 @@ public class Widget extends view.Element
 		return mtcs;
 	}
 	
+	/**
+	 * Get component in which this is included
+	 * @return a component or null
+	 */
 	protected MTComponent getMTcomponent()
 	{
 		MTComponent c = null;
@@ -96,6 +115,10 @@ public class Widget extends view.Element
 		
 		for ( int i = mtcs.size()-1 ; i >= 0 ; i-- )
 		{
+			// on ne s'interesse qu'aux collisions avec des objets "element" et "library"
+			if ( !(mtcs.get(i) instanceof view.Element) && !(mtcs.get(i) instanceof view.Library) )
+				continue;
+			
 			boolean inside = true;
 			MTComponent p = mtcs.get(i);
 			if ( p.getBounds() == null ) { continue; }
@@ -131,13 +154,11 @@ public class Widget extends view.Element
 		{
 			view.Element w = view.Element.newInstance(applet, e);
 			this.addChild(w);
+			
 			if ( e instanceof model.widget.Widget ) 
 			{ 
 				Vector3D wpos = ((model.widget.Widget)e).getPosition();				
-				wpos.addLocal(this.getCenterPointGlobal());
-				wpos.subtractLocal(new Vector3D(this._model.getWidth()/2, this._model.getHeight()/2, 0));
-				w.setPositionGlobal(wpos); 
-				System.out.println("((pos)) " +wpos);
+				w.setPositionRelativeToParent(wpos); 
 			}
 		}
 	}
@@ -154,7 +175,7 @@ public class Widget extends view.Element
 				
 				if ( dragType == DragType.MOVE )
 				{
-					Widget.this.delEffect.setVisible(false);
+					Widget.this.setDelEffect(false);
 					
 					if ( fx == -1 || fy == -1 ) 
 					{ 
@@ -182,40 +203,38 @@ public class Widget extends view.Element
 						if ( c != null )
 						{
 							// dragged to library
-							if ( de.getId() == MTGestureEvent.GESTURE_ENDED && c instanceof Library ) 
+							if ( c instanceof Library ) 
 							{
-								System.out.println("Widget dragged to library"); 
-	
-								// remove from parent (model)
-								if ( Widget.this.getParent() instanceof view.Element ){ view.Element cc = (view.Element)  Widget.this.getParent(); cc.getModel().removeElement(Widget.this._model); }
-	
-								destroy = true;
+								Widget.this.setDelEffect(true);
+								
+								if ( de.getId() == MTGestureEvent.GESTURE_ENDED )
+								{
+									System.out.println("Widget dragged to library"); 
+		
+									// remove from parent (model)
+									if ( Widget.this.getParent() instanceof view.Element ){ ((view.Element)Widget.this.getParent()).getModel().removeElement(Widget.this._model); }
+		
+									destroy = true;
+								}
 							}
 							// dragged to page/widget
 							else if ( c instanceof view.Element ) 
 							{ 
-								if ( de.getId() == MTGestureEvent.GESTURE_ENDED )
+								if ( de.getId() == MTGestureEvent.GESTURE_ENDED &&  c.getChildbyID(Widget.this.getID()) == null )
 								{
-									if ( c.getChildbyID(Widget.this.getID()) == null )
-									{
-										System.out.println("Widget dragged to page/widget");
-										
-										// remove from parent (model)
-										if ( Widget.this.getParent() instanceof view.Element ){ view.Element cc = (view.Element)  Widget.this.getParent(); cc.getModel().removeElement(Widget.this._model); }
-										
-										// add to new parent (model)
-										{ view.Element cc = (view.Element) c; cc.getModel().addElement(Widget.this._model); }
-										
-										c.addChild(Widget.this);
-										destroy = true;
-										Widget.this.setPositionGlobal(newpos);
-										fx = Widget.this.getCenterPointRelativeToParent().x; 
-										fy = Widget.this.getCenterPointRelativeToParent().y; 
-									}
-	
-									// update coordinate in the model
-									model.widget.Widget mw = (model.widget.Widget) Widget.this._model;
-									mw.setPosition(c.globalToLocal(newpos));
+									System.out.println("Widget dragged to page/widget");
+									
+									// remove from parent (model)
+									if ( Widget.this.getParent() instanceof view.Element ){ ((view.Element)Widget.this.getParent()).getModel().removeElement(Widget.this._model); }
+									
+									// add to new parent (model)
+									{ ((view.Element) c).getModel().addElement(Widget.this._model); }
+									
+									c.addChild(Widget.this);
+									destroy = true;
+									Widget.this.setPositionGlobal(newpos);
+									fx = Widget.this.getCenterPointRelativeToParent().x; 
+									fy = Widget.this.getCenterPointRelativeToParent().y; 
 								}
 								
 								// grid
@@ -233,20 +252,25 @@ public class Widget extends view.Element
 									else if ( y%GRID_SPACING > GRID_SPACING-(GRID_SPACING/2) ) 
 										y = (y-y%GRID_SPACING+GRID_SPACING);
 									
-	//								System.out.println("snap to x=" + x + ", y = " + y);
 									x += Widget.this._model.getWidth()/2;
 									y += Widget.this._model.getHeight()/2;
 									
 									Widget.this.setPositionRelativeToParent(new Vector3D(x,y,0));
+								}
+								
+								// update model position
+								if ( de.getId() == MTGestureEvent.GESTURE_ENDED )
+								{
+									// update coordinate in the model
 									model.widget.Widget mw = (model.widget.Widget) Widget.this._model;
-									mw.setPosition(new Vector3D(x,y,0));
+									mw.setPosition(Widget.this.getCenterPointRelativeToParent());
 								}
 							}	
 						}
 						// dragged to scene
 						else if ( Widget.this.getParent() != Widget.this.getRoot() )
 						{
-							Widget.this.delEffect.setVisible(true);
+							Widget.this.setDelEffect(true);
 							
 							if ( de.getId() == MTGestureEvent.GESTURE_ENDED )
 							{
@@ -260,6 +284,13 @@ public class Widget extends view.Element
 								if ( o instanceof view.Element ){ view.Element cc = (view.Element)  o; cc.getModel().removeElement(Widget.this._model); }
 							}
 						}
+					}
+					
+					
+					if ( de.getId() == MTGestureEvent.GESTURE_ENDED )
+					{
+						System.out.println("widget(view) position global : " + Widget.this.getCenterPointGlobal());
+						System.out.println("widget(view) position local2parent : " + Widget.this.localToParent(Widget.this.getCenterPointLocal()));
 					}
 				}
 				else if (Widget.this.dragType == DragType.RESIZE) 
@@ -314,9 +345,6 @@ public class Widget extends view.Element
 		        		resizeStart = model.Element.Corner.LOWER_RIGHT;
 		            
 		            Widget.this.dragType = DragType.RESIZE;
-		            
-		            //debug
-		            //Widget.this.dragType = DragType.LINK;
 		        }
 		        return false;
 		    }    

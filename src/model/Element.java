@@ -38,14 +38,12 @@ public class Element  implements Serializable,Cloneable
 	
 	public void addElement(model.Element e)
 	{
-		System.out.println("element " + e + " added to " + this);
 		childs.add(e);
 		pcs.firePropertyChange("addElement", null, e);
 	}
 	
 	public void removeElement(model.Element e)
 	{
-		System.out.println("element " + e + " removed from " + this);
 		childs.remove(e);
 		pcs.firePropertyChange("removeElement", null, e);
 	}
