@@ -165,7 +165,7 @@ public class ApplicationModel {
 		File f = new File(filePath);
 			
 		// Make sure the file or directory exists and isn't write protected
-		if (!f.exists())throw new IllegalArgumentException("Delete: no such file or directory: " + filePath);
+		if (!f.exists()) return;
 
 		if (!f.canWrite())throw new IllegalArgumentException("Delete: write protected: " + filePath);
 	
@@ -178,6 +178,9 @@ public class ApplicationModel {
 	
 	public void deleteProject(Project p)
 	{
+		if ( p == _currentProject )
+			_pcs.firePropertyChange("closeProject", null, null);
+			
 		deleteProjectFile(p.getSluggedLabel());
 		_projectList.remove(p);	
 	}

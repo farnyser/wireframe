@@ -27,9 +27,9 @@ public class Page extends Element
 	
 	protected PropertyChangeSupport _viewNotifier  = new PropertyChangeSupport(this);
 	
-	public Page(PApplet a, float x, float y, model.Page p) 
+	public Page(PApplet a, model.Page p) 
 	{
-		super(a, x, y, p);
+		super(a, 0, 0, p);
 		applet = a;
 		_model = p;
 	}
@@ -140,8 +140,9 @@ public class Page extends Element
 		{
 			view.Element w = view.Element.newInstance(applet, e);
 			this.addChild(w);
+			
 			if ( e instanceof model.widget.Widget ) 
-			{ 
+			{
 				w.setPositionRelativeToParent(((model.widget.Widget)e).getPosition()); 
 			}
 		}
@@ -177,7 +178,10 @@ public class Page extends Element
 		_viewNotifier = new PropertyChangeSupport(this);
 	}
 	
-	public PropertyChangeSupport getViewNotifier() { return _viewNotifier; }
+	public PropertyChangeSupport getViewNotifier() 
+	{ 
+		return _viewNotifier; 
+	}
 	
 	public MTColor getColorFromId()
 	{

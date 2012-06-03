@@ -135,22 +135,19 @@ public class StartMenuScene extends AbstractScene{
 		{
 			List<MenuItem> menuLoad = new ArrayList<MenuItem>();
 			menuLoad.add(new MenuItem("New projet", new gestureListener("New project",this.scene)));
-			menuLoad.add(new MenuItem("Exsiting projets", new gestureListener("Existing projects", this.scene)));	
+			menuLoad.add(new MenuItem("Existing projets", new gestureListener("Existing projects", this.scene)));	
 			
 			if(nameArea != null) nameArea.destroy();
 			if(projectList != null) projectList.destroy();
 			
-			if ( rMenu == null )
-			{
-				rMenu = new RectangleMenu(app, new Vector3D(320,180) , menuLoad, 170);
-				scene.getCanvas().addChild(rMenu);
-			}
-			else
+			if ( rMenu != null )
 			{
 				rMenu.destroy();
 				rMenu = null;
 			}
-
+			
+			rMenu = new RectangleMenu(app, new Vector3D(320,180) , menuLoad, 170);
+			scene.getCanvas().addChild(rMenu);
 		}
 	
 		private void createNewProject()
@@ -185,7 +182,7 @@ public class StartMenuScene extends AbstractScene{
 	    private void createNewPage()
 	    {
 	    	model.Page newAbPage = model.getCurrentProject().createPage("untitled");
-	    	view.page.Page newPage = new view.page.Page(app, 0, 0, newAbPage);
+	    	view.page.Page newPage = new view.page.Page(app, newAbPage);
 	    	newPage.addListener(pages);
 	    	scene.getCanvas().addChild(newPage);
 	    	newPage.setPositionGlobal(new Vector3D(200 + newAbPage.getWidth()/2,150 + newAbPage.getHeight()/2));

@@ -32,23 +32,7 @@ public abstract class Element extends MTClipRectangle implements PropertyChangeL
 		
 		_model.addListener(this);
 	}
-	
-	public Element(Element e)
-	{
-		super(e.applet, 0, 0, 0, e._model.getWidth(), e._model.getHeight());
-		applet = e.applet;
-		_model = e._model;
-		mh = e.mh; 
-		mw = e.mw;
-		initGraphics();
-		initGesture();
-		this.setPositionGlobal(new Vector3D(e.getCenterPointGlobal().x, e.getCenterPointGlobal().y, 0));
-		this.setMinSize(e.mw, e.mh);
-		this.setFillColor(e.getFillColor());
 		
-		_model.addListener(this);
-	}
-	
 	public Element(Element e, Boolean create_new_model)
 	{
 		super(e.applet, 0, 0, 0, e._model.getWidth(), e._model.getHeight());
@@ -67,8 +51,9 @@ public abstract class Element extends MTClipRectangle implements PropertyChangeL
 		mw = e.mw;
 		initGraphics();
 		initGesture();
-		this.setPositionGlobal(new Vector3D(e.getCenterPointGlobal().x, e.getCenterPointGlobal().y, 0));
-		this.setMinSize(e.mw, e.mh);
+		this.setPositionGlobal(e.getCenterPointGlobal());
+		if ( e.isMiniature ) 
+			this.setMinSize(e.mw, e.mh);
 		this.setFillColor(e.getFillColor());
 		
 		_model.addListener(this);
@@ -172,7 +157,7 @@ public abstract class Element extends MTClipRectangle implements PropertyChangeL
 		Element el = null;
 	
 		if ( e instanceof model.Page )
-			el = new view.page.Page(applet, 0, 0, (model.Page) e);
+			el = new view.page.Page(applet, (model.Page) e);
 		else if ( e instanceof model.widget.ButtonWidget )
 			el = new view.widget.Button(applet, (model.widget.ButtonWidget) e);
 		else if ( e instanceof model.widget.ListWidget )

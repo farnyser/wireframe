@@ -18,6 +18,7 @@ public class Widget extends Element
 		this.x = 0;
 		this.y = 0;
 		this.z = 0;
+		System.out.println("widget position : " + x + " / " + y + " / " + z);
 	}
 	
 	public Widget(Vector3D _position)
@@ -25,6 +26,7 @@ public class Widget extends Element
 		this.x = _position.x;
 		this.y = _position.y;
 		this.z = _position.z;
+		System.out.println("widget position : " + x + " / " + y + " / " + z);
 	}
 	
 	public Widget(float x, float y, float z)
@@ -32,6 +34,7 @@ public class Widget extends Element
 		this.x = x;
 		this.y = y;
 		this.z = z;
+		System.out.println("widget position : " + x + " / " + y + " / " + z);
 	}
 	
 	public Vector3D getPosition()
@@ -44,6 +47,7 @@ public class Widget extends Element
 		this.x = x;
 		this.y = y;
 		this.z = z;
+		System.out.println("widget position : " + x + " / " + y + " / " + z);
 		this.pcs.firePropertyChange("setPosition", null, this);
 	}
 	
@@ -52,6 +56,7 @@ public class Widget extends Element
 		this.x = p.x;
 		this.y = p.y;
 		this.z = p.z;
+		System.out.println("widget position : " + x + " / " + y + " / " + z);
 		this.pcs.firePropertyChange("setPosition", null, this);
 	}
 	
