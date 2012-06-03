@@ -13,7 +13,9 @@ import org.mt4j.input.inputProcessors.IGestureEventListener;
 import org.mt4j.input.inputProcessors.MTGestureEvent;
 import org.mt4j.input.inputProcessors.componentProcessors.dragProcessor.DragEvent;
 import org.mt4j.input.inputProcessors.componentProcessors.dragProcessor.DragProcessor;
-import org.mt4j.input.inputProcessors.componentProcessors.panProcessor.PanProcessorTwoFingers;
+import org.mt4j.input.inputProcessors.componentProcessors.rotateProcessor.RotateProcessor;
+import org.mt4j.input.inputProcessors.componentProcessors.scaleProcessor.ScaleEvent;
+import org.mt4j.input.inputProcessors.componentProcessors.scaleProcessor.ScaleProcessor;
 import org.mt4j.input.inputProcessors.componentProcessors.tapAndHoldProcessor.TapAndHoldEvent;
 import org.mt4j.input.inputProcessors.componentProcessors.tapAndHoldProcessor.TapAndHoldProcessor;
 import org.mt4j.util.MTColor;
@@ -21,6 +23,7 @@ import org.mt4j.util.math.ToolsGeometry;
 import org.mt4j.util.math.Vector3D;
 
 import processing.core.PApplet;
+import view.DeleteEffect;
 import view.Library;
 
 public class Widget extends view.Element
@@ -31,17 +34,22 @@ public class Widget extends view.Element
 	// linking (action)
 	protected MTLine line = null;
 	
+	// delete
+	protected DeleteEffect delEffect = null;
+	
 	protected boolean GRID_ENABLED = true;
 	protected int GRID_SPACING = 20;
 	
 	public Widget(PApplet a, model.widget.Widget m) 
 	{
 		super(a, m.getPosition().x, m.getPosition().y, m);
+		delEffect = new DeleteEffect(this.applet, this, _model.getWidth(), _model.getHeight());
 	}
 	
 	public Widget(Widget widget, Boolean create_new_model) 
 	{
 		super(widget, create_new_model);
+		delEffect = new DeleteEffect(this.applet, this, _model.getWidth(), _model.getHeight());
 	}
 	
 	public model.widget.Widget getModel() 
@@ -146,6 +154,8 @@ public class Widget extends view.Element
 				
 				if ( dragType == DragType.MOVE )
 				{
+					Widget.this.delEffect.setVisible(false);
+					
 					if ( fx == -1 || fy == -1 ) 
 					{ 
 						fx = Widget.this.getCenterPointRelativeToParent().x; 
@@ -173,7 +183,7 @@ public class Widget extends view.Element
 						{
 							// dragged to library
 							if ( de.getId() == MTGestureEvent.GESTURE_ENDED && c instanceof Library ) 
-							{ 
+							{
 								System.out.println("Widget dragged to library"); 
 	
 								// remove from parent (model)
@@ -234,18 +244,22 @@ public class Widget extends view.Element
 							}	
 						}
 						// dragged to scene
-						else if ( de.getId() == MTGestureEvent.GESTURE_ENDED && Widget.this.getParent() != Widget.this.getRoot() )
+						else if ( Widget.this.getParent() != Widget.this.getRoot() )
 						{
-							System.out.println("Widget dragged to scene (workspace)");
-							Object o = Widget.this.getParent();
+							Widget.this.delEffect.setVisible(true);
 							
-							Widget.this.setPositionGlobal(newpos);
-							fx = -1;
-							
-							// remove from parent (model)
-							if ( o instanceof view.Element ){ view.Element cc = (view.Element)  o; cc.getModel().removeElement(Widget.this._model); }
+							if ( de.getId() == MTGestureEvent.GESTURE_ENDED )
+							{
+								System.out.println("Widget dragged to scene (workspace)");
+								Object o = Widget.this.getParent();
+								
+								Widget.this.setPositionGlobal(newpos);
+								fx = -1;
+								
+								// remove from parent (model)
+								if ( o instanceof view.Element ){ view.Element cc = (view.Element)  o; cc.getModel().removeElement(Widget.this._model); }
+							}
 						}
-	
 					}
 				}
 				else if (Widget.this.dragType == DragType.RESIZE) 
@@ -272,46 +286,6 @@ public class Widget extends view.Element
 					// retour en mode "deplacement"
 					if ( de.getId() == MTGestureEvent.GESTURE_ENDED )
 						Widget.this.dragType = DragType.MOVE;
-				}
-				else if (Widget.this.dragType == DragType.LINK) 
-				{
-					if ( line == null )
-					{
-						Vector3D start = localToGlobal( de.getDragCursor().getPosition() );
-						line = new MTLine(Widget.this.applet, start.x, start.y, start.x, start.y);
-						line.setStrokeColor(MTColor.RED);
-						line.setUserData("start", de.getFrom());
-						Widget.this.getRoot().addChild(line);
-					}
-					else
-					{
-						Vector3D start = (Vector3D) line.getUserData("start");
-						line.destroy();
-						line = new MTLine(Widget.this.applet, start.x, start.y, de.getDragCursor().getCurrentEvtPosX(), de.getDragCursor().getCurrentEvtPosY());
-						line.setStrokeColor(MTColor.RED);
-						line.setUserData("start", start);
-						Widget.this.getRoot().addChild(line);
-					}
-					
-					if ( de.getId() == MTGestureEvent.GESTURE_ENDED )
-					{
-						Vector3D p = (de.getDragCursor().getPosition());
-						
-						PickResult pk = Widget.this.getRoot().pick(p.x, p.y, true);
-						MTComponent target = pk.getNearestPickResult();
-						if ( target instanceof MTListCell ) { target = target.getChildByIndex(0); }
-						
-						if ( target instanceof view.page.Page )
-						{
-							System.out.println("create link between " + Widget.this + " and " + target);
-							((view.page.Page)target).getModel().addLinked(Widget.this.getModel());
-							Widget.this.getModel().addLink(((view.page.Page)target).getModel());
-						}
-						
-						line.destroy();
-						line = null;
-						Widget.this.dragType = DragType.MOVE;
-					}
 				}
 				
 				if ( destroy ) { Widget.this.removeFromParent(); }
@@ -348,13 +322,54 @@ public class Widget extends view.Element
 		    }    
 		});
 		
-		// 2 doigts
-		this.addGestureListener(PanProcessorTwoFingers.class, new IGestureEventListener()
+		// 2 doigts pour creer les liens
+		this.removeAllGestureEventListeners(RotateProcessor.class);
+		this.removeAllGestureEventListeners(ScaleProcessor.class);
+		this.addGestureListener(ScaleProcessor.class, new IGestureEventListener()
 		{
 			@Override
-			public boolean processGestureEvent(MTGestureEvent arg0) {
-	            Widget.this.dragType = DragType.LINK;
-	            System.out.println("pan 2 fingers");
+			public boolean processGestureEvent(MTGestureEvent arg0) 
+			{
+	            ScaleEvent de = (ScaleEvent) arg0;
+	            
+				if ( line == null )
+				{
+					Vector3D start = localToGlobal( de.getFirstCursor().getPosition() );
+					Vector3D stop = localToGlobal( de.getSecondCursor().getPosition() );
+					line = new MTLine(Widget.this.applet, start.x, start.y, stop.x, stop.y);
+					line.setStrokeColor(MTColor.RED);
+					line.setUserData("start", de.getFirstCursor().getPosition());
+					Widget.this.getRoot().addChild(line);
+				}
+				else
+				{
+					Vector3D start = (Vector3D) line.getUserData("start");
+					line.destroy();
+					line = new MTLine(Widget.this.applet, start.x, start.y, de.getSecondCursor().getCurrentEvtPosX(), de.getSecondCursor().getCurrentEvtPosY());
+					line.setStrokeColor(MTColor.RED);
+					line.setUserData("start", start);
+					Widget.this.getRoot().addChild(line);
+				}
+				
+				if ( de.getId() == MTGestureEvent.GESTURE_ENDED )
+				{
+					Vector3D p = (de.getSecondCursor().getPosition());
+					
+					PickResult pk = Widget.this.getRoot().pick(p.x, p.y, true);
+					MTComponent target = pk.getNearestPickResult();
+					if ( target instanceof MTListCell ) { target = target.getChildByIndex(0); }
+					
+					if ( target instanceof view.page.Page )
+					{
+						System.out.println("create link between " + Widget.this + " and " + target);
+						((view.page.Page)target).getModel().addLinked(Widget.this.getModel());
+						Widget.this.getModel().addLink(((view.page.Page)target).getModel());
+					}
+					
+					line.destroy();
+					line = null;
+				}
+
 				return false;
 			} 
 				

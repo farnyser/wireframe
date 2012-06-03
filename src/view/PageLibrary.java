@@ -11,6 +11,7 @@ import processing.core.PApplet;
 public class PageLibrary extends Library implements PropertyChangeListener
 {
 	protected model.ApplicationModel _application;
+	private static int SPACING = 20;
 	
 	public PageLibrary(PApplet applet, float x, float y, float width, float height, model.ApplicationModel app)
 	{
@@ -29,11 +30,14 @@ public class PageLibrary extends Library implements PropertyChangeListener
 	{
 		for ( model.Page p : _application.getCurrentProject().getPageList() )
 		{
-			MTListCell cell = new MTListCell(this.getRenderer(), 50, 50);
+			MTListCell cell = new MTListCell(this.getRenderer(), this.getWidthXYGlobal(), this.getWidthXYGlobal() - SPACING);
+			cell.setNoFill(true);
+			cell.setNoStroke(true);
 			view.page.Page page = new view.page.Page(this.getRenderer(), 0, 0, p);
 			page.addListener(this);
-			page.setMinSize(50, 50);
+			page.setMinSize(this.getWidthXYGlobal() - SPACING, this.getWidthXYGlobal() - SPACING);
 			cell.addChild(page);
+			page.setPositionRelativeToParent(cell.getCenterPointLocal());
 			this.addListElement(cell);
 			this.addDragProcessor(cell);
 		}

@@ -4,7 +4,6 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import utils.Slugger;
 
@@ -28,6 +27,11 @@ public class Project implements Serializable
 	 */
 	private String _sluggedLabel;
 
+	/**
+	 * Project has been modified and need to b e saved ?
+	 */
+	protected boolean _updated = false;
+	
 	protected PropertyChangeSupport _pcs = new PropertyChangeSupport(this);
 
 	public static String _path = "repository/";
@@ -36,7 +40,7 @@ public class Project implements Serializable
 	public Project(String projectLabel) {
 		
 		_label = projectLabel;
-		_sluggedLabel = Slugger.toSlug(projectLabel);
+		_sluggedLabel = Slugger.toSlug(_label);
 
 		_pageList = new ArrayList<Page>();
 	}
@@ -61,6 +65,7 @@ public class Project implements Serializable
 		
 		Page sc = new Page(pageLabel);
 		this.addPage(sc);
+		_updated = true;
 		
 		return sc;
 	}
@@ -72,6 +77,7 @@ public class Project implements Serializable
 	public void addPage(Page page) {
 		_pageList.add(page);
 		_pcs.firePropertyChange("addPage", null, page);
+		_updated = true;
 	}
 	
 	/**
@@ -81,6 +87,7 @@ public class Project implements Serializable
 	public void removePage(Page page) {
 		page.fireDeletion();
 		_pageList.remove(page);
+		_updated = true;
 	}
 	
 	/**
@@ -91,31 +98,28 @@ public class Project implements Serializable
 	public void reorderPage(int newIndex, Page page) {
 		_pageList.remove(page);
 		_pageList.add(newIndex, page);
+		_updated = true;
 	}
 	
 	public ArrayList<Page> getPageList() { return _pageList; }
 	
 	public String getLabel() {	return _label;	}
+	
+	public void setLabel(String label) { _label = label; _sluggedLabel = Slugger.toSlug(_label); }
 
 	public String getSluggedLabel() { return this._sluggedLabel; }
 	
-	/**
-	 * Debug method
-	 */
-	public void pagesToString() {
-		
-		if(_pageList.isEmpty()) {
-			System.out.println("DEBUG: Project#This project has no scene.");
-		}
-		
-		Iterator<Page> it = _pageList.iterator();
-		
-		while(it.hasNext()) {
-			Page s = (Page) it.next();
-			System.out.println(s.getLabel());
-		}
+	public boolean getUpdateStatus()
+	{
+		return _updated;
 	}
 	
+	public void setSaved()
+	{
+		_updated = false;
+	}
+	
+	//---
 	public void addListener(PropertyChangeListener listener)
 	{
 		_pcs.addPropertyChangeListener(listener);

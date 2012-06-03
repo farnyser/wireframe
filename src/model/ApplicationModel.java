@@ -50,7 +50,8 @@ public class ApplicationModel {
 	public void saveCurrentProject(String path) {
 		
 		if(_currentProject == null) return;
-
+		if(_currentProject.getUpdateStatus() == false) return;
+		
 		String filePath = path+_currentProject.getSluggedLabel()+".wire";
 		try {
 			File f = new File(path);
@@ -64,6 +65,40 @@ public class ApplicationModel {
 			System.out.println("DEBUG: ApplicationModel#can't save the project to "+filePath);
 			e.printStackTrace();
 		}
+	}
+	
+	
+	public void saveProject(Project p)
+	{	
+		if(p.getUpdateStatus() == false) return;
+		String newfilePath = Project._path + p.getSluggedLabel()+".wire";
+		
+		try {
+			File f = new File(Project._path);
+			f.mkdirs();
+			ObjectOutput out = new ObjectOutputStream(new FileOutputStream(newfilePath));
+			out.writeObject(p);
+			out.close();
+			System.out.println("DEBUG: ApplicationModel#project saved to "+newfilePath);
+		}
+		catch(IOException e) {
+			System.out.println("DEBUG: ApplicationModel#can't save the project to "+newfilePath);
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Rename a project
+	 * 
+	 * @param p		Project to rename
+	 * @param name	New name
+	 */
+	public void renameProject(Project p, String name)
+	{
+		String oldname = p.getSluggedLabel();
+		p.setLabel(name);
+		this.saveProject(p);
+		this.deleteProjectFile(oldname);
 	}
 	
 	/**
@@ -121,6 +156,30 @@ public class ApplicationModel {
 		}
 		
 		return _currentProject; 
+	}
+	
+	public void deleteProjectFile(String filename)
+	{
+		String filePath = Project._path + filename+".wire";
+		
+		File f = new File(filePath);
+			
+		// Make sure the file or directory exists and isn't write protected
+		if (!f.exists())throw new IllegalArgumentException("Delete: no such file or directory: " + filePath);
+
+		if (!f.canWrite())throw new IllegalArgumentException("Delete: write protected: " + filePath);
+	
+		// Attempt to delete it
+		boolean success = f.delete();
+
+		if (!success)throw new IllegalArgumentException("Delete: deletion failed");
+		else System.out.println("DEBUG: ApplicationModel#project:"+filePath + "was deleted");
+	}
+	
+	public void deleteProject(Project p)
+	{
+		deleteProjectFile(p.getSluggedLabel());
+		_projectList.remove(p);	
 	}
 	
 	public ArrayList<Project> getProjectList()
