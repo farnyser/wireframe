@@ -25,7 +25,7 @@ import view.EditableText;
 
 public class PageMenuProperties extends MTClipRectangle implements PropertyChangeListener {
 	
-	final static public float HEIGHT_WHEN_OPENED = 250;
+	final static public float HEIGHT_WHEN_OPENED = 200;
 	
 	protected boolean animationRunning = false; // for the slide up animation
 	
@@ -167,9 +167,16 @@ public class PageMenuProperties extends MTClipRectangle implements PropertyChang
 					animationRunning = true;
 					
 					if(initialPoint.y > (PageMenuProperties.HEIGHT_WHEN_OPENED / 3) && (Math.abs(initialPoint.x) <= 100)) {
-						MultiPurposeInterpolator slideUpInterpolator = new MultiPurposeInterpolator(PageMenuProperties.HEIGHT_WHEN_OPENED - initialPoint.y, PageMenuProperties.this.getFeedBackHeight(), duration, 0.0f, 1.0f, 1);
+						
+						if(initialPoint.y > PageMenuProperties.HEIGHT_WHEN_OPENED) {
+							animationRunning = false;
+							PageMenuProperties.this.setVisible(false);
+						}
+						else {
+							MultiPurposeInterpolator slideUpInterpolator = new MultiPurposeInterpolator(PageMenuProperties.HEIGHT_WHEN_OPENED - initialPoint.y, PageMenuProperties.this.getFeedBackHeight(), duration, 0.0f, 1.0f, 1);
 							slideAnimation.setInterpolator(slideUpInterpolator);
 							slideAnimation.start();
+						}
 					}
 					else {
 						MultiPurposeInterpolator slideDownInterpolator = new MultiPurposeInterpolator(PageMenuProperties.HEIGHT_WHEN_OPENED - initialPoint.y, PageMenuProperties.HEIGHT_WHEN_OPENED, duration, 0.0f, 1.0f, 1);
