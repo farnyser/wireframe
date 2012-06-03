@@ -6,6 +6,7 @@ import java.beans.PropertyChangeSupport;
 import java.util.Random;
 
 import org.mt4j.MTApplication;
+import org.mt4j.components.MTComponent;
 import org.mt4j.input.gestureAction.TapAndHoldVisualizer;
 import org.mt4j.input.inputProcessors.IGestureEventListener;
 import org.mt4j.input.inputProcessors.MTGestureEvent;
@@ -151,7 +152,6 @@ public class Page extends Element
 	{
 		super.setMinSize(_w, _h);
 		this.setFillColor(this.getColorFromId());
-		
 		menu.setVisible(false);
 	}
 	
@@ -159,7 +159,6 @@ public class Page extends Element
 	{
 		super.setFullSize();
 		this.setFillColor(MTColor.WHITE);
-		
 		menu.setVisible(true);
 		menu.sendToFront();
 	}

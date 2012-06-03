@@ -50,7 +50,7 @@ public class ApplicationModel {
 	public void saveCurrentProject(String path) {
 		
 		if(_currentProject == null) return;
-
+		
 		String filePath = path+_currentProject.getSluggedLabel()+".wire";
 		try {
 			File f = new File(path);
@@ -66,6 +66,30 @@ public class ApplicationModel {
 		}
 	}
 	
+	
+	public void saveProject(Project p)
+	{	
+		String newfilePath = Project._path + p.getSluggedLabel()+".wire";
+		try {
+			File f = new File(newfilePath);
+			ObjectOutput out = new ObjectOutputStream(new FileOutputStream(newfilePath));
+			out.writeObject(p);
+			out.close();
+			System.out.println("DEBUG: ApplicationModel#project saved to "+newfilePath);
+		}
+		catch(IOException e) {
+			System.out.println("DEBUG: ApplicationModel#can't save the project to "+newfilePath);
+			e.printStackTrace();
+		}
+	}
+	
+	
+	public void renameProject(Project p, String name)
+	{
+		this.deleteProjectFile(p.getSluggedLabel());
+		p.setLabel(name);
+		this.saveProject(p);
+	}
 	/**
 	 * Loads the project at the specified path
 	 * @param filePath
@@ -121,6 +145,30 @@ public class ApplicationModel {
 		}
 		
 		return _currentProject; 
+	}
+	
+	public void deleteProjectFile(String filename)
+	{
+		String filePath = Project._path + filename+".wire";
+		
+		File f = new File(filePath);
+			
+		// Make sure the file or directory exists and isn't write protected
+		if (!f.exists())throw new IllegalArgumentException("Delete: no such file or directory: " + filePath);
+
+		if (!f.canWrite())throw new IllegalArgumentException("Delete: write protected: " + filePath);
+	
+		// Attempt to delete it
+		boolean success = f.delete();
+
+		if (!success)throw new IllegalArgumentException("Delete: deletion failed");
+		else System.out.println("DEBUG: ApplicationModel#project:"+filePath + "was deleted");
+	}
+	
+	public void deleteProject(Project p)
+	{
+		deleteProjectFile(p.getSluggedLabel());
+		_projectList.remove(p);	
 	}
 	
 	public ArrayList<Project> getProjectList()

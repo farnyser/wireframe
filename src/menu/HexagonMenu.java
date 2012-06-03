@@ -501,13 +501,14 @@ public class HexagonMenu extends MTRectangle{
 			// Set Stroke/Border
 			/*rect.setStrokeColor(vss.getBorderColor());
 			  rect.setStrokeWeight(vss.getBorderWidth());*/
-			rect.setStrokeColor(new MTColor(154,192,205));
-			rect.setStrokeWeight(vss.getBorderWidth());
+			rect.setStrokeColor(MTColor.BLACK);
+			rect.setStrokeWeight(1);
 
 			// Set Font and Position for the child MTTextAreas
 			if (((MTPolygon) c).getTexture() == null) {
 				//rect.setFillColor(vss.getBackgroundColor());
 				rect.setFillColor(new MTColor(154,192,205));
+				
 				for (MTComponent d : c.getChildren()) {
 					if (d instanceof MTTextArea) {
 						MTTextArea ta = (MTTextArea) d;
