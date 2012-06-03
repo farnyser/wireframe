@@ -1,17 +1,13 @@
 package view.page;
 
-import org.mt4j.MTApplication;
 import org.mt4j.components.TransformSpace;
 import org.mt4j.components.visibleComponents.widgets.MTClipRectangle;
 import org.mt4j.components.visibleComponents.widgets.MTClipRoundRect;
 import org.mt4j.components.visibleComponents.widgets.MTTextArea;
-import org.mt4j.input.gestureAction.TapAndHoldVisualizer;
 import org.mt4j.input.inputProcessors.IGestureEventListener;
 import org.mt4j.input.inputProcessors.MTGestureEvent;
 import org.mt4j.input.inputProcessors.componentProcessors.dragProcessor.DragEvent;
 import org.mt4j.input.inputProcessors.componentProcessors.dragProcessor.DragProcessor;
-import org.mt4j.input.inputProcessors.componentProcessors.tapAndHoldProcessor.TapAndHoldEvent;
-import org.mt4j.input.inputProcessors.componentProcessors.tapAndHoldProcessor.TapAndHoldProcessor;
 import org.mt4j.input.inputProcessors.componentProcessors.tapProcessor.TapEvent;
 import org.mt4j.input.inputProcessors.componentProcessors.tapProcessor.TapProcessor;
 import org.mt4j.util.MTColor;
@@ -103,25 +99,27 @@ public class PageMenu extends MTClipRectangle {
 
 		this.removeAllGestureEventListeners();
 		
-		// Slide down animation
+		// Slide animation
 		final int duration = 200;
-		MultiPurposeInterpolator slideDownInterpolator = new MultiPurposeInterpolator(0, PageMenuProperties.HEIGHT_WHEN_OPENED, duration, 0.0f, 1.0f, 1);
-		final Animation slideDownAnimation = new Animation("Slide down anim", slideDownInterpolator, this.properties, 0);
-		slideDownAnimation.addAnimationListener(new IAnimationListener() {
+		MultiPurposeInterpolator defaultInterpolator = new MultiPurposeInterpolator(0, 0, duration, 0.0f, 1.0f, 1);
+		final Animation slideAnimation = new Animation("Slide anim", defaultInterpolator, this, 0);
+		slideAnimation.addAnimationListener(new IAnimationListener() {
 			
 			public void processAnimationEvent(AnimationEvent ae) {
-				PageMenu.this.properties.setHeightLocal(ae.getValue());
+				properties.setHeightLocal(ae.getValue());
 				
-				if(ae.getId() == AnimationEvent.ANIMATION_STARTED) {
-					PageMenu.this.properties.setVisible(true);
-				}
-				else if(ae.getId() == AnimationEvent.ANIMATION_ENDED) {
+				if(ae.getId() == AnimationEvent.ANIMATION_ENDED) {
 					animationRunning = false;
+					
+					// if this is a slide up movement, we hide the properties
+					if(ae.getDelta() <= 0) {
+						properties.setVisible(false);
+					}
 				}
 			}
-		});
+		});		
 		
-		// Slide Down interaction
+		// Slide interaction
 		this.addGestureListener(DragProcessor.class, new IGestureEventListener()
 		{
 			private Vector3D initialPoint;
@@ -131,18 +129,40 @@ public class PageMenu extends MTClipRectangle {
 				DragEvent de = (DragEvent) ge;
 				if(de.getId() == MTGestureEvent.GESTURE_STARTED) {
 					initialPoint = de.getFrom();
+					properties.setVisible(true);
+					properties.setHeightLocal(properties.getFeedBackHeight());
+				}
+				else if(de.getId() == MTGestureEvent.GESTURE_UPDATED) {
+					
+					float delta = de.getTo().subtractLocal(initialPoint).y;
+					
+					if(delta >= properties.getFeedBackHeight() && delta <= PageMenuProperties.HEIGHT_WHEN_OPENED) {
+						properties.setHeightLocal(delta);
+					}
 				}
 				else if(de.getId() == MTGestureEvent.GESTURE_ENDED) {
 
 					initialPoint = de.getTo().subtractLocal(initialPoint);
+
+					if(animationRunning) return false;
+					animationRunning = true;
 					
-					if(initialPoint.y > 150 && (Math.abs(initialPoint.x) <= 100)) {
-					
-						if (!animationRunning){
-							animationRunning = true;
+					if(initialPoint.y > (PageMenuProperties.HEIGHT_WHEN_OPENED / 3) && (Math.abs(initialPoint.x) <= 100)) {
 							properties.getEditablePageName().reloadText();
 							PageMenu.this.sendToFront();
-							slideDownAnimation.start();
+							MultiPurposeInterpolator slideDownInterpolator = new MultiPurposeInterpolator(initialPoint.y, PageMenuProperties.HEIGHT_WHEN_OPENED, duration, 0.0f, 1.0f, 1);
+							slideAnimation.setInterpolator(slideDownInterpolator);
+							slideAnimation.start();
+					}
+					else {
+						if(initialPoint.y <= properties.getFeedBackHeight()) {
+							animationRunning = false;
+							properties.setVisible(false);
+						}
+						else {
+							MultiPurposeInterpolator slideUpInterpolator = new MultiPurposeInterpolator(initialPoint.y, properties.getFeedBackHeight(), duration, 0.0f, 1.0f, 1);
+							slideAnimation.setInterpolator(slideUpInterpolator);
+							slideAnimation.start();
 						}
 					}
 				}

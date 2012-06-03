@@ -25,7 +25,7 @@ import view.EditableText;
 
 public class PageMenuProperties extends MTClipRectangle implements PropertyChangeListener {
 	
-	final static public float HEIGHT_WHEN_OPENED = 200;
+	final static public float HEIGHT_WHEN_OPENED = 250;
 	
 	protected boolean animationRunning = false; // for the slide up animation
 	
@@ -60,6 +60,7 @@ public class PageMenuProperties extends MTClipRectangle implements PropertyChang
 		pageNameLabel.setNoFill(true);
 		pageNameLabel.setNoStroke(true);
 		pageNameLabel.setPickable(false);
+		pageNameLabel.setVisible(false);
 		
 		_pageName = new EditableText(this.getRenderer()) 
 		{
@@ -92,6 +93,7 @@ public class PageMenuProperties extends MTClipRectangle implements PropertyChang
 		_pageName.setPositionRelativeToParent(new Vector3D(pageNameLabel.getPosition(TransformSpace.RELATIVE_TO_PARENT).x + pageNameLabel.getWidthXY(TransformSpace.RELATIVE_TO_PARENT) + 5, 15, 0));
 		_pageName.setFont(font);
 		_pageName.setNoStroke(false);
+		_pageName.setVisible(false);
 		
 		MTTextArea deleteLabel = new MTTextArea(this.getRenderer(), font);
 		this.addChild(deleteLabel);
@@ -102,15 +104,15 @@ public class PageMenuProperties extends MTClipRectangle implements PropertyChang
 		deleteLabel.setNoFill(true);
 		deleteLabel.setNoStroke(true);
 		deleteLabel.setPickable(false);
+		deleteLabel.setVisible(false);
 		
 		this.addChild(_sliderConfirm);
 		_sliderConfirm.setPositionRelativeToParent(new Vector3D(deleteLabel.getPosition(TransformSpace.RELATIVE_TO_PARENT).x + deleteLabel.getWidthXY(TransformSpace.RELATIVE_TO_PARENT) + 5, deleteLineY, 0));
-		
+		_sliderConfirm.setVisible(false);
 		
 		this.addChild(_feedback);
 		_feedback.setFillColor(MTColor.BLACK);
 		_feedback.setAnchor(PositionAnchor.LOWER_LEFT);
-		_feedback.setPickable(false);
 		_feedback.setNoStroke(true);
 	}
 	
@@ -118,46 +120,63 @@ public class PageMenuProperties extends MTClipRectangle implements PropertyChang
 
 		this.removeAllGestureEventListeners();
 		
-		// Slide up animation
+		// Slide animation
 		final int duration = 200;
-		MultiPurposeInterpolator slideUpInterpolator = new MultiPurposeInterpolator(PageMenuProperties.HEIGHT_WHEN_OPENED, 0, duration, 0.0f, 1.0f, 1);
-		final Animation slideUpAnimation = new Animation("Slide up anim", slideUpInterpolator, this, 0);
-		slideUpAnimation.addAnimationListener(new IAnimationListener() {
+		MultiPurposeInterpolator defaultInterpolator = new MultiPurposeInterpolator(0, 0, duration, 0.0f, 1.0f, 1);
+		final Animation slideAnimation = new Animation("Slide anim", defaultInterpolator, this, 0);
+		slideAnimation.addAnimationListener(new IAnimationListener() {
 			
 			public void processAnimationEvent(AnimationEvent ae) {
 				PageMenuProperties.this.setHeightLocal(ae.getValue());
 				
 				if(ae.getId() == AnimationEvent.ANIMATION_ENDED) {
 					animationRunning = false;
-					PageMenuProperties.this.setVisible(false);
+					
+					// if this is a slide up movement, we hide the properties
+					if(ae.getDelta() <= 0) {
+						PageMenuProperties.this.setVisible(false);
+					}
 				}
 			}
-		});
+		});		
 		
-		// Slide up interaction
-		this.addGestureListener(DragProcessor.class, new IGestureEventListener()
+		// Slide interaction
+		_feedback.removeAllGestureEventListeners();
+		_feedback.addGestureListener(DragProcessor.class, new IGestureEventListener()
 		{
 			private Vector3D initialPoint;
 
 			public boolean processGestureEvent(MTGestureEvent ge) 
 			{
 				DragEvent de = (DragEvent) ge;
-				
 				if(de.getId() == MTGestureEvent.GESTURE_STARTED) {
 					initialPoint = de.getFrom();
 				}
-				
-				if(de.getId() == MTGestureEvent.GESTURE_ENDED) {
+				else if(de.getId() == MTGestureEvent.GESTURE_UPDATED) {
 					
+					float delta = initialPoint.y - de.getTo().y;
+
+					if(delta > 0 && delta <= PageMenuProperties.HEIGHT_WHEN_OPENED - PageMenuProperties.this.getFeedBackHeight()) {
+						PageMenuProperties.this.setHeightLocal(PageMenuProperties.HEIGHT_WHEN_OPENED - delta);
+					}
+				}
+				else if(de.getId() == MTGestureEvent.GESTURE_ENDED) {
+
 					initialPoint.subtractLocal(de.getTo());
 
-					if(initialPoint.y > 100 && (Math.abs(initialPoint.x) <= 100)) {
-						if (!animationRunning){
-							animationRunning = true;
-							slideUpAnimation.start();
-						}
+					if(animationRunning) return false;
+					animationRunning = true;
+					
+					if(initialPoint.y > (PageMenuProperties.HEIGHT_WHEN_OPENED / 3) && (Math.abs(initialPoint.x) <= 100)) {
+						MultiPurposeInterpolator slideUpInterpolator = new MultiPurposeInterpolator(PageMenuProperties.HEIGHT_WHEN_OPENED - initialPoint.y, PageMenuProperties.this.getFeedBackHeight(), duration, 0.0f, 1.0f, 1);
+							slideAnimation.setInterpolator(slideUpInterpolator);
+							slideAnimation.start();
 					}
-
+					else {
+						MultiPurposeInterpolator slideDownInterpolator = new MultiPurposeInterpolator(PageMenuProperties.HEIGHT_WHEN_OPENED - initialPoint.y, PageMenuProperties.HEIGHT_WHEN_OPENED, duration, 0.0f, 1.0f, 1);
+						slideAnimation.setInterpolator(slideDownInterpolator);
+						slideAnimation.start();
+					}
 				}
 				
 		        return false;
@@ -172,6 +191,10 @@ public class PageMenuProperties extends MTClipRectangle implements PropertyChang
 
 		// on set la barre de feedback au bon Y
 		_feedback.setPositionRelativeToParent(new Vector3D(0, this.getHeightXY(TransformSpace.LOCAL), 0));
+	}
+	
+	public float getFeedBackHeight() {
+		return _feedback.getHeightXY(TransformSpace.LOCAL);
 	}
 
 	@Override
