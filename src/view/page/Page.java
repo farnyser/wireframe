@@ -5,6 +5,7 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
 import org.mt4j.MTApplication;
+import org.mt4j.components.MTComponent;
 import org.mt4j.input.gestureAction.TapAndHoldVisualizer;
 import org.mt4j.input.inputProcessors.IGestureEventListener;
 import org.mt4j.input.inputProcessors.MTGestureEvent;
@@ -148,14 +149,12 @@ public class Page extends Element
 	public void setMinSize(float _w, float _h) 
 	{
 		super.setMinSize(_w, _h);
-		
 		menu.setVisible(false);
 	}
 	
 	public void setFullSize() 
 	{
 		super.setFullSize();
-		
 		menu.setVisible(true);
 		menu.sendToFront();
 	}

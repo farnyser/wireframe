@@ -9,7 +9,6 @@ import org.mt4j.AbstractMTApplication;
 import org.mt4j.components.TransformSpace;
 import org.mt4j.components.visibleComponents.widgets.MTList;
 import org.mt4j.util.MTColor;
-
 import org.mt4j.util.animation.AnimationEvent;
 import org.mt4j.util.animation.IAnimation;
 import org.mt4j.util.animation.IAnimationListener;
@@ -17,6 +16,7 @@ import org.mt4j.util.animation.ani.AniAnimation;
 import org.mt4j.util.font.FontManager;
 import org.mt4j.util.font.IFont;
 import org.mt4j.util.math.Vector3D;
+
 import processing.core.PApplet;
 
 public class ExistProjectMenu extends MTList{

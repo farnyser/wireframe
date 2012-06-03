@@ -14,6 +14,7 @@ import org.mt4j.components.visibleComponents.widgets.MTTextArea;
 import org.mt4j.components.visibleComponents.widgets.keyboard.MTKeyboard;
 import org.mt4j.input.inputProcessors.IGestureEventListener;
 import org.mt4j.input.inputProcessors.MTGestureEvent;
+import org.mt4j.input.inputProcessors.componentProcessors.dragProcessor.DragProcessor;
 import org.mt4j.input.inputProcessors.componentProcessors.tapProcessor.TapEvent;
 import org.mt4j.input.inputProcessors.componentProcessors.tapProcessor.TapProcessor;
 import org.mt4j.util.MTColor;
@@ -26,7 +27,6 @@ import processing.core.PApplet;
 import processing.core.PConstants;
 import processing.core.PImage;
 import utils.Slugger;
-import view.EditableText;
 import view.page.Page;
 
 public class SingleProjectMenu extends MTListCell{
@@ -84,6 +84,8 @@ public class SingleProjectMenu extends MTListCell{
 		{
 			firstPage = new Page(this.getRenderer(), 0, 0, project.getPageList().get(0));
 			firstPage.setMinSize(preferredIconWidth, preferredIconWidth);
+			firstPage.setComposite(true);
+			firstPage.setPickable(false);
 			firstPage.rotateZ(firstPage.getCenterPointLocal(), 90, TransformSpace.LOCAL);
 			
 			Vertex[] vertices = new Vertex[]{
@@ -114,6 +116,7 @@ public class SingleProjectMenu extends MTListCell{
 			image.setTexture(defaultImage);
 		}				
 			
+		image.setComposite(true);
 		image.setStrokeColor(new MTColor(80,80,80, 255));
 		image.setNoStroke(true);
 		image.setName(titleArea.getText());
@@ -121,7 +124,8 @@ public class SingleProjectMenu extends MTListCell{
 		
 		image.setPositionRelativeToParent(this.getCenterPointLocal());
 		
-		image.removeAllGestureEventListeners(TapProcessor.class);
+		image.removeAllGestureEventListeners();
+		//image.removeAllGestureEventListeners(TapProcessor.class);
 		image.setGestureAllowance(TapProcessor.class, true);
 		TapProcessor tp = new TapProcessor(this.applet);
 		image.registerInputProcessor(tp);
@@ -140,6 +144,15 @@ public class SingleProjectMenu extends MTListCell{
 					}
 		        }	
 		        return false;
+			}
+		});
+		image.addGestureListener(DragProcessor.class, new IGestureEventListener(){
+			public boolean processGestureEvent(MTGestureEvent ge) 
+			{
+				if ( image.getParent() != null )
+					return image.getParent().processGestureEvent(ge);
+				else
+					return false;
 			}
 		});
 	}
