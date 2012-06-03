@@ -50,6 +50,7 @@ public class ApplicationModel {
 	public void saveCurrentProject(String path) {
 		
 		if(_currentProject == null) return;
+		if(_currentProject.getUpdateStatus() == false) return;
 		
 		String filePath = path+_currentProject.getSluggedLabel()+".wire";
 		try {
@@ -69,9 +70,12 @@ public class ApplicationModel {
 	
 	public void saveProject(Project p)
 	{	
+		if(p.getUpdateStatus() == false) return;
 		String newfilePath = Project._path + p.getSluggedLabel()+".wire";
+		
 		try {
-			File f = new File(newfilePath);
+			File f = new File(Project._path);
+			f.mkdirs();
 			ObjectOutput out = new ObjectOutputStream(new FileOutputStream(newfilePath));
 			out.writeObject(p);
 			out.close();
@@ -83,13 +87,20 @@ public class ApplicationModel {
 		}
 	}
 	
-	
+	/**
+	 * Rename a project
+	 * 
+	 * @param p		Project to rename
+	 * @param name	New name
+	 */
 	public void renameProject(Project p, String name)
 	{
-		this.deleteProjectFile(p.getSluggedLabel());
+		String oldname = p.getSluggedLabel();
 		p.setLabel(name);
 		this.saveProject(p);
+		this.deleteProjectFile(oldname);
 	}
+	
 	/**
 	 * Loads the project at the specified path
 	 * @param filePath

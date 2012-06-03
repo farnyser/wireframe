@@ -1,7 +1,5 @@
 package view.page;
 
-import java.util.Random;
-
 import org.mt4j.components.TransformSpace;
 import org.mt4j.components.visibleComponents.widgets.MTClipRectangle;
 import org.mt4j.components.visibleComponents.widgets.MTClipRoundRect;

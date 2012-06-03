@@ -6,7 +6,6 @@ import java.beans.PropertyChangeSupport;
 import java.util.Random;
 
 import org.mt4j.MTApplication;
-import org.mt4j.components.MTComponent;
 import org.mt4j.input.gestureAction.TapAndHoldVisualizer;
 import org.mt4j.input.inputProcessors.IGestureEventListener;
 import org.mt4j.input.inputProcessors.MTGestureEvent;
