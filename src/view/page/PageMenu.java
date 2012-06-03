@@ -1,13 +1,17 @@
 package view.page;
 
+import org.mt4j.MTApplication;
 import org.mt4j.components.TransformSpace;
 import org.mt4j.components.visibleComponents.widgets.MTClipRectangle;
 import org.mt4j.components.visibleComponents.widgets.MTClipRoundRect;
 import org.mt4j.components.visibleComponents.widgets.MTTextArea;
+import org.mt4j.input.gestureAction.TapAndHoldVisualizer;
 import org.mt4j.input.inputProcessors.IGestureEventListener;
 import org.mt4j.input.inputProcessors.MTGestureEvent;
 import org.mt4j.input.inputProcessors.componentProcessors.dragProcessor.DragEvent;
 import org.mt4j.input.inputProcessors.componentProcessors.dragProcessor.DragProcessor;
+import org.mt4j.input.inputProcessors.componentProcessors.tapAndHoldProcessor.TapAndHoldEvent;
+import org.mt4j.input.inputProcessors.componentProcessors.tapAndHoldProcessor.TapAndHoldProcessor;
 import org.mt4j.input.inputProcessors.componentProcessors.tapProcessor.TapEvent;
 import org.mt4j.input.inputProcessors.componentProcessors.tapProcessor.TapProcessor;
 import org.mt4j.util.MTColor;
@@ -119,16 +123,19 @@ public class PageMenu extends MTClipRectangle {
 		// Slide Down interaction
 		this.addGestureListener(DragProcessor.class, new IGestureEventListener()
 		{
+			private Vector3D initialPoint;
+
 			public boolean processGestureEvent(MTGestureEvent ge) 
 			{
 				DragEvent de = (DragEvent) ge;
-				
-				if(de.getId() == MTGestureEvent.GESTURE_ENDED) {
+				if(de.getId() == MTGestureEvent.GESTURE_STARTED) {
+					initialPoint = de.getFrom();
+				}
+				else if(de.getId() == MTGestureEvent.GESTURE_ENDED) {
+
+					initialPoint = de.getTo().subtractLocal(initialPoint);
 					
-					Vector3D move = de.getTo();
-					move.subtractLocal(PageMenu.this.getCenterPointGlobal());
-					
-					if(move.y > 150 && (Math.abs(move.x) <= 100)) {
+					if(initialPoint.y > 150 && (Math.abs(initialPoint.x) <= 100)) {
 					
 						if (!animationRunning){
 							animationRunning = true;
