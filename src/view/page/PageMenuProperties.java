@@ -165,7 +165,7 @@ public class PageMenuProperties extends MTClipRectangle implements PropertyChang
 
 					if(animationRunning) return false;
 					animationRunning = true;
-					
+
 					if(initialPoint.y > (PageMenuProperties.HEIGHT_WHEN_OPENED / 3) && (Math.abs(initialPoint.x) <= 100)) {
 						
 						if(initialPoint.y > PageMenuProperties.HEIGHT_WHEN_OPENED) {
@@ -179,9 +179,14 @@ public class PageMenuProperties extends MTClipRectangle implements PropertyChang
 						}
 					}
 					else {
-						MultiPurposeInterpolator slideDownInterpolator = new MultiPurposeInterpolator(PageMenuProperties.HEIGHT_WHEN_OPENED - initialPoint.y, PageMenuProperties.HEIGHT_WHEN_OPENED, duration, 0.0f, 1.0f, 1);
-						slideAnimation.setInterpolator(slideDownInterpolator);
-						slideAnimation.start();
+						if(initialPoint.y > 0 && initialPoint.y < PageMenuProperties.HEIGHT_WHEN_OPENED - PageMenuProperties.this.getFeedBackHeight()) {
+							MultiPurposeInterpolator slideDownInterpolator = new MultiPurposeInterpolator(PageMenuProperties.HEIGHT_WHEN_OPENED - initialPoint.y, PageMenuProperties.HEIGHT_WHEN_OPENED, duration, 0.0f, 1.0f, 1);
+							slideAnimation.setInterpolator(slideDownInterpolator);
+							slideAnimation.start();
+						}
+						else {
+							animationRunning = false;
+						}
 					}
 				}
 				

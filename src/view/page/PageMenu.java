@@ -131,6 +131,8 @@ public class PageMenu extends MTClipRectangle {
 					initialPoint = de.getFrom();
 					properties.setVisible(true);
 					properties.setHeightLocal(properties.getFeedBackHeight());
+					properties.getEditablePageName().reloadText();
+					PageMenu.this.sendToFront();
 				}
 				else if(de.getId() == MTGestureEvent.GESTURE_UPDATED) {
 					
@@ -148,11 +150,15 @@ public class PageMenu extends MTClipRectangle {
 					animationRunning = true;
 					
 					if(initialPoint.y > (PageMenuProperties.HEIGHT_WHEN_OPENED / 3) && (Math.abs(initialPoint.x) <= 100)) {
-							properties.getEditablePageName().reloadText();
-							PageMenu.this.sendToFront();
-							MultiPurposeInterpolator slideDownInterpolator = new MultiPurposeInterpolator(initialPoint.y, PageMenuProperties.HEIGHT_WHEN_OPENED, duration, 0.0f, 1.0f, 1);
-							slideAnimation.setInterpolator(slideDownInterpolator);
-							slideAnimation.start();
+							
+							if(initialPoint.y < PageMenuProperties.HEIGHT_WHEN_OPENED) {							
+								MultiPurposeInterpolator slideDownInterpolator = new MultiPurposeInterpolator(initialPoint.y, PageMenuProperties.HEIGHT_WHEN_OPENED, duration, 0.0f, 1.0f, 1);
+								slideAnimation.setInterpolator(slideDownInterpolator);
+								slideAnimation.start();
+							}
+							else {
+								animationRunning = false;
+							}
 					}
 					else {
 						if(initialPoint.y <= properties.getFeedBackHeight()) {
