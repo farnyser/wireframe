@@ -31,12 +31,15 @@ public class PageMenuProperties extends MTClipRectangle implements PropertyChang
 	
 	protected ConfirmationSlider _sliderConfirm;
 	protected EditableText _pageName;
+	protected MTClipRectangle _feedback;
 
 	PageMenuProperties(PApplet applet) {
 		super(applet, 0, 0, 0, 400, 0);
 
 		_sliderConfirm = new ConfirmationSlider(applet, 200, 20, 15);
 		_sliderConfirm.addPropertyChangeListener(ConfirmationSlider.EVENT_CONFIRMATION, this);
+		
+		_feedback = new MTClipRectangle(applet, 0, this.getHeightXY(TransformSpace.LOCAL), 0, 400, 20);
 		
 		initGraphics();
 		initGesture();
@@ -102,6 +105,13 @@ public class PageMenuProperties extends MTClipRectangle implements PropertyChang
 		
 		this.addChild(_sliderConfirm);
 		_sliderConfirm.setPositionRelativeToParent(new Vector3D(deleteLabel.getPosition(TransformSpace.RELATIVE_TO_PARENT).x + deleteLabel.getWidthXY(TransformSpace.RELATIVE_TO_PARENT) + 5, deleteLineY, 0));
+		
+		
+		this.addChild(_feedback);
+		_feedback.setFillColor(MTColor.BLACK);
+		_feedback.setAnchor(PositionAnchor.LOWER_LEFT);
+		_feedback.setPickable(false);
+		_feedback.setNoStroke(true);
 	}
 	
 	protected void initGesture() {
@@ -128,6 +138,7 @@ public class PageMenuProperties extends MTClipRectangle implements PropertyChang
 		this.addGestureListener(DragProcessor.class, new IGestureEventListener()
 		{
 			private Vector3D initialPoint;
+
 			public boolean processGestureEvent(MTGestureEvent ge) 
 			{
 				DragEvent de = (DragEvent) ge;
@@ -153,6 +164,15 @@ public class PageMenuProperties extends MTClipRectangle implements PropertyChang
 			}
 		});
 	} 
+	
+	@Override
+	public void setHeightLocal(float height) {
+		
+		super.setHeightLocal(height);
+
+		// on set la barre de feedback au bon Y
+		_feedback.setPositionRelativeToParent(new Vector3D(0, this.getHeightXY(TransformSpace.LOCAL), 0));
+	}
 
 	@Override
 	public void propertyChange(PropertyChangeEvent ev) {
