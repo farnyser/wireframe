@@ -20,35 +20,46 @@ import org.mt4j.util.math.Vector3D;
 import processing.core.PApplet;
 import view.EditableText;
 
-public class PageMenu extends MTClipRectangle {
+public class PageMenu extends MTClipRectangle 
+{
+	final public static int HEIGHT = 25;
+	final public static int ARROW_HEIGHT = 10;
+	final public static int CLOSE_PADDING = 3;
+	final public static int CLOSE_HEIGHT = HEIGHT - 2 * CLOSE_PADDING;
+	final public static int PROPERTIES_HEIGHT = PageMenuProperties.HEIGHT_WHEN_OPENED;
+	final public static int TOTAL_HEIGHT = HEIGHT+ARROW_HEIGHT+CLOSE_HEIGHT+PROPERTIES_HEIGHT;
 	
 	protected EditableText textArea;
 	protected PageMenuProperties properties;
+	protected MTClipRectangle topbar;
 	protected MTClipRectangle arrowDown;
-	protected PApplet applet;
 	protected MTClipRoundRect close;
+	protected PApplet applet;
 	
 	private boolean animationRunning = false; // for the slide down animation	
 
 	public PageMenu(PApplet applet) 
 	{
-		super(applet, 0, 0, 0, 400, 25);
+		super(applet, 0, 0, 0, 400, PageMenu.TOTAL_HEIGHT);
 
 		this.applet = applet;
 		textArea = new EditableText(applet) 
 		{
 			@Override
-			protected boolean handleGesture(MTGestureEvent e) {
-				return PageMenu.this.processGestureEvent(e);
+			protected boolean handleGesture(MTGestureEvent e) 
+			{
+				return PageMenu.this.topbar.processGestureEvent(e);
 			}
 
 			@Override
-			protected void textUpdated(String newUnformatedText) {
+			protected void textUpdated(String newUnformatedText) 
+			{
 				((model.Page)((view.page.Page) PageMenu.this.getParent()).getModel()).setLabel(newUnformatedText);
 			}
 
 			@Override
-			protected String getUnformatedText() {
+			protected String getUnformatedText() 
+			{
 				if(PageMenu.this.getParent() != null) {
 					return ((model.Page)((view.page.Page) PageMenu.this.getParent()).getModel()).getLabel();
 				}
@@ -56,55 +67,63 @@ public class PageMenu extends MTClipRectangle {
 			}
 
 			@Override
-			protected String getFormatedText() {
+			protected String getFormatedText() 
+			{
 				return getUnformatedText();
 			}
 			
 		};
 		properties = new PageMenuProperties(applet);
-		arrowDown = new MTClipRectangle(applet, 0, 0, 0, 10, 10);
+		arrowDown = new MTClipRectangle(applet, 0, 0, 0, ARROW_HEIGHT, ARROW_HEIGHT);
+		topbar = new MTClipRectangle(applet, 0, 0, 0, 400, PageMenu.HEIGHT);
 
 		initGraphics();
 		initGesture();
 	}
 	 
-	protected void initGraphics() {
-		this.setFillColor(MTColor.GRAY);
+	protected void initGraphics() 
+	{
+		this.setPickable(false);
+		this.setNoFill(true);
 		this.setNoStroke(true);
-
-		textArea.setFillColor(new MTColor(0,0,0,MTColor.ALPHA_FULL_TRANSPARENCY));
+		
+		topbar.setNoStroke(true);
+		topbar.setFillColor(MTColor.GRAY);
+		this.addChild(topbar);
+		
 		textArea.setNoStroke(true);
-		textArea.setHeightXYGlobal(25);
+		textArea.setHeightXYGlobal(PageMenu.HEIGHT);
 		this.addChild(textArea);
 		
 		this.addChild(properties);
 		properties.setAnchor(PositionAnchor.UPPER_LEFT);
-		properties.setPositionRelativeToParent(new Vector3D(0, this.getHeight(), 0));
+		properties.setPositionRelativeToParent(new Vector3D(0, PageMenu.HEIGHT, 0));
 		
 		this.addChild(arrowDown);
 		arrowDown.setFillColor(MTColor.GRAY);
 		arrowDown.setNoStroke(true);
-		arrowDown.setPositionRelativeToParent(new Vector3D(this.getWidth() / 2, this.getHeight(), 0));
+		arrowDown.setPositionRelativeToParent(new Vector3D(this.getWidth() / 2, PageMenu.HEIGHT, 0));
 		arrowDown.rotateZ(arrowDown.getCenterPointLocal(), 45, TransformSpace.LOCAL);
 		
 		textArea.sendToFront();
 		
-		close = new MTClipRoundRect(applet, 0, 0, 0, 20, 20, 10, 10);
+		close = new MTClipRoundRect(applet, 0, 0, 0, CLOSE_HEIGHT, CLOSE_HEIGHT, CLOSE_HEIGHT/2, CLOSE_HEIGHT/2);
 		close.setFillColor(MTColor.RED);
-		close.setPositionRelativeToParent(new Vector3D(this.getWidth(), 0, 0));
+		close.setPositionRelativeToParent(new Vector3D(this.getWidth()-CLOSE_HEIGHT/2 - CLOSE_PADDING, CLOSE_HEIGHT/2 + CLOSE_PADDING, 0));
 		this.addChild(close);
 	}
 	
 	protected void initGesture() {
 
 		this.removeAllGestureEventListeners();
+		topbar.removeAllGestureEventListeners();
 		
 		// Slide animation
 		final int duration = 200;
-		MultiPurposeInterpolator defaultInterpolator = new MultiPurposeInterpolator(0, 0, duration, 0.0f, 1.0f, 1);
-		final Animation slideAnimation = new Animation("Slide anim", defaultInterpolator, this, 0);
-		slideAnimation.addAnimationListener(new IAnimationListener() {
-			
+		MultiPurposeInterpolator slideDownInterpolator = new MultiPurposeInterpolator(0, PageMenuProperties.HEIGHT_WHEN_OPENED, duration, 0.0f, 1.0f, 1);
+		final Animation slideDownAnimation = new Animation("Slide down anim", slideDownInterpolator, this.properties, 0);
+		slideDownAnimation.addAnimationListener(new IAnimationListener()
+		{
 			public void processAnimationEvent(AnimationEvent ae) {
 				properties.setHeightLocal(ae.getValue());
 				
@@ -118,9 +137,8 @@ public class PageMenu extends MTClipRectangle {
 				}
 			}
 		});		
-		
-		// Slide interaction
-		this.addGestureListener(DragProcessor.class, new IGestureEventListener()
+		// Slide Down interaction
+		topbar.addGestureListener(DragProcessor.class, new IGestureEventListener()
 		{
 			private Vector3D initialPoint;
 
@@ -134,8 +152,8 @@ public class PageMenu extends MTClipRectangle {
 					properties.getEditablePageName().reloadText();
 					PageMenu.this.sendToFront();
 				}
-				else if(de.getId() == MTGestureEvent.GESTURE_UPDATED) {
-					
+				else if(de.getId() == MTGestureEvent.GESTURE_UPDATED)
+				{
 					float delta = de.getTo().subtractLocal(initialPoint).y;
 					
 					if(delta >= properties.getFeedBackHeight() && delta <= PageMenuProperties.HEIGHT_WHEN_OPENED) {
@@ -153,8 +171,8 @@ public class PageMenu extends MTClipRectangle {
 							
 							if(initialPoint.y < PageMenuProperties.HEIGHT_WHEN_OPENED) {							
 								MultiPurposeInterpolator slideDownInterpolator = new MultiPurposeInterpolator(initialPoint.y, PageMenuProperties.HEIGHT_WHEN_OPENED, duration, 0.0f, 1.0f, 1);
-								slideAnimation.setInterpolator(slideDownInterpolator);
-								slideAnimation.start();
+								slideDownAnimation.setInterpolator(slideDownInterpolator);
+								slideDownAnimation.start();
 							}
 							else {
 								animationRunning = false;
@@ -167,8 +185,8 @@ public class PageMenu extends MTClipRectangle {
 						}
 						else {
 							MultiPurposeInterpolator slideUpInterpolator = new MultiPurposeInterpolator(initialPoint.y, properties.getFeedBackHeight(), duration, 0.0f, 1.0f, 1);
-							slideAnimation.setInterpolator(slideUpInterpolator);
-							slideAnimation.start();
+							slideDownAnimation.setInterpolator(slideUpInterpolator);
+							slideDownAnimation.start();
 						}
 					}
 				}
@@ -202,22 +220,21 @@ public class PageMenu extends MTClipRectangle {
 		});
 	}
 	
-	public void changePageName(String newLabel) {
+	public void changePageName(String newLabel) 
+	{
 		this.textArea.setText(newLabel);
 		this.properties.getEditablePageName().reloadText();
 		
-		this.textArea.setPositionRelativeToParent(this.getCenterPointLocal());		
+		this.textArea.setPositionRelativeToParent(new Vector3D(this.getCenterPointLocal().x, HEIGHT/2));		
 	}
 	
 	public void setColor(MTColor c) 
 	{
-		this.setFillColor(c);
+		topbar.setFillColor(c);
 		arrowDown.setFillColor(c);
 		properties.setFillColor(c);
 	}
 	
 	public float getHeight() { return this.getHeightXYGlobal(); }
 	public float getWidth() { return this.getWidthXYGlobal(); }
-
-	public MTTextArea getTextArea() { return this.textArea; }
 }

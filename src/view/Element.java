@@ -27,6 +27,7 @@ public abstract class Element extends MTClipRectangle implements PropertyChangeL
 		_model = p;
 		mw = p.getWidth();
 		mh =  p.getHeight();
+		initObject();
 		initGraphics();
 		initGesture();
 		
@@ -49,6 +50,7 @@ public abstract class Element extends MTClipRectangle implements PropertyChangeL
 		applet = e.applet;
 		mh = e.mh; 
 		mw = e.mw;
+		initObject();
 		initGraphics();
 		initGesture();
 		this.setPositionGlobal(e.getCenterPointGlobal());
@@ -170,6 +172,7 @@ public abstract class Element extends MTClipRectangle implements PropertyChangeL
 		return el;
 	}
 
+	protected void initObject() {};
 	protected abstract void initGesture();
 	protected abstract void initGraphics();
 }
