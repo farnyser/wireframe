@@ -3,10 +3,8 @@ package view.page;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.util.Random;
 
 import org.mt4j.MTApplication;
-import org.mt4j.components.visibleComponents.shapes.MTRectangle;
 import org.mt4j.input.gestureAction.TapAndHoldVisualizer;
 import org.mt4j.input.inputProcessors.IGestureEventListener;
 import org.mt4j.input.inputProcessors.MTGestureEvent;
@@ -139,7 +137,7 @@ public class Page extends Element
 	protected void initGraphics() 
 	{
 		this.setFillColor(MTColor.WHITE);
-		
+
 		menu = new PageMenu(applet);
 		this.addChild(menu);
 		menu.setWidthXYGlobal(this.getWidthXYGlobal());

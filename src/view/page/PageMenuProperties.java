@@ -110,9 +110,14 @@ public class PageMenuProperties extends MTClipRectangle implements PropertyChang
 		_sliderConfirm.setPositionRelativeToParent(new Vector3D(_deleteLabel.getPosition(TransformSpace.RELATIVE_TO_PARENT).x + _deleteLabel.getWidthXY(TransformSpace.RELATIVE_TO_PARENT) + 5, deleteLineY, 0));
 		
 		this.addChild(_feedback);
-		_feedback.setFillColor(MTColor.BLACK);
 		_feedback.setAnchor(PositionAnchor.LOWER_LEFT);
 		_feedback.setNoStroke(true);
+	}
+	
+	public void setFillColor(MTColor c) {
+		super.setFillColor(c);
+		
+		_feedback.setFillColor(new MTColor(c.getR() - 50, c.getG() - 50, c.getB() - 50, c.getAlpha()));
 	}
 	
 	protected void initGesture() {

@@ -3,7 +3,6 @@ package view.page;
 import org.mt4j.components.TransformSpace;
 import org.mt4j.components.visibleComponents.widgets.MTClipRectangle;
 import org.mt4j.components.visibleComponents.widgets.MTClipRoundRect;
-import org.mt4j.components.visibleComponents.widgets.MTTextArea;
 import org.mt4j.input.inputProcessors.IGestureEventListener;
 import org.mt4j.input.inputProcessors.MTGestureEvent;
 import org.mt4j.input.inputProcessors.componentProcessors.dragProcessor.DragEvent;
