@@ -66,6 +66,13 @@ public class Widget extends view.Element
         {
         	this.setPositionRelativeToParent(this.getModel().getPosition());
         }
+		else if ( propertyName == "setLinks" ) 
+        {
+			if ( getModel().getLinks() != null )
+				this.setStrokeColor(getModel().getLinks().getColorFromId());
+			else
+				this.setStrokeColor(MTColor.BLACK);
+        }
 	}
 	
 	/**
@@ -392,6 +399,10 @@ public class Widget extends view.Element
 						System.out.println("create link between " + Widget.this + " and " + target);
 						((view.page.Page)target).getModel().addLinked(Widget.this.getModel());
 						Widget.this.getModel().addLink(((view.page.Page)target).getModel());
+					}
+					else
+					{
+						Widget.this.getModel().addLink(null);
 					}
 					
 					line.destroy();

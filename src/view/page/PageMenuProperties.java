@@ -25,7 +25,7 @@ import view.EditableText;
 
 public class PageMenuProperties extends MTClipRectangle implements PropertyChangeListener {
 	
-	final static public float HEIGHT_WHEN_OPENED = 200;
+	final static public int HEIGHT_WHEN_OPENED = 200;
 	
 	protected boolean animationRunning = false; // for the slide up animation
 	

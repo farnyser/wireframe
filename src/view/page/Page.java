@@ -6,6 +6,7 @@ import java.beans.PropertyChangeSupport;
 import java.util.Random;
 
 import org.mt4j.MTApplication;
+import org.mt4j.components.visibleComponents.shapes.MTRectangle;
 import org.mt4j.input.gestureAction.TapAndHoldVisualizer;
 import org.mt4j.input.inputProcessors.IGestureEventListener;
 import org.mt4j.input.inputProcessors.MTGestureEvent;
@@ -23,8 +24,8 @@ public class Page extends Element
 {
 	final static public String EVENT_DELETE_PAGE = "event_delete_page";
 	
+	protected MTRectangle content = null;
 	protected PageMenu menu;
-	
 	protected PropertyChangeSupport _viewNotifier  = new PropertyChangeSupport(this);
 	
 	public Page(PApplet a, model.Page p) 
@@ -36,7 +37,7 @@ public class Page extends Element
 	
 	public Page(Page p, Boolean create_new_model)
 	{
-		super(p,create_new_model); 
+		super(p,create_new_model);
 	}
 	
 	public model.Page getModel() 
@@ -62,8 +63,20 @@ public class Page extends Element
 		}
 	}
 
+	protected void initObject()
+	{
+		content = new MTRectangle(this.getRenderer(), 0, PageMenu.TOTAL_HEIGHT - PageMenu.PROPERTIES_HEIGHT, this.getWidthXYGlobal(), this.getHeightXYGlobal()-(PageMenu.TOTAL_HEIGHT - PageMenu.PROPERTIES_HEIGHT));
+		this.addChild(content);
+	}
+	
 	protected void initGesture()
 	{
+		content.removeAllGestureEventListeners();
+		content.addGestureListener(DragProcessor.class, new IGestureEventListener() 
+		{
+			public boolean processGestureEvent(MTGestureEvent ge) { return Page.this.processGestureEvent(ge); }
+		});
+		
 		this.removeAllGestureEventListeners(DragProcessor.class);
 		this.addGestureListener(DragProcessor.class, new IGestureEventListener() 
 		{
@@ -94,9 +107,9 @@ public class Page extends Element
 				return false;
 			}
 		});
-		this.registerInputProcessor(new TapAndHoldProcessor((MTApplication)applet,1000));
-		this.addGestureListener(TapAndHoldProcessor.class,new TapAndHoldVisualizer((MTApplication)applet, this));
-		this.addGestureListener(TapAndHoldProcessor.class, new IGestureEventListener() 
+		content.registerInputProcessor(new TapAndHoldProcessor((MTApplication)applet,1000));
+		content.addGestureListener(TapAndHoldProcessor.class,new TapAndHoldVisualizer((MTApplication)applet, this));
+		content.addGestureListener(TapAndHoldProcessor.class, new IGestureEventListener() 
 		{
 		    @Override
 		    public boolean processGestureEvent(MTGestureEvent ge) 
@@ -131,10 +144,9 @@ public class Page extends Element
 		this.addChild(menu);
 		menu.setWidthXYGlobal(this.getWidthXYGlobal());
 		menu.setAnchor(PositionAnchor.UPPER_LEFT);
-		menu.setPositionRelativeToParent(new Vector3D(0, -menu.getHeight(), 0));
-		menu.getTextArea().setText(((model.Page) _model).getLabel());
-		menu.getTextArea().setPositionRelativeToParent(menu.getCenterPointLocal());
-		menu.setColor(getColorFromId());
+		menu.setPositionRelativeToParent(new Vector3D(0, 0, 0));
+		menu.changePageName(((model.Page) _model).getLabel());
+		menu.setColor(this.getModel().getColorFromId());
 		
 		for ( model.Element e : _model.getElements() )
 		{
@@ -151,7 +163,7 @@ public class Page extends Element
 	public void setMinSize(float _w, float _h) 
 	{
 		super.setMinSize(_w, _h);
-		this.setFillColor(this.getColorFromId());
+		this.setFillColor(this.getModel().getColorFromId());
 		menu.setVisible(false);
 	}
 	
@@ -181,14 +193,5 @@ public class Page extends Element
 	public PropertyChangeSupport getViewNotifier() 
 	{ 
 		return _viewNotifier; 
-	}
-	
-	public MTColor getColorFromId()
-	{
-		Random rand = new Random(_model.hashCode());
-		int r = rand.nextInt(200) + 55;
-		int g = rand.nextInt(200) + 55;
-		int b = rand.nextInt(200) + 55;
-		return new MTColor(r,g,b);
 	}
 }

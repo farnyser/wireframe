@@ -1,7 +1,10 @@
 package model;
 
 import java.io.Serializable;
+import java.util.Random;
 import java.util.Vector;
+
+import org.mt4j.util.MTColor;
 
 public class Page extends Element implements Serializable 
 {
@@ -43,5 +46,18 @@ public class Page extends Element implements Serializable
 	{
 		if ( linkeds.contains(widget) == false )
 			linkeds.add(widget);
+	}
+	
+	/**
+	 * Get Random color associated to model
+	 * @return a MTColor object
+	 */
+	public MTColor getColorFromId()
+	{
+		Random rand = new Random(this.hashCode());
+		int r = rand.nextInt(200) + 55;
+		int g = rand.nextInt(200) + 55;
+		int b = rand.nextInt(200) + 55;
+		return new MTColor(r,g,b);
 	}
 }

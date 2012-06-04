@@ -20,35 +20,45 @@ import org.mt4j.util.math.Vector3D;
 import processing.core.PApplet;
 import view.EditableText;
 
-public class PageMenu extends MTClipRectangle {
+public class PageMenu extends MTClipRectangle 
+{
+	final public static int HEIGHT = 25;
+	final public static int ARROW_HEIGHT = 10;
+	final public static int CLOSE_HEIGHT = 20;
+	final public static int PROPERTIES_HEIGHT = PageMenuProperties.HEIGHT_WHEN_OPENED;
+	final public static int TOTAL_HEIGHT = HEIGHT+ARROW_HEIGHT+CLOSE_HEIGHT+PROPERTIES_HEIGHT;
 	
 	protected EditableText textArea;
 	protected PageMenuProperties properties;
+	protected MTClipRectangle topbar;
 	protected MTClipRectangle arrowDown;
-	protected PApplet applet;
 	protected MTClipRoundRect close;
+	protected PApplet applet;
 	
 	private boolean animationRunning = false; // for the slide down animation	
 
 	public PageMenu(PApplet applet) 
 	{
-		super(applet, 0, 0, 0, 400, 25);
+		super(applet, 0, 0, 0, 400, PageMenu.TOTAL_HEIGHT);
 
 		this.applet = applet;
 		textArea = new EditableText(applet) 
 		{
 			@Override
-			protected boolean handleGesture(MTGestureEvent e) {
-				return PageMenu.this.processGestureEvent(e);
+			protected boolean handleGesture(MTGestureEvent e) 
+			{
+				return PageMenu.this.topbar.processGestureEvent(e);
 			}
 
 			@Override
-			protected void textUpdated(String newUnformatedText) {
+			protected void textUpdated(String newUnformatedText) 
+			{
 				((model.Page)((view.page.Page) PageMenu.this.getParent()).getModel()).setLabel(newUnformatedText);
 			}
 
 			@Override
-			protected String getUnformatedText() {
+			protected String getUnformatedText() 
+			{
 				if(PageMenu.this.getParent() != null) {
 					return ((model.Page)((view.page.Page) PageMenu.this.getParent()).getModel()).getLabel();
 				}
@@ -56,40 +66,46 @@ public class PageMenu extends MTClipRectangle {
 			}
 
 			@Override
-			protected String getFormatedText() {
+			protected String getFormatedText() 
+			{
 				return getUnformatedText();
 			}
 			
 		};
 		properties = new PageMenuProperties(applet);
-		arrowDown = new MTClipRectangle(applet, 0, 0, 0, 10, 10);
+		arrowDown = new MTClipRectangle(applet, 0, 0, 0, ARROW_HEIGHT, ARROW_HEIGHT);
+		topbar = new MTClipRectangle(applet, 0, 0, 0, 400, PageMenu.HEIGHT);
 
 		initGraphics();
 		initGesture();
 	}
 	 
-	protected void initGraphics() {
-		this.setFillColor(MTColor.GRAY);
+	protected void initGraphics() 
+	{
+		this.setNoFill(true);
 		this.setNoStroke(true);
-
-		textArea.setFillColor(new MTColor(0,0,0,MTColor.ALPHA_FULL_TRANSPARENCY));
+		
+		topbar.setNoStroke(true);
+		topbar.setFillColor(MTColor.GRAY);
+		this.addChild(topbar);
+		
 		textArea.setNoStroke(true);
-		textArea.setHeightXYGlobal(25);
+		textArea.setHeightXYGlobal(PageMenu.HEIGHT);
 		this.addChild(textArea);
 		
 		this.addChild(properties);
 		properties.setAnchor(PositionAnchor.UPPER_LEFT);
-		properties.setPositionRelativeToParent(new Vector3D(0, this.getHeight(), 0));
+		properties.setPositionRelativeToParent(new Vector3D(0, PageMenu.HEIGHT, 0));
 		
 		this.addChild(arrowDown);
 		arrowDown.setFillColor(MTColor.GRAY);
 		arrowDown.setNoStroke(true);
-		arrowDown.setPositionRelativeToParent(new Vector3D(this.getWidth() / 2, this.getHeight(), 0));
+		arrowDown.setPositionRelativeToParent(new Vector3D(this.getWidth() / 2, PageMenu.HEIGHT, 0));
 		arrowDown.rotateZ(arrowDown.getCenterPointLocal(), 45, TransformSpace.LOCAL);
 		
 		textArea.sendToFront();
 		
-		close = new MTClipRoundRect(applet, 0, 0, 0, 20, 20, 10, 10);
+		close = new MTClipRoundRect(applet, 0, 0, 0, CLOSE_HEIGHT, CLOSE_HEIGHT, CLOSE_HEIGHT/2, CLOSE_HEIGHT/2);
 		close.setFillColor(MTColor.RED);
 		close.setPositionRelativeToParent(new Vector3D(this.getWidth(), 0, 0));
 		this.addChild(close);
@@ -98,13 +114,14 @@ public class PageMenu extends MTClipRectangle {
 	protected void initGesture() {
 
 		this.removeAllGestureEventListeners();
+		topbar.removeAllGestureEventListeners();
 		
 		// Slide down animation
 		final int duration = 200;
 		MultiPurposeInterpolator slideDownInterpolator = new MultiPurposeInterpolator(0, PageMenuProperties.HEIGHT_WHEN_OPENED, duration, 0.0f, 1.0f, 1);
 		final Animation slideDownAnimation = new Animation("Slide down anim", slideDownInterpolator, this.properties, 0);
-		slideDownAnimation.addAnimationListener(new IAnimationListener() {
-			
+		slideDownAnimation.addAnimationListener(new IAnimationListener()
+		{
 			public void processAnimationEvent(AnimationEvent ae) {
 				PageMenu.this.properties.setHeightLocal(ae.getValue());
 				
@@ -118,7 +135,7 @@ public class PageMenu extends MTClipRectangle {
 		});
 		
 		// Slide Down interaction
-		this.addGestureListener(DragProcessor.class, new IGestureEventListener()
+		topbar.addGestureListener(DragProcessor.class, new IGestureEventListener()
 		{
 			public boolean processGestureEvent(MTGestureEvent ge) 
 			{
@@ -127,7 +144,7 @@ public class PageMenu extends MTClipRectangle {
 				if(de.getId() == MTGestureEvent.GESTURE_ENDED) {
 					
 					Vector3D move = de.getTo();
-					move.subtractLocal(PageMenu.this.getCenterPointGlobal());
+					move.subtractLocal(PageMenu.this.topbar.getCenterPointGlobal());
 					
 					if(move.y > 150 && (Math.abs(move.x) <= 100)) {
 					
@@ -169,22 +186,21 @@ public class PageMenu extends MTClipRectangle {
 		});
 	}
 	
-	public void changePageName(String newLabel) {
+	public void changePageName(String newLabel) 
+	{
 		this.textArea.setText(newLabel);
 		this.properties.getEditablePageName().reloadText();
 		
-		this.textArea.setPositionRelativeToParent(this.getCenterPointLocal());		
+		this.textArea.setPositionRelativeToParent(new Vector3D(this.getCenterPointLocal().x, HEIGHT/2));		
 	}
 	
 	public void setColor(MTColor c) 
 	{
-		this.setFillColor(c);
+		topbar.setFillColor(c);
 		arrowDown.setFillColor(c);
 		properties.setFillColor(c);
 	}
 	
 	public float getHeight() { return this.getHeightXYGlobal(); }
 	public float getWidth() { return this.getWidthXYGlobal(); }
-
-	public MTTextArea getTextArea() { return this.textArea; }
 }
