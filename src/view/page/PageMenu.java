@@ -116,42 +116,74 @@ public class PageMenu extends MTClipRectangle
 		this.removeAllGestureEventListeners();
 		topbar.removeAllGestureEventListeners();
 		
-		// Slide down animation
+		// Slide animation
 		final int duration = 200;
 		MultiPurposeInterpolator slideDownInterpolator = new MultiPurposeInterpolator(0, PageMenuProperties.HEIGHT_WHEN_OPENED, duration, 0.0f, 1.0f, 1);
 		final Animation slideDownAnimation = new Animation("Slide down anim", slideDownInterpolator, this.properties, 0);
 		slideDownAnimation.addAnimationListener(new IAnimationListener()
 		{
 			public void processAnimationEvent(AnimationEvent ae) {
-				PageMenu.this.properties.setHeightLocal(ae.getValue());
+				properties.setHeightLocal(ae.getValue());
 				
-				if(ae.getId() == AnimationEvent.ANIMATION_STARTED) {
-					PageMenu.this.properties.setVisible(true);
-				}
-				else if(ae.getId() == AnimationEvent.ANIMATION_ENDED) {
+				if(ae.getId() == AnimationEvent.ANIMATION_ENDED) {
 					animationRunning = false;
+					
+					// if this is a slide up movement, we hide the properties
+					if(ae.getDelta() <= 0) {
+						properties.setVisible(false);
+					}
 				}
 			}
-		});
-		
+		});		
 		// Slide Down interaction
 		topbar.addGestureListener(DragProcessor.class, new IGestureEventListener()
 		{
+			private Vector3D initialPoint;
+
 			public boolean processGestureEvent(MTGestureEvent ge) 
 			{
 				DragEvent de = (DragEvent) ge;
-				
-				if(de.getId() == MTGestureEvent.GESTURE_ENDED) {
+				if(de.getId() == MTGestureEvent.GESTURE_STARTED) {
+					initialPoint = de.getFrom();
+					properties.setVisible(true);
+					properties.setHeightLocal(properties.getFeedBackHeight());
+					properties.getEditablePageName().reloadText();
+					PageMenu.this.sendToFront();
+				}
+				else if(de.getId() == MTGestureEvent.GESTURE_UPDATED)
+				{
+					float delta = de.getTo().subtractLocal(initialPoint).y;
 					
-					Vector3D move = de.getTo();
-					move.subtractLocal(PageMenu.this.topbar.getCenterPointGlobal());
+					if(delta >= properties.getFeedBackHeight() && delta <= PageMenuProperties.HEIGHT_WHEN_OPENED) {
+						properties.setHeightLocal(delta);
+					}
+				}
+				else if(de.getId() == MTGestureEvent.GESTURE_ENDED) {
+
+					initialPoint = de.getTo().subtractLocal(initialPoint);
+
+					if(animationRunning) return false;
+					animationRunning = true;
 					
-					if(move.y > 150 && (Math.abs(move.x) <= 100)) {
-					
-						if (!animationRunning){
-							animationRunning = true;
-							properties.getEditablePageName().reloadText();
-							PageMenu.this.sendToFront();
+					if(initialPoint.y > (PageMenuProperties.HEIGHT_WHEN_OPENED / 3) && (Math.abs(initialPoint.x) <= 100)) {
+							
+							if(initialPoint.y < PageMenuProperties.HEIGHT_WHEN_OPENED) {							
+								MultiPurposeInterpolator slideDownInterpolator = new MultiPurposeInterpolator(initialPoint.y, PageMenuProperties.HEIGHT_WHEN_OPENED, duration, 0.0f, 1.0f, 1);
+								slideDownAnimation.setInterpolator(slideDownInterpolator);
+								slideDownAnimation.start();
+							}
+							else {
+								animationRunning = false;
+							}
+					}
+					else {
+						if(initialPoint.y <= properties.getFeedBackHeight()) {
+							animationRunning = false;
+							properties.setVisible(false);
+						}
+						else {
+							MultiPurposeInterpolator slideUpInterpolator = new MultiPurposeInterpolator(initialPoint.y, properties.getFeedBackHeight(), duration, 0.0f, 1.0f, 1);
+							slideDownAnimation.setInterpolator(slideUpInterpolator);
 							slideDownAnimation.start();
 						}
 					}

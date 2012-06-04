@@ -31,12 +31,21 @@ public class PageMenuProperties extends MTClipRectangle implements PropertyChang
 	
 	protected ConfirmationSlider _sliderConfirm;
 	protected EditableText _pageName;
+	protected MTClipRectangle _feedback;
+	protected MTTextArea _pageNameLabel;
+	protected MTTextArea _deleteLabel;
 
 	PageMenuProperties(PApplet applet) {
 		super(applet, 0, 0, 0, 400, 0);
 
 		_sliderConfirm = new ConfirmationSlider(applet, 200, 20, 15);
 		_sliderConfirm.addPropertyChangeListener(ConfirmationSlider.EVENT_CONFIRMATION, this);
+		
+		IFont font = FontManager.getInstance().createFont(this.getRenderer(), "SansSerif", 12);
+		_pageNameLabel = new MTTextArea(this.getRenderer(), font);
+		_deleteLabel = new MTTextArea(this.getRenderer(), font);
+		
+		_feedback = new MTClipRectangle(applet, 0, this.getHeightXY(TransformSpace.LOCAL), 0, 400, 20);
 		
 		initGraphics();
 		initGesture();
@@ -47,16 +56,14 @@ public class PageMenuProperties extends MTClipRectangle implements PropertyChang
 		this.setNoStroke(true);
 		this.setVisible(false);
 		
-		IFont font = FontManager.getInstance().createFont(this.getRenderer(), "SansSerif", 12);
 		
-		MTTextArea pageNameLabel = new MTTextArea(this.getRenderer(), font);
-		this.addChild(pageNameLabel);
-		pageNameLabel.setAnchor(PositionAnchor.UPPER_LEFT);
-		pageNameLabel.setPositionRelativeToParent(new Vector3D(10, 15, 0));
-		pageNameLabel.setText("Nom de la page");
-		pageNameLabel.setNoFill(true);
-		pageNameLabel.setNoStroke(true);
-		pageNameLabel.setPickable(false);
+		this.addChild(_pageNameLabel);
+		_pageNameLabel.setAnchor(PositionAnchor.UPPER_LEFT);
+		_pageNameLabel.setPositionRelativeToParent(new Vector3D(10, 15, 0));
+		_pageNameLabel.setText("Nom de la page");
+		_pageNameLabel.setNoFill(true);
+		_pageNameLabel.setNoStroke(true);
+		_pageNameLabel.setPickable(false);
 		
 		_pageName = new EditableText(this.getRenderer()) 
 		{
@@ -86,73 +93,126 @@ public class PageMenuProperties extends MTClipRectangle implements PropertyChang
 	    
 		this.addChild(_pageName);
 		_pageName.setAnchor(PositionAnchor.UPPER_LEFT);
-		_pageName.setPositionRelativeToParent(new Vector3D(pageNameLabel.getPosition(TransformSpace.RELATIVE_TO_PARENT).x + pageNameLabel.getWidthXY(TransformSpace.RELATIVE_TO_PARENT) + 5, 15, 0));
-		_pageName.setFont(font);
+		_pageName.setPositionRelativeToParent(new Vector3D(_pageNameLabel.getPosition(TransformSpace.RELATIVE_TO_PARENT).x + _pageNameLabel.getWidthXY(TransformSpace.RELATIVE_TO_PARENT) + 5, 15, 0));
+		_pageName.setFont(_pageNameLabel.getFont());
 		_pageName.setNoStroke(false);
 		
-		MTTextArea deleteLabel = new MTTextArea(this.getRenderer(), font);
-		this.addChild(deleteLabel);
-		deleteLabel.setAnchor(PositionAnchor.UPPER_LEFT);
-		float deleteLineY = pageNameLabel.getPosition(TransformSpace.RELATIVE_TO_PARENT).y + pageNameLabel.getHeightXY(TransformSpace.RELATIVE_TO_PARENT) + 10;
-		deleteLabel.setPositionRelativeToParent(new Vector3D(10, deleteLineY, 0));
-		deleteLabel.setText("Suppression de la page");
-		deleteLabel.setNoFill(true);
-		deleteLabel.setNoStroke(true);
-		deleteLabel.setPickable(false);
+		this.addChild(_deleteLabel);
+		_deleteLabel.setAnchor(PositionAnchor.UPPER_LEFT);
+		float deleteLineY = _pageNameLabel.getPosition(TransformSpace.RELATIVE_TO_PARENT).y + _pageNameLabel.getHeightXY(TransformSpace.RELATIVE_TO_PARENT) + 10;
+		_deleteLabel.setPositionRelativeToParent(new Vector3D(10, deleteLineY, 0));
+		_deleteLabel.setText("Suppression de la page");
+		_deleteLabel.setNoFill(true);
+		_deleteLabel.setNoStroke(true);
+		_deleteLabel.setPickable(false);
 		
 		this.addChild(_sliderConfirm);
-		_sliderConfirm.setPositionRelativeToParent(new Vector3D(deleteLabel.getPosition(TransformSpace.RELATIVE_TO_PARENT).x + deleteLabel.getWidthXY(TransformSpace.RELATIVE_TO_PARENT) + 5, deleteLineY, 0));
+		_sliderConfirm.setPositionRelativeToParent(new Vector3D(_deleteLabel.getPosition(TransformSpace.RELATIVE_TO_PARENT).x + _deleteLabel.getWidthXY(TransformSpace.RELATIVE_TO_PARENT) + 5, deleteLineY, 0));
+		
+		this.addChild(_feedback);
+		_feedback.setFillColor(MTColor.BLACK);
+		_feedback.setAnchor(PositionAnchor.LOWER_LEFT);
+		_feedback.setNoStroke(true);
 	}
 	
 	protected void initGesture() {
 
 		this.removeAllGestureEventListeners();
 		
-		// Slide up animation
+		// Slide animation
 		final int duration = 200;
-		MultiPurposeInterpolator slideUpInterpolator = new MultiPurposeInterpolator(PageMenuProperties.HEIGHT_WHEN_OPENED, 0, duration, 0.0f, 1.0f, 1);
-		final Animation slideUpAnimation = new Animation("Slide up anim", slideUpInterpolator, this, 0);
-		slideUpAnimation.addAnimationListener(new IAnimationListener() {
+		MultiPurposeInterpolator defaultInterpolator = new MultiPurposeInterpolator(0, 0, duration, 0.0f, 1.0f, 1);
+		final Animation slideAnimation = new Animation("Slide anim", defaultInterpolator, this, 0);
+		slideAnimation.addAnimationListener(new IAnimationListener() {
 			
 			public void processAnimationEvent(AnimationEvent ae) {
 				PageMenuProperties.this.setHeightLocal(ae.getValue());
 				
 				if(ae.getId() == AnimationEvent.ANIMATION_ENDED) {
 					animationRunning = false;
-					PageMenuProperties.this.setVisible(false);
+					
+					// if this is a slide up movement, we hide the properties
+					if(ae.getDelta() <= 0) {
+						PageMenuProperties.this.setVisible(false);
+					}
 				}
 			}
-		});
+		});		
 		
-		// Slide up interaction
-		this.addGestureListener(DragProcessor.class, new IGestureEventListener()
+		// Slide interaction
+		_feedback.removeAllGestureEventListeners();
+		_feedback.addGestureListener(DragProcessor.class, new IGestureEventListener()
 		{
 			private Vector3D initialPoint;
+
 			public boolean processGestureEvent(MTGestureEvent ge) 
 			{
 				DragEvent de = (DragEvent) ge;
-				
 				if(de.getId() == MTGestureEvent.GESTURE_STARTED) {
 					initialPoint = de.getFrom();
 				}
-				
-				if(de.getId() == MTGestureEvent.GESTURE_ENDED) {
+				else if(de.getId() == MTGestureEvent.GESTURE_UPDATED) {
 					
+					float delta = initialPoint.y - de.getTo().y;
+
+					if(delta > 0 && delta <= PageMenuProperties.HEIGHT_WHEN_OPENED - PageMenuProperties.this.getFeedBackHeight()) {
+						PageMenuProperties.this.setHeightLocal(PageMenuProperties.HEIGHT_WHEN_OPENED - delta);
+					}
+				}
+				else if(de.getId() == MTGestureEvent.GESTURE_ENDED) {
+
 					initialPoint.subtractLocal(de.getTo());
 
-					if(initialPoint.y > 100 && (Math.abs(initialPoint.x) <= 100)) {
-						if (!animationRunning){
-							animationRunning = true;
-							slideUpAnimation.start();
+					if(animationRunning) return false;
+					animationRunning = true;
+
+					if(initialPoint.y > (PageMenuProperties.HEIGHT_WHEN_OPENED / 3) && (Math.abs(initialPoint.x) <= 100)) {
+						
+						if(initialPoint.y > PageMenuProperties.HEIGHT_WHEN_OPENED) {
+							animationRunning = false;
+							PageMenuProperties.this.setVisible(false);
+						}
+						else {
+							MultiPurposeInterpolator slideUpInterpolator = new MultiPurposeInterpolator(PageMenuProperties.HEIGHT_WHEN_OPENED - initialPoint.y, PageMenuProperties.this.getFeedBackHeight(), duration, 0.0f, 1.0f, 1);
+							slideAnimation.setInterpolator(slideUpInterpolator);
+							slideAnimation.start();
 						}
 					}
-
+					else {
+						if(initialPoint.y > 0 && initialPoint.y < PageMenuProperties.HEIGHT_WHEN_OPENED - PageMenuProperties.this.getFeedBackHeight()) {
+							MultiPurposeInterpolator slideDownInterpolator = new MultiPurposeInterpolator(PageMenuProperties.HEIGHT_WHEN_OPENED - initialPoint.y, PageMenuProperties.HEIGHT_WHEN_OPENED, duration, 0.0f, 1.0f, 1);
+							slideAnimation.setInterpolator(slideDownInterpolator);
+							slideAnimation.start();
+						}
+						else {
+							animationRunning = false;
+						}
+					}
 				}
 				
 		        return false;
 			}
 		});
 	} 
+	
+	@Override
+	public void setHeightLocal(float height) {
+		
+		super.setHeightLocal(height);
+
+		// on set la barre de feedback au bon Y
+		_feedback.setPositionRelativeToParent(new Vector3D(0, this.getHeightXY(TransformSpace.LOCAL), 0));
+		
+		// on affiche ou non les composants
+		_pageNameLabel.setVisible(_pageNameLabel.getPosition(TransformSpace.RELATIVE_TO_PARENT).y + _pageNameLabel.getHeightXY(TransformSpace.LOCAL) <= height);
+		_deleteLabel.setVisible(_deleteLabel.getPosition(TransformSpace.RELATIVE_TO_PARENT).y + _deleteLabel.getHeightXY(TransformSpace.LOCAL) <= height);
+		_pageName.setVisible(_pageName.getPosition(TransformSpace.RELATIVE_TO_PARENT).y + _pageName.getHeightXY(TransformSpace.LOCAL) <= height);
+		_sliderConfirm.setVisible(_sliderConfirm.getPosition(TransformSpace.RELATIVE_TO_PARENT).y + _sliderConfirm.getHeightXY(TransformSpace.LOCAL) <= height);
+	}
+	
+	public float getFeedBackHeight() {
+		return _feedback.getHeightXY(TransformSpace.LOCAL);
+	}
 
 	@Override
 	public void propertyChange(PropertyChangeEvent ev) {

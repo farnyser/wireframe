@@ -1,7 +1,17 @@
 package view;
 
+import java.awt.Dimension;
+import java.awt.Rectangle;
+import java.awt.Robot;
+import java.awt.Toolkit;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+
+import javax.imageio.ImageIO;
 
 import menu.ExistProjectMenu;
 import menu.HexagonMenu;
@@ -59,7 +69,7 @@ public class StartMenuScene extends AbstractScene{
 		menus.add(new MenuItem("Project", new gestureListener("Project",this)));
 		menus.add(new MenuItem(newPageIcon, new gestureListener("New page",this)));
 		menus.add(new MenuItem("Exit", new gestureListener("Exit",this)));
-		menus.add(new MenuItem("Undo", new gestureListener("Undo",this)));
+		menus.add(new MenuItem("Export", new gestureListener("Export",this)));
 		menus.add(new MenuItem("Redo", new gestureListener("Redo",this)));
 
 		//Create Hexagon Menu
@@ -121,9 +131,9 @@ public class StartMenuScene extends AbstractScene{
 					{
 						redoOperation();
 					}
-					if(string.equals("Undo"))
+					if(string.equals("Export"))
 					{
-						undoOperation();
+						exportToPngOperation();
 					}
 				}
 			}
@@ -222,9 +232,24 @@ public class StartMenuScene extends AbstractScene{
 			
 	    }
 		
-		private void undoOperation()
+		private void exportToPngOperation()
 	    {
-	    	
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-HHmmss");
+			String date = sdf.format(Calendar.getInstance().getTime());
+			String fileName = "export/"+date+"-"+model.getCurrentProject().getSluggedLabel()+".png";
+
+			try {
+				Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+				Rectangle screenRectangle = new Rectangle(screenSize);
+				Robot robot = new Robot();
+				BufferedImage image = robot.createScreenCapture(screenRectangle);
+				File f = new File(fileName);
+				f.mkdirs();
+				ImageIO.write(image, "png", f);
+			}
+			catch(Exception e) {
+				System.out.println(e.getStackTrace());
+			}
 	    }
 	}
 
