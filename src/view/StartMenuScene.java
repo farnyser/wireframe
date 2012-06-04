@@ -21,6 +21,9 @@ import model.ApplicationModel;
 import model.Project;
 
 import org.mt4j.AbstractMTApplication;
+import org.mt4j.components.visibleComponents.shapes.MTEllipse;
+import org.mt4j.components.visibleComponents.shapes.MTRectangle;
+import org.mt4j.components.visibleComponents.widgets.MTSceneTexture;
 import org.mt4j.input.inputProcessors.IGestureEventListener;
 import org.mt4j.input.inputProcessors.MTGestureEvent;
 import org.mt4j.input.inputProcessors.componentProcessors.tapProcessor.TapEvent;
@@ -31,6 +34,7 @@ import org.mt4j.util.math.Vector3D;
 import org.mt4jx.components.visibleComponents.widgets.menus.MenuItem;
 
 import processing.core.PImage;
+import advanced.drawing.DrawSurfaceScene;
 
 public class StartMenuScene extends AbstractScene{
 
@@ -42,6 +46,8 @@ public class StartMenuScene extends AbstractScene{
 	RectangleMenu rMenu = null;
 	NewProjectMenu nameArea = null;
 	ExistProjectMenu projectList = null;
+	private DrawSurfaceScene drawingScene;
+	private MTEllipse pencilBrush;	
 	
 	public StartMenuScene(AbstractMTApplication mtApplication, String name, ApplicationModel model)
 	{
@@ -54,6 +60,8 @@ public class StartMenuScene extends AbstractScene{
 		this.model = model;
 		this.app = mtApplication;
 		this.getCanvas().setFrustumCulling(true); //?
+
+		initializeDrawing();
 		
 		// on le cree par defaut pour que la PageLibrary capte les evenements des view.Page
 		this.pages = new PageLibrary(app, app.getWidth()-75, 0, 75, app.getHeight(), model);
@@ -75,7 +83,7 @@ public class StartMenuScene extends AbstractScene{
 		//Create Hexagon Menu
 		hMenu = new HexagonMenu(app, new Vector3D(800,550), menus, 70);
 		this.getCanvas().addChild(hMenu);
-	
+		
 	}
 	
 	public void onEnter() {}
@@ -251,6 +259,35 @@ public class StartMenuScene extends AbstractScene{
 				System.out.println(e.getStackTrace());
 			}
 	    }
+	}
+	
+	protected void initializeDrawing() {
+		
+		//Create window frame
+        MTRectangle frame = new MTRectangle(app, app.width, app.height);
+        this.getCanvas().addChild(frame);
+        
+        frame.setFillColor(new MTColor(200, 210, 215));
+        
+        //Create the scene in which we actually draw
+        drawingScene = new DrawSurfaceScene(app, "DrawSurface Scene");
+        drawingScene.setClear(false);
+		
+		//Create pencil brush
+		pencilBrush = new MTEllipse(this.getMTApplication(), new Vector3D(7.5f, 7.5f,0), 7.5f, 7.5f, 60);
+		pencilBrush.setPickable(false);
+		pencilBrush.setNoFill(false);
+		pencilBrush.setNoStroke(false);
+		pencilBrush.setDrawSmooth(true);
+		pencilBrush.setStrokeColor(new MTColor(0, 0, 0, 255));
+		pencilBrush.setFillColor(new MTColor(0, 0, 0, 255));
+		
+		drawingScene.setBrush(pencilBrush);
+		
+		final MTSceneTexture sceneTexture = new MTSceneTexture(app, 0, 0, app.width, app.height, drawingScene);
+        sceneTexture.getFbo().clear(true, 255, 255, 255, 0, true);
+        sceneTexture.setStrokeColor(new MTColor(155,155,155));
+        frame.addChild(sceneTexture);
 	}
 
 }
