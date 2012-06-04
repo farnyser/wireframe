@@ -24,7 +24,8 @@ public class PageMenu extends MTClipRectangle
 {
 	final public static int HEIGHT = 25;
 	final public static int ARROW_HEIGHT = 10;
-	final public static int CLOSE_HEIGHT = 20;
+	final public static int CLOSE_PADDING = 3;
+	final public static int CLOSE_HEIGHT = HEIGHT - 2 * CLOSE_PADDING;
 	final public static int PROPERTIES_HEIGHT = PageMenuProperties.HEIGHT_WHEN_OPENED;
 	final public static int TOTAL_HEIGHT = HEIGHT+ARROW_HEIGHT+CLOSE_HEIGHT+PROPERTIES_HEIGHT;
 	
@@ -82,6 +83,7 @@ public class PageMenu extends MTClipRectangle
 	 
 	protected void initGraphics() 
 	{
+		this.setPickable(false);
 		this.setNoFill(true);
 		this.setNoStroke(true);
 		
@@ -107,7 +109,7 @@ public class PageMenu extends MTClipRectangle
 		
 		close = new MTClipRoundRect(applet, 0, 0, 0, CLOSE_HEIGHT, CLOSE_HEIGHT, CLOSE_HEIGHT/2, CLOSE_HEIGHT/2);
 		close.setFillColor(MTColor.RED);
-		close.setPositionRelativeToParent(new Vector3D(this.getWidth(), 0, 0));
+		close.setPositionRelativeToParent(new Vector3D(this.getWidth()-CLOSE_HEIGHT/2 - CLOSE_PADDING, CLOSE_HEIGHT/2 + CLOSE_PADDING, 0));
 		this.addChild(close);
 	}
 	

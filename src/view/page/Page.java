@@ -24,7 +24,7 @@ public class Page extends Element
 {
 	final static public String EVENT_DELETE_PAGE = "event_delete_page";
 	
-	protected MTRectangle content = null;
+	protected PageContent content = null;
 	protected PageMenu menu;
 	protected PropertyChangeSupport _viewNotifier  = new PropertyChangeSupport(this);
 	
@@ -65,7 +65,7 @@ public class Page extends Element
 
 	protected void initObject()
 	{
-		content = new MTRectangle(this.getRenderer(), 0, PageMenu.TOTAL_HEIGHT - PageMenu.PROPERTIES_HEIGHT, this.getWidthXYGlobal(), this.getHeightXYGlobal()-(PageMenu.TOTAL_HEIGHT - PageMenu.PROPERTIES_HEIGHT));
+		content = new PageContent(this.getRenderer(), 0, PageMenu.HEIGHT, this.getWidthXYGlobal(), this.getHeightXYGlobal()-(PageMenu.HEIGHT));
 		this.addChild(content);
 	}
 	

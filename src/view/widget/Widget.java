@@ -25,6 +25,7 @@ import org.mt4j.util.math.Vector3D;
 import processing.core.PApplet;
 import view.DeleteEffect;
 import view.Library;
+import view.page.PageContent;
 
 public class Widget extends view.Element
 {
@@ -122,8 +123,8 @@ public class Widget extends view.Element
 		
 		for ( int i = mtcs.size()-1 ; i >= 0 ; i-- )
 		{
-			// on ne s'interesse qu'aux collisions avec des objets "element" et "library"
-			if ( !(mtcs.get(i) instanceof view.Element) && !(mtcs.get(i) instanceof view.Library) )
+			// on ne s'interesse qu'aux collisions avec des objets "widget", "pagecontent" et "library"
+			if ( !(mtcs.get(i) instanceof view.widget.Widget) && !(mtcs.get(i) instanceof view.page.PageContent) && !(mtcs.get(i) instanceof view.Library) )
 				continue;
 			
 			boolean inside = true;
@@ -209,6 +210,9 @@ public class Widget extends view.Element
 						
 						if ( c != null )
 						{
+							if ( c instanceof view.page.PageContent )
+								c = c.getParent();
+							
 							// dragged to library
 							if ( c instanceof Library ) 
 							{
