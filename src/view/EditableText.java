@@ -62,9 +62,9 @@ public abstract class EditableText extends MTTextArea
 	private void initGesture()
 	{
 		this.setPickable(true);
-		
+		this.removeAllGestureEventListeners();
+
 	    // Add Tap listener to evoke Keyboard
-		this.removeAllGestureEventListeners(DragProcessor.class);
 		this.setGestureAllowance(TapProcessor.class, true);
 		TapProcessor tp = new TapProcessor(this.applet);
 		tp.setEnableDoubleTap(true);

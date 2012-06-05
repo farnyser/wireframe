@@ -5,9 +5,7 @@ import java.util.Vector;
 
 import org.mt4j.MTApplication;
 import org.mt4j.components.MTComponent;
-import org.mt4j.components.PickResult;
 import org.mt4j.components.visibleComponents.shapes.MTLine;
-import org.mt4j.components.visibleComponents.widgets.MTListCell;
 import org.mt4j.input.gestureAction.TapAndHoldVisualizer;
 import org.mt4j.input.inputProcessors.IGestureEventListener;
 import org.mt4j.input.inputProcessors.MTGestureEvent;
@@ -25,7 +23,6 @@ import org.mt4j.util.math.Vector3D;
 import processing.core.PApplet;
 import view.DeleteEffect;
 import view.Library;
-import view.page.PageContent;
 
 public class Widget extends view.Element
 {
@@ -153,10 +150,40 @@ public class Widget extends view.Element
 		return c;
 	}
 	
+	/**
+	 * Get component at a global position (x,y)
+	 * "Page" is the only component picked (other are rejected)
+	 * @return a component or null
+	 */
+	protected MTComponent getMTComponent(float x, float y)
+	{
+		MTComponent c = null;
+		
+		Vector<MTComponent> mtcs = Widget.this.getMTcomponents();
+		mtcs.remove(Widget.this);
+		
+		for ( int i = mtcs.size()-1 ; i >= 0 ; i-- )
+		{
+			// on ne s'interesse qu'aux collisions avec des objets "page"
+			if ( !(mtcs.get(i) instanceof view.page.Page) )
+				continue;
+			
+			MTComponent p = mtcs.get(i);
+			if ( p.getBounds() == null ) { continue; }
+			if ( p.containsPointGlobal(new Vector3D(x,y)) ) { c = p; break; }
+		}
+		
+		return c;
+	}
+
 	protected void initGraphics()
 	{
 		this.setFillColor(MTColor.WHITE);
-		this.setStrokeColor(MTColor.BLACK);
+		
+		if ( getModel().getLinks() != null )
+			this.setStrokeColor(getModel().getLinks().getColorFromId());
+		else
+			this.setStrokeColor(MTColor.BLACK);
 		
 		for ( model.Element e : _model.getElements() )
 		{
@@ -393,10 +420,7 @@ public class Widget extends view.Element
 				if ( de.getId() == MTGestureEvent.GESTURE_ENDED )
 				{
 					Vector3D p = (de.getSecondCursor().getPosition());
-					
-					PickResult pk = Widget.this.getRoot().pick(p.x, p.y, true);
-					MTComponent target = pk.getNearestPickResult();
-					if ( target instanceof MTListCell ) { target = target.getChildByIndex(0); }
+					MTComponent target = Widget.this.getMTComponent(p.x, p.y);
 					
 					if ( target instanceof view.page.Page )
 					{
@@ -406,6 +430,8 @@ public class Widget extends view.Element
 					}
 					else
 					{
+						if ( getModel().getLinks() != null )
+							getModel().getLinks().removeLinked(Widget.this.getModel());
 						Widget.this.getModel().addLink(null);
 					}
 					

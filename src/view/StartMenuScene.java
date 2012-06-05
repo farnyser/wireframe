@@ -34,7 +34,6 @@ import org.mt4j.util.math.Vector3D;
 import org.mt4jx.components.visibleComponents.widgets.menus.MenuItem;
 
 import processing.core.PImage;
-import advanced.drawing.DrawSurfaceScene;
 
 public class StartMenuScene extends AbstractScene{
 

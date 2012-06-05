@@ -47,6 +47,12 @@ public class Page extends Element implements Serializable
 		if ( linkeds.contains(widget) == false )
 			linkeds.add(widget);
 	}
+
+	public void removeLinked(model.widget.Widget widget) 
+	{
+		if ( linkeds.contains(widget) == false )
+			linkeds.remove(widget);
+	}
 	
 	/**
 	 * Get Random color associated to model
@@ -60,4 +66,5 @@ public class Page extends Element implements Serializable
 		int b = rand.nextInt(200) + 55;
 		return new MTColor(r,g,b);
 	}
+
 }
