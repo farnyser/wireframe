@@ -1,13 +1,23 @@
 package view.widget;
 
+import org.mt4j.MTApplication;
+import org.mt4j.components.MTComponent;
 import org.mt4j.components.TransformSpace;
 import org.mt4j.components.visibleComponents.shapes.MTPolygon;
 import org.mt4j.components.visibleComponents.shapes.MTRectangle;
+import org.mt4j.input.gestureAction.TapAndHoldVisualizer;
+import org.mt4j.input.inputProcessors.IGestureEventListener;
+import org.mt4j.input.inputProcessors.MTGestureEvent;
+import org.mt4j.input.inputProcessors.componentProcessors.dragProcessor.DragProcessor;
+import org.mt4j.input.inputProcessors.componentProcessors.rotateProcessor.RotateProcessor;
+import org.mt4j.input.inputProcessors.componentProcessors.scaleProcessor.ScaleProcessor;
+import org.mt4j.input.inputProcessors.componentProcessors.tapAndHoldProcessor.TapAndHoldProcessor;
 import org.mt4j.util.MTColor;
 import org.mt4j.util.math.Vector3D;
 import org.mt4j.util.math.Vertex;
 
 import processing.core.PApplet;
+import view.EditableText;
 
 public class Video extends Widget 
 {
@@ -59,9 +69,54 @@ public class Video extends Widget
 				this.getCenterPointLocal().x - this.getWidthXY(TransformSpace.LOCAL)/2 + BUTTON + 2 * PADDING, 
 				this.getCenterPointLocal().y + this.getHeightXY(TransformSpace.LOCAL)/2 - BUTTON/2 - TIMELINE - PADDING)
 		);
-	timeline.setStrokeColor(MTColor.BLACK);
+		timeline.setStrokeColor(MTColor.BLACK);
 		
-		this.setComposite(true);
+		
+		this.composite(timeline);
+		this.composite(play);
+		this.composite(screen);
+		this.composite(button);
+
 		super.initGraphics();
+	}
+	
+	void composite(MTComponent m)
+	{
+		m.removeAllGestureEventListeners();
+		
+		// drag event passed to other widget
+		m.addGestureListener(DragProcessor.class, new IGestureEventListener()
+		{
+			public boolean processGestureEvent(MTGestureEvent ge) 
+			{
+		        return Video.this.processGestureEvent(ge);
+			}
+		});
+		// scale event passed to other widget
+		m.addGestureListener(ScaleProcessor.class, new IGestureEventListener()
+		{
+			public boolean processGestureEvent(MTGestureEvent ge) 
+			{
+		        return Video.this.processGestureEvent(ge);
+			}
+		});
+		// rotate event passed to other widget
+		m.addGestureListener(RotateProcessor.class, new IGestureEventListener()
+		{
+			public boolean processGestureEvent(MTGestureEvent ge) 
+			{
+		        return Video.this.processGestureEvent(ge);
+			}
+		});
+		// tap&hold event passed to other widget
+		m.registerInputProcessor(new TapAndHoldProcessor((MTApplication)applet,1000));
+		m.addGestureListener(TapAndHoldProcessor.class,new TapAndHoldVisualizer((MTApplication)applet, this));
+		m.addGestureListener(TapAndHoldProcessor.class, new IGestureEventListener()
+		{
+			public boolean processGestureEvent(MTGestureEvent ge) 
+			{
+		        return Video.this.processGestureEvent(ge);
+			}
+		});
 	}
 }
