@@ -29,6 +29,12 @@ public class WidgetLibrary extends Library
 			model.setSize(200,200);
 			widget = new view.widget.Image(applet, model);
 			this.addWidget(applet, widget);
+		}		
+		{
+			model = new model.widget.VideoWidget();
+			model.setSize(200,200);
+			widget = new view.widget.Video(applet, model);
+			this.addWidget(applet, widget);
 		}
 		{
 			model = new model.widget.ListWidget();
