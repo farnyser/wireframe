@@ -22,15 +22,13 @@ public class Page extends Element
 {
 	final static public String EVENT_DELETE_PAGE = "event_delete_page";
 	
-	protected PageContent content = null;
+	protected PageContent content;
 	protected PageMenu menu;
 	protected PropertyChangeSupport _viewNotifier  = new PropertyChangeSupport(this);
 	
 	public Page(PApplet a, model.Page p) 
 	{
 		super(a, 0, 0, p);
-		applet = a;
-		_model = p;
 	}
 	
 	public Page(Page p, Boolean create_new_model)
@@ -61,9 +59,10 @@ public class Page extends Element
 		}
 	}
 
+	@Override
 	protected void initObject()
 	{
-		content = new PageContent(this.getRenderer(), 0, PageMenu.HEIGHT, this.getWidthXYGlobal(), this.getHeightXYGlobal()-(PageMenu.HEIGHT));
+		this.content = new PageContent(this.getRenderer(), 0, PageMenu.HEIGHT, this.getWidthXYGlobal(), this.getHeightXYGlobal()-(PageMenu.HEIGHT));
 		this.addChild(content);
 	}
 	
@@ -161,14 +160,14 @@ public class Page extends Element
 	public void setMinSize(float _w, float _h) 
 	{
 		super.setMinSize(_w, _h);
-		this.setFillColor(this.getModel().getColorFromId());
+		content.setFillColor(this.getModel().getColorFromId());
 		menu.setVisible(false);
 	}
 	
 	public void setFullSize() 
 	{
 		super.setFullSize();
-		this.setFillColor(MTColor.WHITE);
+		content.setFillColor(MTColor.WHITE);
 		menu.setVisible(true);
 		menu.sendToFront();
 	}

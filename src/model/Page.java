@@ -61,9 +61,9 @@ public class Page extends Element implements Serializable
 	public MTColor getColorFromId()
 	{
 		Random rand = new Random(this.hashCode());
-		int r = rand.nextInt(200) + 55;
-		int g = rand.nextInt(200) + 55;
-		int b = rand.nextInt(200) + 55;
+		int r = rand.nextInt(20)*10 + 55;
+		int g = rand.nextInt(20)*10 + 55;
+		int b = rand.nextInt(20)*10 + 55;
 		return new MTColor(r,g,b);
 	}
 

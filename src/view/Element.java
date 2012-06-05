@@ -172,7 +172,7 @@ public abstract class Element extends MTClipRectangle implements PropertyChangeL
 		return el;
 	}
 
-	protected void initObject() {};
+	protected abstract void initObject();
 	protected abstract void initGesture();
 	protected abstract void initGraphics();
 }

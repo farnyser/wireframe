@@ -444,4 +444,11 @@ public class Widget extends view.Element
 				
 		});
 	}
+
+	@Override
+	protected void initObject() 
+	{
+		// TODO Auto-generated method stub
+		
+	}
 }
