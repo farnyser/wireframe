@@ -6,7 +6,6 @@ import java.util.Vector;
 import org.mt4j.MTApplication;
 import org.mt4j.components.MTComponent;
 import org.mt4j.components.TransformSpace;
-import org.mt4j.components.visibleComponents.shapes.MTLine;
 import org.mt4j.input.gestureAction.TapAndHoldVisualizer;
 import org.mt4j.input.inputProcessors.IGestureEventListener;
 import org.mt4j.input.inputProcessors.MTGestureEvent;
@@ -22,6 +21,7 @@ import org.mt4j.util.math.ToolsGeometry;
 import org.mt4j.util.math.Vector3D;
 
 import processing.core.PApplet;
+import view.Arrow;
 import view.DeleteEffect;
 import view.Library;
 
@@ -31,7 +31,7 @@ public class Widget extends view.Element
 	protected float fx = -1, fy = -1, fw = -1, fh = -1;
 	
 	// linking (action)
-	protected MTLine line = null;
+	protected Arrow line = null;
 	
 	// delete
 	protected DeleteEffect delEffect = null;
@@ -188,9 +188,15 @@ public class Widget extends view.Element
 		this.setFillColor(MTColor.WHITE);
 		
 		if ( getModel().getLinks() != null )
+		{
+			this.setStrokeWeight(6);
 			this.setStrokeColor(getModel().getLinks().getColorFromId());
+		}
 		else
+		{
+			this.setStrokeWeight(1);
 			this.setStrokeColor(MTColor.BLACK);
+		}
 		
 		for ( model.Element e : _model.getElements() )
 		{
@@ -219,6 +225,7 @@ public class Widget extends view.Element
 				{
 					Widget.this.setDelEffect(false);
 					Vector3D gpos = Widget.this.getPosition(TransformSpace.GLOBAL);
+					if ( Widget.this.getParent() instanceof view.Element ){ Widget.this.setUserData("oldparent", Widget.this.getParent()); }
 					Widget.this.getRoot().addChild(Widget.this);
 					Widget.this.setPositionGlobal(gpos);
 					
@@ -273,7 +280,7 @@ public class Widget extends view.Element
 									System.out.println("Widget dragged to page/widget");
 									
 									// remove from parent (model)
-									if ( Widget.this.getParent() instanceof view.Element ){ ((view.Element)Widget.this.getParent()).getModel().removeElement(Widget.this._model); }
+									if ( Widget.this.getUserData("oldparent") instanceof view.Element ){ ((view.Element)Widget.this.getUserData("oldparent")).getModel().removeElement(Widget.this._model); }
 									
 									// add to new parent (model)
 									{ ((view.Element) c).getModel().addElement(Widget.this._model); }
@@ -323,13 +330,12 @@ public class Widget extends view.Element
 							if ( de.getId() == MTGestureEvent.GESTURE_ENDED )
 							{
 								System.out.println("Widget dragged to scene (workspace)");
-								Object o = Widget.this.getParent();
 								
 								Widget.this.setPositionGlobal(newpos);
 								fx = -1;
 								
 								// remove from parent (model)
-								if ( o instanceof view.Element ){ view.Element cc = (view.Element)  o; cc.getModel().removeElement(Widget.this._model); }
+								if ( Widget.this.getUserData("oldparent") instanceof view.Element ){ ((view.Element)Widget.this.getUserData("oldparent")).getModel().removeElement(Widget.this._model); }
 							
 								destroy = true;
 							}
@@ -414,8 +420,7 @@ public class Widget extends view.Element
 				{
 					Vector3D start = localToGlobal( de.getFirstCursor().getPosition() );
 					Vector3D stop = localToGlobal( de.getSecondCursor().getPosition() );
-					line = new MTLine(Widget.this.applet, start.x, start.y, stop.x, stop.y);
-					line.setStrokeColor(MTColor.RED);
+					line = new Arrow(Widget.this.applet, start, stop, MTColor.RED);
 					line.setUserData("start", de.getFirstCursor().getPosition());
 					Widget.this.getRoot().addChild(line);
 				}
@@ -423,8 +428,7 @@ public class Widget extends view.Element
 				{
 					Vector3D start = (Vector3D) line.getUserData("start");
 					line.destroy();
-					line = new MTLine(Widget.this.applet, start.x, start.y, de.getSecondCursor().getCurrentEvtPosX(), de.getSecondCursor().getCurrentEvtPosY());
-					line.setStrokeColor(MTColor.RED);
+					line = new Arrow(Widget.this.applet, start, new Vector3D(de.getSecondCursor().getCurrentEvtPosX(), de.getSecondCursor().getCurrentEvtPosY()), MTColor.RED);
 					line.setUserData("start", start);
 					Widget.this.getRoot().addChild(line);
 				}
