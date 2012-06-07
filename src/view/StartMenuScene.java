@@ -49,6 +49,7 @@ public class StartMenuScene extends AbstractScene{
 	ExistProjectMenu projectList = null;
 	private DrawSurfaceScene drawingScene;
 	private MTEllipse pencilBrush;	
+	private int state = 0;
 	
 	public StartMenuScene(AbstractMTApplication mtApplication, String name, ApplicationModel model)
 	{
@@ -154,7 +155,6 @@ public class StartMenuScene extends AbstractScene{
 			return false;
 		}
 		
-		
 		private void openProject()
 		{
 			List<MenuItem> menuLoad = new ArrayList<MenuItem>();
@@ -164,7 +164,13 @@ public class StartMenuScene extends AbstractScene{
 			if(nameArea != null) nameArea.destroy();
 			if(projectList != null) projectList.destroy();
 			
-			if ( rMenu != null )
+			if(state == 2 || state == 3)
+			{
+				rMenu.destroy();
+				rMenu = null;
+			}
+			
+			if(rMenu != null)
 			{
 				rMenu.destroy();
 				rMenu = null;
@@ -175,6 +181,8 @@ public class StartMenuScene extends AbstractScene{
 				rMenu.setPositionGlobal(new Vector3D(app.width/2, app.height/2));
 				scene.getCanvas().addChild(rMenu);
 			}
+			
+			state = 1;
 		}
 	
 		private void createNewProject()
@@ -185,6 +193,8 @@ public class StartMenuScene extends AbstractScene{
 			nameArea = new NewProjectMenu(app, model, 0, 0, 440, 120);
 			nameArea.setPositionGlobal(new Vector3D(app.width/2, app.height/2));
 			scene.getCanvas().addChild(nameArea);
+			
+			state = 2;
 		}
 		
 		private void loadFromExistingProject()
@@ -196,12 +206,14 @@ public class StartMenuScene extends AbstractScene{
 			int displayHeightOfReflection = (int) (preferredIconHeight * 0.5f);
 			int listWidth = preferredIconHeight + displayHeightOfReflection + gapBetweenIconAndReflection;
 			int listHeight = app.width;
-
+			
 			if(projectList != null) projectList.destroy();
 
 			projectList = new ExistProjectMenu(app, model, 0, 0, (float)listWidth, listHeight, 40);
 			scene.getCanvas().addChild(projectList);
 			scene.getCanvas().setFrustumCulling(true); 
+			
+			state = 3;
 		}
 	
 	    private void createNewPage()
