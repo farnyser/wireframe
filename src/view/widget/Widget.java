@@ -223,11 +223,14 @@ public class Widget extends view.Element
 				
 				if ( dragType == DragType.MOVE )
 				{
-					Widget.this.setDelEffect(false);
-					Vector3D gpos = Widget.this.getPosition(TransformSpace.GLOBAL);
-					if ( Widget.this.getParent() instanceof view.Element ){ Widget.this.setUserData("oldparent", Widget.this.getParent()); }
-					Widget.this.getRoot().addChild(Widget.this);
-					Widget.this.setPositionGlobal(gpos);
+					if ( ge.getId() == MTGestureEvent.GESTURE_STARTED )
+					{
+						Widget.this.setDelEffect(false);
+						Vector3D gpos = Widget.this.getPosition(TransformSpace.GLOBAL);
+						if ( Widget.this.getParent() instanceof view.Element ){ Widget.this.setUserData("oldparent", Widget.this.getParent()); }
+						Widget.this.getRoot().addChild(Widget.this);
+						Widget.this.setPositionGlobal(gpos);
+					}
 					
 					if ( fx == -1 || fy == -1 ) 
 					{ 
@@ -245,9 +248,6 @@ public class Widget extends view.Element
 					Widget.this.translateGlobal(de.getTranslationVect());
 					Widget.this.sendToFront();
 					
-					// calcul du "parent" uniquement si on utilise la grille
-					// ou bien lors de la fin du mouvement
-					if ( GRID_ENABLED || de.getId() == MTGestureEvent.GESTURE_ENDED )
 					{
 						MTComponent c = Widget.this.getMTcomponent();
 						Vector3D newpos = Widget.this.getCenterPointGlobal();
@@ -401,6 +401,15 @@ public class Widget extends view.Element
 		        		resizeStart = model.Element.Corner.LOWER_RIGHT;
 		            
 		            Widget.this.dragType = DragType.RESIZE;
+		            
+		            // empeche la perte du widget lors de l'annulation du deplacement (DragType.MOVE)
+					if ( Widget.this.getUserData("oldparent") instanceof view.Element )
+					{
+						Vector3D gpos = Widget.this.getPosition(TransformSpace.GLOBAL);
+						((view.Element)Widget.this.getUserData("oldparent")).addChild(Widget.this);
+						Widget.this.setPositionGlobal(gpos);
+						Widget.this.setUserData("oldparent", null);
+					}
 		        }
 		        return false;
 		    }    
