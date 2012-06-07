@@ -5,6 +5,7 @@ import java.util.Vector;
 
 import org.mt4j.MTApplication;
 import org.mt4j.components.MTComponent;
+import org.mt4j.components.TransformSpace;
 import org.mt4j.components.visibleComponents.shapes.MTLine;
 import org.mt4j.input.gestureAction.TapAndHoldVisualizer;
 import org.mt4j.input.inputProcessors.IGestureEventListener;
@@ -217,6 +218,9 @@ public class Widget extends view.Element
 				if ( dragType == DragType.MOVE )
 				{
 					Widget.this.setDelEffect(false);
+					Vector3D gpos = Widget.this.getPosition(TransformSpace.GLOBAL);
+					Widget.this.getRoot().addChild(Widget.this);
+					Widget.this.setPositionGlobal(gpos);
 					
 					if ( fx == -1 || fy == -1 ) 
 					{ 
@@ -312,7 +316,7 @@ public class Widget extends view.Element
 							}	
 						}
 						// dragged to scene
-						else if ( Widget.this.getParent() != Widget.this.getRoot() )
+						else // if ( Widget.this.getParent() != Widget.this.getRoot() )
 						{
 							Widget.this.setDelEffect(true);
 							
@@ -326,6 +330,8 @@ public class Widget extends view.Element
 								
 								// remove from parent (model)
 								if ( o instanceof view.Element ){ view.Element cc = (view.Element)  o; cc.getModel().removeElement(Widget.this._model); }
+							
+								destroy = true;
 							}
 						}
 					}
