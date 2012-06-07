@@ -223,9 +223,10 @@ public class Widget extends view.Element
 				
 				if ( dragType == DragType.MOVE )
 				{
+					Widget.this.setDelEffect(false);
+					
 					if ( ge.getId() == MTGestureEvent.GESTURE_STARTED )
 					{
-						Widget.this.setDelEffect(false);
 						Vector3D gpos = Widget.this.getPosition(TransformSpace.GLOBAL);
 						if ( Widget.this.getParent() instanceof view.Element ){ Widget.this.setUserData("oldparent", Widget.this.getParent()); }
 						Widget.this.getRoot().addChild(Widget.this);
