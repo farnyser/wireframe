@@ -79,9 +79,9 @@ public class StartMenuScene extends AbstractScene{
 		menus.add(new MenuItem("Project", new gestureListener("Project",this)));
 		menus.add(new MenuItem(newPageIcon, new gestureListener("New page",this)));
 		menus.add(new MenuItem("Exit", new gestureListener("Exit",this)));
+		menus.add(new MenuItem("Save", new gestureListener("Save",this)));
 		menus.add(new MenuItem("Export", new gestureListener("Export",this)));
-		menus.add(new MenuItem("Redo", new gestureListener("Redo",this)));
-
+		
 		//Create Hexagon Menu
 		hMenu = new HexagonMenu(app, new Vector3D(app.getWidth()-LIB_WIDTH*2,550), menus, 70);
 		this.getCanvas().addChild(hMenu);
@@ -141,9 +141,9 @@ public class StartMenuScene extends AbstractScene{
 					{
 						openWidgetLibrary();
 					}
-					if(string.equals("Redo"))
+					if(string.equals("Save"))
 					{
-						redoOperation();
+						saveProject();
 					}
 					if(string.equals("Export"))
 					{
@@ -180,13 +180,11 @@ public class StartMenuScene extends AbstractScene{
 		private void createNewProject()
 		{
 			System.out.println("new project");
-			
-			if(nameArea != null) nameArea.destroy();
 		
-			nameArea = new NewProjectMenu(app, model, 0, 0, 380, 100);
+			if(nameArea != null) nameArea.destroy();
+			nameArea = new NewProjectMenu(app, model, 0, 0, 440, 120);
 			nameArea.setPositionGlobal(new Vector3D(app.width/2, app.height/2));
 			scene.getCanvas().addChild(nameArea);
-	
 		}
 		
 		private void loadFromExistingProject()
@@ -199,7 +197,6 @@ public class StartMenuScene extends AbstractScene{
 			int listWidth = preferredIconHeight + displayHeightOfReflection + gapBetweenIconAndReflection;
 			int listHeight = app.width;
 
-			if(rMenu != null) rMenu.destroy();
 			if(projectList != null) projectList.destroy();
 
 			projectList = new ExistProjectMenu(app, model, 0, 0, (float)listWidth, listHeight, 40);
@@ -245,9 +242,9 @@ public class StartMenuScene extends AbstractScene{
 			app.exit();
 	    }
 		
-		private void redoOperation()
+		private void saveProject()
 	    {
-			
+			model.saveCurrentProject(Project._path);
 	    }
 		
 		private void exportToPngOperation()

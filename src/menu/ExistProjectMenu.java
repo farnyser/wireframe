@@ -54,8 +54,7 @@ public class ExistProjectMenu extends MTList{
 		listHeight = height;
 		font = FontManager.getInstance().createFont(app, "SansSerif", 18, MTColor.WHITE);
 		
-		this.setFillColor(new MTColor(150,150,150,200));
-		this.setNoStroke(true);
+		this.setFillColor(new MTColor(0,100,0,50));
 
 		this.loadProjectList();
 		

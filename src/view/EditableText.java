@@ -16,6 +16,7 @@ import org.mt4j.input.inputProcessors.componentProcessors.scaleProcessor.ScalePr
 import org.mt4j.input.inputProcessors.componentProcessors.tapAndHoldProcessor.TapAndHoldProcessor;
 import org.mt4j.input.inputProcessors.componentProcessors.tapProcessor.TapEvent;
 import org.mt4j.input.inputProcessors.componentProcessors.tapProcessor.TapProcessor;
+import org.mt4j.util.MTColor;
 import org.mt4j.util.math.Vector3D;
 
 import processing.core.PApplet;
@@ -81,6 +82,7 @@ public abstract class EditableText extends MTTextArea
 			            if (keyboard == null) 
 			            {
 							keyboard = new MTKeyboard(applet);
+							keyboard.setFillColor(new MTColor(154,192,205,200));
 							EditableText.this.getRoot().addChild(keyboard);
 							keyboard.setPositionGlobal(te.getLocationOnScreen().addLocal(new Vector3D(0,150)));
 							keyboard.setHardwareInputEnabled(true);

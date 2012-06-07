@@ -1,6 +1,5 @@
 package menu;
 
-
 import model.ApplicationModel;
 import model.Project;
 
@@ -35,7 +34,6 @@ public class SingleProjectMenu extends MTListCell{
 	private ApplicationModel model;
 	private MTPolygon image;
 	private MTTextArea deleteButton;
-	private MTPolygon okArrow;
 	private MTTextArea titleArea;
 	private Project project;
 	
@@ -54,10 +52,8 @@ public class SingleProjectMenu extends MTListCell{
 	       		new Vertex(0,30,0),
 	       		new Vertex(15,15,0),
 		};
-		okArrow = new MTPolygon(applet,v);
 		
-		setTitle();
-		setOKArrow();
+		setTitleArea();
 		setImage();
 		setDeleteButton();
 
@@ -157,7 +153,7 @@ public class SingleProjectMenu extends MTListCell{
 		});
 	}
 	
-	private void setTitle()
+	private void setTitleArea()
 	{
 		titleArea.setFillColor(new MTColor(150,150,250,200));
 		titleArea.setNoFill(true);
@@ -180,6 +176,7 @@ public class SingleProjectMenu extends MTListCell{
 				if (te.isTapped())
 				{	
 					MTKeyboard keyboard = new MTKeyboard(applet);
+					keyboard.setFillColor(new MTColor(154,192,205,200));
 					SingleProjectMenu.this.getRoot().addChild(keyboard);
 					keyboard.setPositionGlobal(new Vector3D(applet.width/2, applet.height/4*3));
 					keyboard.addTextInputListener(titleArea);
@@ -191,8 +188,8 @@ public class SingleProjectMenu extends MTListCell{
 							public void stateChanged(StateChangeEvent arg0) 
 							{
 									titleArea.setEnableCaret(false);
-									okArrow.setPositionRelativeToParent(new Vector3D(titleArea.getWidthXY(TransformSpace.LOCAL),
-									titleArea.getHeightXY(TransformSpace.LOCAL)/2));
+									image.setName(titleArea.getText());
+									model.renameProject(project,titleArea.getText());
 							}
 						  }
 					);	
@@ -202,32 +199,6 @@ public class SingleProjectMenu extends MTListCell{
 			}
 		});
 		
-	}
-	
-	private void setOKArrow()
-	{
-		okArrow.setFillColor(new MTColor(154,192,205));
-		okArrow.setNoStroke(true);
-		titleArea.addChild(okArrow);
-		okArrow.setPositionRelativeToParent(new Vector3D(titleArea.getWidthXY(TransformSpace.LOCAL),titleArea.getHeightXY(TransformSpace.LOCAL)/2));
-		
-		okArrow.removeAllGestureEventListeners(TapProcessor.class);
-		okArrow.setGestureAllowance(TapProcessor.class, true);
-		TapProcessor tp2 = new TapProcessor(this.applet);
-		okArrow.registerInputProcessor(tp2);
-		okArrow.addGestureListener(TapProcessor.class, new IGestureEventListener() {
-			public boolean processGestureEvent(MTGestureEvent ge) {
-				TapEvent te = (TapEvent)ge;
-				if (te.isTapped())
-				{	
-					System.out.println("Project renamed :" + titleArea.getText());
-					
-					image.setName(titleArea.getText());
-					model.renameProject(project,titleArea.getText());
-			    }
-				return false;
-			}
-		});
 	}
 	
 	private void setDeleteButton()
@@ -308,11 +279,11 @@ public class SingleProjectMenu extends MTListCell{
 	{
 		if(project.equals(model.getCurrentProject()))
 		{
-			MessageBox m = new MessageBox(applet, 0, 0, 260, 60);
+			MessageBox m = new MessageBox(applet, 0, 0, 160, 80);
 			m.setMessage("Cannot delete the current project");
 			this.addChild(m);
 			m.rotateZ(m.getCenterPointLocal(), 90, TransformSpace.LOCAL);
-			m.setPositionGlobal(new Vector3D(applet.width/2, applet.height/2));
+			m.setPositionRelativeToParent(this.getCenterPointLocal());
 		}
 		else
 		{

@@ -21,7 +21,7 @@ public class Library extends MTList
 	{
 		super(applet, x, y, width, height, 10);
 		
-		this.setFillColor(new MTColor(0,0,0,30));
+		this.setFillColor(new MTColor(0,100,0,50));
 		this.setPickable(true);
 	} 
 	

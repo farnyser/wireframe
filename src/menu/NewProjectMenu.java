@@ -41,7 +41,6 @@ public class NewProjectMenu extends MTRectangle {
 	private MTKeyboard keyboard = null;
 	private MTRectangle ok, cancel;
 	private ApplicationModel model;
-	
 
 	public NewProjectMenu(PApplet a, ApplicationModel m, float x, float y, float width, float height) 
 	{
@@ -60,9 +59,7 @@ public class NewProjectMenu extends MTRectangle {
 	private void initMenu()
 	{
 		this.setCssForceDisable(true);
-		//this.setFillColor(new MTColor(154,192,205));
-		//this.setNoStroke(true);
-		this.setFillColor(MTColor.BLACK);
+		this.setFillColor(new MTColor(154,192,205));
 		this.setStrokeColor(MTColor.BLACK);
 	
 		this.setMovablePosition();
@@ -105,13 +102,13 @@ public class NewProjectMenu extends MTRectangle {
 	private void setLabel()
 	{
 		CSSFont cf = this.getCssHelper().getVirtualStyleSheet().getCssfont().clone();
-		cf.setFontsize(14);
+		cf.setFontsize(16);
 		cf.setWeight(CSSFontWeight.BOLD);
 
 		CSSFontManager cfm = new CSSFontManager((AbstractMTApplication) applet);
 		IFont font = cfm.selectFont(cf);
 		
-		label = new MTTextArea(applet, 0, 0, this.w, this.h/4);
+		label = new MTTextArea(applet, 0, 0, this.w, this.h/3);
 		label.setText("Enter the new project name :");
 		label.setFont(font);
 		label.setStrokeColor(MTColor.BLACK);
@@ -132,42 +129,34 @@ public class NewProjectMenu extends MTRectangle {
 		texta.setPositionRelativeToParent(new Vector3D(posx, posy));
 		
 	    // Add Tap listener to evoke Keyboard
-		texta.removeAllGestureEventListeners(TapProcessor.class);
+		texta.removeAllGestureEventListeners();
 		texta.setGestureAllowance(TapProcessor.class, true);
 		TapProcessor tp = new TapProcessor(this.applet);
 		texta.registerInputProcessor(tp);
-		texta.addGestureListener(TapProcessor.class, new IGestureEventListener()
-		{
-			public boolean processGestureEvent(MTGestureEvent ge) 
-			{
-				if (ge instanceof TapEvent) 
-				{
-					TapEvent te = (TapEvent) ge;
-					if (te.getTapID() == TapEvent.TAPPED) 
-					{						
-			            if (keyboard == null) 
-			            {
-							keyboard = new MTKeyboard(applet);
-							NewProjectMenu.this.addChild(keyboard);
-							keyboard.setPositionGlobal(new Vector3D(applet.width/2, applet.height/4*3));
-							keyboard.addTextInputListener(texta);
-							keyboard.addStateChangeListener(
-						      StateChange.COMPONENT_DESTROYED,
-						      new StateChangeListener() {
-								
-								@Override
-								public void stateChanged(StateChangeEvent arg0) {
-									texta.setEnableCaret(false);
-									
-								}
-							});
-							
-							texta.setEnableCaret(true);
-			            }
-					}
-		        }
-				
-		        return false;
+		texta.addGestureListener(TapProcessor.class, new IGestureEventListener() {
+			public boolean processGestureEvent(MTGestureEvent ge) {
+				TapEvent te = (TapEvent)ge;
+				if (te.isTapped())
+				{	
+					MTKeyboard keyboard = new MTKeyboard(applet);
+					keyboard.setFillColor(new MTColor(154,192,205,200));
+					NewProjectMenu.this.getRoot().addChild(keyboard);
+					keyboard.setPositionGlobal(new Vector3D(applet.width/2, applet.height/4*3));
+					keyboard.addTextInputListener(texta);
+					keyboard.addStateChangeListener(
+						  StateChange.COMPONENT_DESTROYED,
+						  new StateChangeListener() 
+						  {
+							@Override
+							public void stateChanged(StateChangeEvent arg0) 
+							{
+								texta.setEnableCaret(false);
+							}
+						  }
+					);	
+					texta.setEnableCaret(true);
+			     }
+				return false;
 			}
 		});
 	}
