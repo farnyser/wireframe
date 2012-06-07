@@ -58,7 +58,7 @@ public class Widget extends view.Element
 	public void propertyChange(PropertyChangeEvent e) 
 	{
 		super.propertyChange(e);
-		
+
         String propertyName = e.getPropertyName();
 		if ( propertyName == "setPosition" ) 
         {
@@ -67,10 +67,16 @@ public class Widget extends view.Element
 		else if ( propertyName == "setLinks" ) 
         {
 			if ( getModel().getLinks() != null )
+			{
+				this.setStrokeWeight(6);
 				this.setStrokeColor(getModel().getLinks().getColorFromId());
+			}
 			else
+			{
+				this.setStrokeWeight(1);
 				this.setStrokeColor(MTColor.BLACK);
-        }
+			}
+		}
 	}
 	
 	/**

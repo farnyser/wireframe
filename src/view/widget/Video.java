@@ -17,7 +17,6 @@ import org.mt4j.util.math.Vector3D;
 import org.mt4j.util.math.Vertex;
 
 import processing.core.PApplet;
-import view.EditableText;
 
 public class Video extends Widget 
 {
