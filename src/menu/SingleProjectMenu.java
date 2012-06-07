@@ -170,7 +170,7 @@ public class SingleProjectMenu extends MTListCell{
 		titleArea.setPositionRelativeToParent(this.getCenterPointLocal());
 		titleArea.translate(new Vector3D(280*0.5f - titleArea.getHeightXY(TransformSpace.LOCAL)*0.5f, 0));
 	
-		titleArea.removeAllGestureEventListeners(TapProcessor.class);
+		titleArea.removeAllGestureEventListeners();
 		titleArea.setGestureAllowance(TapProcessor.class, true);
 		TapProcessor tp = new TapProcessor(this.applet);
 		titleArea.registerInputProcessor(tp);
@@ -180,18 +180,19 @@ public class SingleProjectMenu extends MTListCell{
 				if (te.isTapped())
 				{	
 					MTKeyboard keyboard = new MTKeyboard(applet);
-					keyboard.rotateZ(titleArea.getCenterPointLocal(), 90, TransformSpace.LOCAL);
-					SingleProjectMenu.this.addChild(keyboard);
+					SingleProjectMenu.this.getRoot().addChild(keyboard);
 					keyboard.setPositionGlobal(new Vector3D(applet.width/2, applet.height/4*3));
 					keyboard.addTextInputListener(titleArea);
 					keyboard.addStateChangeListener(
 						  StateChange.COMPONENT_DESTROYED,
-						  new StateChangeListener() {
-								@Override
-							public void stateChanged(StateChangeEvent arg0) {
+						  new StateChangeListener() 
+						  {
+							@Override
+							public void stateChanged(StateChangeEvent arg0) 
+							{
 									titleArea.setEnableCaret(false);
 									okArrow.setPositionRelativeToParent(new Vector3D(titleArea.getWidthXY(TransformSpace.LOCAL),
-											titleArea.getHeightXY(TransformSpace.LOCAL)/2));
+									titleArea.getHeightXY(TransformSpace.LOCAL)/2));
 							}
 						  }
 					);	
