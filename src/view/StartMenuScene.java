@@ -83,7 +83,7 @@ public class StartMenuScene extends AbstractScene{
 		menus.add(new MenuItem("Redo", new gestureListener("Redo",this)));
 
 		//Create Hexagon Menu
-		hMenu = new HexagonMenu(app, new Vector3D(800,550), menus, 70);
+		hMenu = new HexagonMenu(app, new Vector3D(app.getWidth()-LIB_WIDTH*2,550), menus, 70);
 		this.getCanvas().addChild(hMenu);
 		
 		
@@ -169,9 +169,12 @@ public class StartMenuScene extends AbstractScene{
 				rMenu.destroy();
 				rMenu = null;
 			}
-			
-			rMenu = new RectangleMenu(app, new Vector3D(320,180) , menuLoad, 170);
-			scene.getCanvas().addChild(rMenu);
+			else
+			{
+				rMenu = new RectangleMenu(app, new Vector3D(0,0) , menuLoad, 170);
+				rMenu.setPositionGlobal(new Vector3D(app.width/2, app.height/2));
+				scene.getCanvas().addChild(rMenu);
+			}
 		}
 	
 		private void createNewProject()
@@ -179,7 +182,7 @@ public class StartMenuScene extends AbstractScene{
 			System.out.println("new project");
 			
 			if(nameArea != null) nameArea.destroy();
-			
+		
 			nameArea = new NewProjectMenu(app, model, 0, 0, 380, 100);
 			nameArea.setPositionGlobal(new Vector3D(app.width/2, app.height/2));
 			scene.getCanvas().addChild(nameArea);
@@ -196,6 +199,7 @@ public class StartMenuScene extends AbstractScene{
 			int listWidth = preferredIconHeight + displayHeightOfReflection + gapBetweenIconAndReflection;
 			int listHeight = app.width;
 
+			if(rMenu != null) rMenu.destroy();
 			if(projectList != null) projectList.destroy();
 
 			projectList = new ExistProjectMenu(app, model, 0, 0, (float)listWidth, listHeight, 40);
@@ -209,7 +213,7 @@ public class StartMenuScene extends AbstractScene{
 	    	view.page.Page newPage = new view.page.Page(app, newAbPage);
 	    	newPage.addListener(pages);
 	    	scene.getCanvas().addChild(newPage);
-	    	newPage.setPositionGlobal(new Vector3D(200 + newAbPage.getWidth()/2,150 + newAbPage.getHeight()/2));
+	    	newPage.setPositionGlobal(new Vector3D(app.width/2, app.height/2));
 	    }
 	    		
 		private void openWidgetLibrary()

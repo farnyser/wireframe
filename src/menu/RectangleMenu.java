@@ -69,7 +69,9 @@ public class RectangleMenu extends MTRectangle implements CSSStylableComponent{
 	 * @param position the position of the Menu
 	 * @param menuLoad the menu items
 	 * @param size the size of the squares
+	 * @return 
 	 */
+	
 	public RectangleMenu(AbstractMTApplication app,Vector3D position,
 			List<MenuItem> menuLoad, float size) {
 		super(app, position.x, position.y, (float) (int) Math
