@@ -37,6 +37,8 @@ import processing.core.PImage;
 
 public class StartMenuScene extends AbstractScene{
 
+	private static int LIB_WIDTH = 125;
+	
 	private AbstractMTApplication app;
 	private HexagonMenu hMenu;
 	private ApplicationModel model;
@@ -51,6 +53,7 @@ public class StartMenuScene extends AbstractScene{
 	public StartMenuScene(AbstractMTApplication mtApplication, String name, ApplicationModel model)
 	{
 		super(mtApplication, name);
+
 		
 		//this.setClearColor(new MTColor(187, 200, 188));
 		this.setClearColor(new MTColor(200, 210, 215));
@@ -63,7 +66,7 @@ public class StartMenuScene extends AbstractScene{
 		initializeDrawing();
 		
 		// on le cree par defaut pour que la PageLibrary capte les evenements des view.Page
-		this.pages = new PageLibrary(app, app.getWidth()-75, 0, 75, app.getHeight(), model);
+		this.pages = new PageLibrary(app, app.getWidth()-LIB_WIDTH, 0, LIB_WIDTH, app.getHeight(), model);
 		this.pages.setVisible(false);
 		this.getCanvas().addChild(pages);
 		
@@ -82,6 +85,10 @@ public class StartMenuScene extends AbstractScene{
 		//Create Hexagon Menu
 		hMenu = new HexagonMenu(app, new Vector3D(800,550), menus, 70);
 		this.getCanvas().addChild(hMenu);
+		
+		
+//		DuoMenu dm = new DuoMenu(mtApplication, 150, app.getHeight(), model);
+//		this.getCanvas().addChild(dm);
 		
 	}
 	
@@ -209,7 +216,7 @@ public class StartMenuScene extends AbstractScene{
 		{
 			if ( widgets == null )
 			{
-				widgets = new WidgetLibrary(app, 0, 0, 75, app.getHeight());
+				widgets = new WidgetLibrary(app, 0, 0, LIB_WIDTH, app.getHeight());
 				scene.getCanvas().addChild(widgets);
 			}
 			else

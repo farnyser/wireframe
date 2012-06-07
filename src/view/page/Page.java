@@ -191,7 +191,7 @@ public class Page extends Element
 	public void setFullSize() 
 	{
 		super.setFullSize();
-		content.setFillColor(MTColor.BLACK);
+		content.setFillColor(MTColor.WHITE);
 		menu.setVisible(true);
 		menu.sendToFront();
 	}
