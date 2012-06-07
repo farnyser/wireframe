@@ -75,13 +75,27 @@ public class Page extends Element
 		{
 			public boolean processGestureEvent(MTGestureEvent ge) { return Page.this.processGestureEvent(ge); }
 		});
+		
 		content.addGestureListener(ScaleProcessor.class, new IGestureEventListener() 
 		{
-			public boolean processGestureEvent(MTGestureEvent ge) { return Page.this.processGestureEvent(ge); }
+			@Override
+			public boolean processGestureEvent(MTGestureEvent ge) 
+			{ 
+				ge.setTarget(Page.this);
+				Page.this.processGestureEvent(ge); 
+				return false;
+			}
 		});
+		
 		content.addGestureListener(RotateProcessor.class, new IGestureEventListener() 
 		{
-			public boolean processGestureEvent(MTGestureEvent ge) { return Page.this.processGestureEvent(ge); }
+			@Override
+			public boolean processGestureEvent(MTGestureEvent ge) 
+			{
+				ge.setTarget(Page.this);
+				Page.this.processGestureEvent(ge); 
+				return false;
+			}
 		});
 		
 		this.removeAllGestureEventListeners(DragProcessor.class);
@@ -177,7 +191,7 @@ public class Page extends Element
 	public void setFullSize() 
 	{
 		super.setFullSize();
-		content.setFillColor(MTColor.WHITE);
+		content.setFillColor(MTColor.BLACK);
 		menu.setVisible(true);
 		menu.sendToFront();
 	}
