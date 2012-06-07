@@ -149,43 +149,52 @@ public class PageMenuProperties extends MTClipRectangle implements PropertyChang
 		_feedback.addGestureListener(DragProcessor.class, new IGestureEventListener()
 		{
 			private Vector3D initialPoint;
+			private Vector3D expectedDirection;
 
 			public boolean processGestureEvent(MTGestureEvent ge) 
 			{
 				DragEvent de = (DragEvent) ge;
-				if(de.getId() == MTGestureEvent.GESTURE_STARTED) {
+				if(de.getId() == MTGestureEvent.GESTURE_STARTED)
+				{
 					initialPoint = de.getFrom();
+					expectedDirection = PageMenuProperties.this.getCenterPointGlobal().getSubtracted(de.getFrom()).normalizeLocal();
 				}
-				else if(de.getId() == MTGestureEvent.GESTURE_UPDATED) {
-					
-					float delta = initialPoint.y - de.getTo().y;
+				else if(de.getId() == MTGestureEvent.GESTURE_UPDATED)
+				{
+					// vecteur direction
+					Vector3D d = de.getTo().getSubtracted(initialPoint);
+					float delta = (float) Math.sqrt(Math.pow((expectedDirection.x * d.x),2) + Math.pow((expectedDirection.y * d.y),2));
+					float angle = (float) Math.abs(180.0/3.14957 * Vector3D.angleBetween(d, expectedDirection));
 
-					if(delta > 0 && delta <= PageMenuProperties.HEIGHT_WHEN_OPENED - PageMenuProperties.this.getFeedBackHeight()) {
+					if(delta > 0 && delta <= PageMenuProperties.HEIGHT_WHEN_OPENED - PageMenuProperties.this.getFeedBackHeight() && angle < 90) {
 						PageMenuProperties.this.setHeightLocal(PageMenuProperties.HEIGHT_WHEN_OPENED - delta);
 					}
 				}
-				else if(de.getId() == MTGestureEvent.GESTURE_ENDED) {
-
-					initialPoint.subtractLocal(de.getTo());
+				else if(de.getId() == MTGestureEvent.GESTURE_ENDED) 
+				{
+					// vecteur direction
+					Vector3D d = de.getTo().getSubtracted(initialPoint);
+					float delta = (float) Math.sqrt(Math.pow((expectedDirection.x * d.x),2) + Math.pow((expectedDirection.y * d.y),2));
+					float angle = (float) Math.abs(180.0/3.14957 * Vector3D.angleBetween(d, expectedDirection));
 
 					if(animationRunning) return false;
 					animationRunning = true;
 
-					if(initialPoint.y > (PageMenuProperties.HEIGHT_WHEN_OPENED / 3) && (Math.abs(initialPoint.x) <= 100)) {
-						
-						if(initialPoint.y > PageMenuProperties.HEIGHT_WHEN_OPENED) {
+					if(delta > (PageMenuProperties.HEIGHT_WHEN_OPENED / 3) && angle <= 90) 
+					{
+						if(delta > PageMenuProperties.HEIGHT_WHEN_OPENED) {
 							animationRunning = false;
 							PageMenuProperties.this.setVisible(false);
 						}
 						else {
-							MultiPurposeInterpolator slideUpInterpolator = new MultiPurposeInterpolator(PageMenuProperties.HEIGHT_WHEN_OPENED - initialPoint.y, PageMenuProperties.this.getFeedBackHeight(), duration, 0.0f, 1.0f, 1);
+							MultiPurposeInterpolator slideUpInterpolator = new MultiPurposeInterpolator(PageMenuProperties.HEIGHT_WHEN_OPENED - delta, PageMenuProperties.this.getFeedBackHeight(), duration, 0.0f, 1.0f, 1);
 							slideAnimation.setInterpolator(slideUpInterpolator);
 							slideAnimation.start();
 						}
 					}
 					else {
-						if(initialPoint.y > 0 && initialPoint.y < PageMenuProperties.HEIGHT_WHEN_OPENED - PageMenuProperties.this.getFeedBackHeight()) {
-							MultiPurposeInterpolator slideDownInterpolator = new MultiPurposeInterpolator(PageMenuProperties.HEIGHT_WHEN_OPENED - initialPoint.y, PageMenuProperties.HEIGHT_WHEN_OPENED, duration, 0.0f, 1.0f, 1);
+						if(delta > 0 && delta < PageMenuProperties.HEIGHT_WHEN_OPENED - PageMenuProperties.this.getFeedBackHeight()) {
+							MultiPurposeInterpolator slideDownInterpolator = new MultiPurposeInterpolator(PageMenuProperties.HEIGHT_WHEN_OPENED - delta, PageMenuProperties.HEIGHT_WHEN_OPENED, duration, 0.0f, 1.0f, 1);
 							slideAnimation.setInterpolator(slideDownInterpolator);
 							slideAnimation.start();
 						}
