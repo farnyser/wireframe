@@ -10,6 +10,8 @@ import org.mt4j.input.inputProcessors.IGestureEventListener;
 import org.mt4j.input.inputProcessors.MTGestureEvent;
 import org.mt4j.input.inputProcessors.componentProcessors.dragProcessor.DragEvent;
 import org.mt4j.input.inputProcessors.componentProcessors.dragProcessor.DragProcessor;
+import org.mt4j.input.inputProcessors.componentProcessors.rotateProcessor.RotateProcessor;
+import org.mt4j.input.inputProcessors.componentProcessors.scaleProcessor.ScaleProcessor;
 import org.mt4j.input.inputProcessors.componentProcessors.tapAndHoldProcessor.TapAndHoldEvent;
 import org.mt4j.input.inputProcessors.componentProcessors.tapAndHoldProcessor.TapAndHoldProcessor;
 import org.mt4j.util.MTColor;
@@ -70,6 +72,14 @@ public class Page extends Element
 	{
 		content.removeAllGestureEventListeners();
 		content.addGestureListener(DragProcessor.class, new IGestureEventListener() 
+		{
+			public boolean processGestureEvent(MTGestureEvent ge) { return Page.this.processGestureEvent(ge); }
+		});
+		content.addGestureListener(ScaleProcessor.class, new IGestureEventListener() 
+		{
+			public boolean processGestureEvent(MTGestureEvent ge) { return Page.this.processGestureEvent(ge); }
+		});
+		content.addGestureListener(RotateProcessor.class, new IGestureEventListener() 
 		{
 			public boolean processGestureEvent(MTGestureEvent ge) { return Page.this.processGestureEvent(ge); }
 		});
