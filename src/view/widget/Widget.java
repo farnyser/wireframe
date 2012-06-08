@@ -17,6 +17,7 @@ import org.mt4j.input.inputProcessors.componentProcessors.scaleProcessor.ScalePr
 import org.mt4j.input.inputProcessors.componentProcessors.tapAndHoldProcessor.TapAndHoldEvent;
 import org.mt4j.input.inputProcessors.componentProcessors.tapAndHoldProcessor.TapAndHoldProcessor;
 import org.mt4j.util.MTColor;
+import org.mt4j.util.math.Matrix;
 import org.mt4j.util.math.ToolsGeometry;
 import org.mt4j.util.math.Vector3D;
 
@@ -228,8 +229,10 @@ public class Widget extends view.Element
 					if ( ge.getId() == MTGestureEvent.GESTURE_STARTED )
 					{
 						Vector3D gpos = Widget.this.getPosition(TransformSpace.GLOBAL);
+						Matrix mt = MTComponent.getTransformToDestinationParentSpace(Widget.this, Widget.this.getRoot());
 						if ( Widget.this.getParent() instanceof view.Element ){ Widget.this.setUserData("oldparent", Widget.this.getParent()); }
 						Widget.this.getRoot().addChild(Widget.this);
+						Widget.this.transform(mt);
 						Widget.this.setPositionGlobal(gpos);
 					}
 					
