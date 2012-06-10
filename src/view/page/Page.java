@@ -26,6 +26,7 @@ public class Page extends Element
 	
 	protected PageContent content;
 	protected PageMenu menu;
+	protected boolean isLocked = false;
 	protected PropertyChangeSupport _viewNotifier  = new PropertyChangeSupport(this);
 	
 	public Page(PApplet a, model.Page p) 
@@ -215,4 +216,10 @@ public class Page extends Element
 	{ 
 		return _viewNotifier; 
 	}
+	
+	public void setIsLocked(boolean locked) {
+		this.isLocked = locked;
+	}
+	
+	public boolean getIsLocked() { return isLocked; }
 }

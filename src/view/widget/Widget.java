@@ -222,6 +222,19 @@ public class Widget extends view.Element
 				boolean destroy = false;
 				DragEvent de = (DragEvent)ge;
 				
+				MTComponent parent = Widget.this.getParent();
+				while(!(parent instanceof view.page.Page) && parent !=null) {
+					parent = parent.getParent();
+				}
+				
+				if(parent instanceof view.page.Page) {
+						
+					view.page.Page thePage = (view.page.Page) parent;
+					if(thePage.getIsLocked() == true) {
+						return false;
+					}
+				}
+				
 				if ( dragType == DragType.MOVE )
 				{
 					Widget.this.setDelEffect(false);

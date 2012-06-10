@@ -3,6 +3,7 @@ package view.page;
 import org.mt4j.components.TransformSpace;
 import org.mt4j.components.visibleComponents.widgets.MTClipRectangle;
 import org.mt4j.components.visibleComponents.widgets.MTClipRoundRect;
+import org.mt4j.components.visibleComponents.widgets.MTTextArea;
 import org.mt4j.input.inputProcessors.IGestureEventListener;
 import org.mt4j.input.inputProcessors.MTGestureEvent;
 import org.mt4j.input.inputProcessors.componentProcessors.dragProcessor.DragEvent;
@@ -14,6 +15,7 @@ import org.mt4j.util.animation.Animation;
 import org.mt4j.util.animation.AnimationEvent;
 import org.mt4j.util.animation.IAnimationListener;
 import org.mt4j.util.animation.MultiPurposeInterpolator;
+import org.mt4j.util.font.FontManager;
 import org.mt4j.util.math.Vector3D;
 
 import processing.core.PApplet;
@@ -34,6 +36,7 @@ public class PageMenu extends MTClipRectangle
 	protected MTClipRectangle arrowDown;
 	protected MTClipRoundRect close;
 	protected PApplet applet;
+	protected MTTextArea lockButton;
 	
 	private boolean animationRunning = false; // for the slide down animation	
 
@@ -75,6 +78,7 @@ public class PageMenu extends MTClipRectangle
 		properties = new PageMenuProperties(applet);
 		arrowDown = new MTClipRectangle(applet, 0, 0, 0, ARROW_HEIGHT, ARROW_HEIGHT);
 		topbar = new MTClipRectangle(applet, 0, 0, 0, 400, PageMenu.HEIGHT);
+		lockButton = new MTTextArea(applet);
 
 		initGraphics();
 		initGesture();
@@ -89,6 +93,14 @@ public class PageMenu extends MTClipRectangle
 		topbar.setNoStroke(true);
 		topbar.setFillColor(MTColor.GRAY);
 		this.addChild(topbar);
+
+		lockButton.setNoStroke(true);
+		lockButton.setNoFill(true);
+		lockButton.setFont(FontManager.getInstance().createFont(this.getRenderer(), "SansSerif", 10));
+		lockButton.setText("Lock");
+		topbar.addChild(lockButton);
+		lockButton.setAnchor(PositionAnchor.UPPER_LEFT);
+		lockButton.setPositionRelativeToParent(new Vector3D(0, 0, 0));
 		
 		textArea.setNoStroke(true);
 		textArea.setHeightXYGlobal(PageMenu.HEIGHT);
@@ -223,6 +235,34 @@ public class PageMenu extends MTClipRectangle
 						if ( view.page.PageMenu.this.getParent() != null )
 						{
 							view.page.PageMenu.this.getParent().destroy();
+						}
+					}
+		        }
+				
+		        return false;
+			}
+		});
+		
+		lockButton.removeAllGestureEventListeners();
+		lockButton.registerInputProcessor(new TapProcessor(this.applet));
+		lockButton.addGestureListener(TapProcessor.class, new IGestureEventListener()
+		{
+			public boolean processGestureEvent(MTGestureEvent ge) 
+			{
+				if (ge instanceof TapEvent) 
+				{
+					TapEvent te = (TapEvent) ge;
+					if (te.getTapID() == TapEvent.TAPPED) 
+					{
+						Page thePage = (view.page.Page) view.page.PageMenu.this.getParent();
+						
+						if(lockButton.getText().equals("Lock")) {
+							lockButton.setText("Unlock");
+							thePage.setIsLocked(true);
+						}
+						else {
+							lockButton.setText("Lock");
+							thePage.setIsLocked(false);
 						}
 					}
 		        }
