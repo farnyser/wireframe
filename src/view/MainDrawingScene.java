@@ -194,6 +194,7 @@ public class MainDrawingScene extends AbstractScene {
 								File f = new File(fileName);
 								f.mkdirs();
 								ImageIO.write(image, "png", f);
+								pa.popScene();
 							}
 							catch(Exception e) {
 								System.out.println(e.getStackTrace());
