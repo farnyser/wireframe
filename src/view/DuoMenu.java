@@ -15,7 +15,7 @@ public class DuoMenu extends MTRectangle
 		super(applet, 0, 0, width, height);
 		
 		PageLibrary pl = new PageLibrary(applet, 0, 0, width, (height-HANDLE)/2, app);
-		WidgetLibrary wl = new WidgetLibrary(applet, 0, (height+HANDLE)/2, width, (height-HANDLE)/2);
+		WidgetLibrary wl = new WidgetLibrary(applet, 0, (height+HANDLE)/2, width, (height-HANDLE)/2, app);
 		
 		pl.setVisible(true);
 		wl.setVisible(true);

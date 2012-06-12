@@ -188,7 +188,7 @@ public class MainDrawingScene extends AbstractScene {
 
 							try {														
 								System.out.println("app x:" + pa.getLocationOnScreen().x + "\n" + "app y:" + pa.getLocationOnScreen().y);
-								Rectangle screenRectangle = new Rectangle(pa.getLocationOnScreen().x + 50, pa.getLocationOnScreen().y + 50, pa.width-120,pa.height-120);
+								Rectangle screenRectangle = new Rectangle(pa.getLocationOnScreen().x + 50, pa.getLocationOnScreen().y + 45, pa.width-120,pa.height-120);
 								Robot robot = new Robot();
 								BufferedImage image = robot.createScreenCapture(screenRectangle);
 								File f = new File(fileName);
@@ -211,7 +211,7 @@ public class MainDrawingScene extends AbstractScene {
         });
         
         //return to previous scene
-        PImage returnIcon = pa.loadImage(imagesPath + "return2.jpg");
+      /*  PImage returnIcon = pa.loadImage(imagesPath + "return2.jpg");
         final MTImageButton returnButton = new MTImageButton(pa, returnIcon);
         frame.addChild(returnButton);
         returnButton.translate(new Vector3D(-50f, 700,0));
@@ -231,7 +231,7 @@ public class MainDrawingScene extends AbstractScene {
 				}
 				return true;
 			}
-        });
+        });*/
         
         /////////////////////////
         //ColorPicker and colorpicker button

@@ -195,8 +195,15 @@ public class Widget extends view.Element
 		}
 		else
 		{
-			this.setStrokeWeight(1);
-			this.setStrokeColor(MTColor.BLACK);
+			if(this instanceof view.widget.PerWidget)
+			{
+				this.setNoStroke(true);
+			}
+			else
+			{
+				this.setStrokeWeight(1);
+				this.setStrokeColor(MTColor.BLACK);
+			}
 		}
 		
 		for ( model.Element e : _model.getElements() )
