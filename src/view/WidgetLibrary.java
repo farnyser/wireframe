@@ -1,5 +1,6 @@
 package view;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.mt4j.components.visibleComponents.widgets.MTListCell;
@@ -9,6 +10,7 @@ import processing.core.PApplet;
 public class WidgetLibrary extends Library 
 {
 	private static int SPACING = 20;
+	//private ArrayList<view.widget.Widget> widegtList = new ArrayList<view.widget.Widget>();
 	
 	public WidgetLibrary(PApplet applet, float x, float y, float width, float height)
 	{
@@ -48,6 +50,7 @@ public class WidgetLibrary extends Library
 			widget = new view.widget.Button(applet, model);
 			this.addWidget(applet, widget);
 		}
+		
 	}
 	
 	public void addWidget(PApplet applet, view.widget.Widget widget)

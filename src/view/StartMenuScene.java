@@ -40,15 +40,18 @@ public class StartMenuScene extends AbstractScene{
 	private static int LIB_WIDTH = 125;
 	
 	private AbstractMTApplication app;
-	private HexagonMenu hMenu;
+	private HexagonMenu hMenu = null;
+	//private HexagonMenu hMenu2 = null;
 	private ApplicationModel model;
-	WidgetLibrary widgets = null;
-	PageLibrary pages = null;
-	RectangleMenu rMenu = null;
-	NewProjectMenu nameArea = null;
-	ExistProjectMenu projectList = null;
+	private WidgetLibrary widgets = null;
+	private PageLibrary pages = null;
+	private RectangleMenu rMenu = null;
+	private NewProjectMenu nameArea = null;
+	private ExistProjectMenu projectList = null;
 	private DrawSurfaceScene drawingScene;
 	private MTEllipse pencilBrush;	
+	private List<MenuItem> menus = new ArrayList<MenuItem>();
+	//private List<MenuItem> menus2 = new ArrayList<MenuItem>();
 	private int state = 0;
 	
 	public StartMenuScene(AbstractMTApplication mtApplication, String name, ApplicationModel model)
@@ -71,17 +74,30 @@ public class StartMenuScene extends AbstractScene{
 		this.pages.setVisible(false);
 		this.getCanvas().addChild(pages);
 		
+		//default: create widget library 
+		this.widgets = new WidgetLibrary(app, 0, 0, LIB_WIDTH, app.getHeight());
+		this.widgets.setVisible(false);
+		this.getCanvas().addChild(widgets);
+		
 		PImage newPageIcon = app.loadImage("data/Plus.jpg");
 		
-		//Create Menu Items
-		List<MenuItem> menus = new ArrayList<MenuItem>();
+		//Create Default Menu Items
 		menus.add(new MenuItem("Widgets", new gestureListener("Widgets",this)));
 		menus.add(new MenuItem("Scenes", new gestureListener("Scenes",this)));
 		menus.add(new MenuItem("Project", new gestureListener("Project",this)));
 		menus.add(new MenuItem(newPageIcon, new gestureListener("New page",this)));
 		menus.add(new MenuItem("Exit", new gestureListener("Exit",this)));
-		menus.add(new MenuItem("Save", new gestureListener("Save",this)));
+		menus.add(new MenuItem("Drawing", new gestureListener("Draw Widget",this)));
 		menus.add(new MenuItem("Export", new gestureListener("Export",this)));
+		
+		//New Menu Items After clicking on Project
+		/*menus2.add(new MenuItem("Widgets", new gestureListener("Widgets",this)));
+		menus2.add(new MenuItem("Scenes", new gestureListener("Scenes",this)));
+		menus2.add(new MenuItem("Cancel", new gestureListener("Cancel",this)));
+		menus2.add(new MenuItem(newPageIcon, new gestureListener("New page",this)));
+		menus2.add(new MenuItem("Exit", new gestureListener("Exit",this)));
+		menus2.add(new MenuItem("Save", new gestureListener("Save",this)));
+		menus2.add(new MenuItem("Export", new gestureListener("Export",this)));*/
 		
 		//Create Hexagon Menu
 		hMenu = new HexagonMenu(app, new Vector3D(app.getWidth()-LIB_WIDTH*2,550), menus, 70);
@@ -91,6 +107,11 @@ public class StartMenuScene extends AbstractScene{
 //		DuoMenu dm = new DuoMenu(mtApplication, 150, app.getHeight(), model);
 //		this.getCanvas().addChild(dm);
 		
+	}
+	
+	public WidgetLibrary getWidgetLibrary()
+	{
+		return widgets;
 	}
 	
 	public void onEnter() {}
@@ -142,13 +163,17 @@ public class StartMenuScene extends AbstractScene{
 					{
 						openWidgetLibrary();
 					}
-					if(string.equals("Save"))
+					if(string.equals("Draw Widget"))
 					{
-						saveProject();
+						onDrawingMode();
 					}
 					if(string.equals("Export"))
 					{
 						exportToPngOperation();
+					}
+					if(string.equals("Cancel"))
+					{
+						cancelLoadFromExistingProject();
 					}
 				}
 			}
@@ -161,14 +186,14 @@ public class StartMenuScene extends AbstractScene{
 			menuLoad.add(new MenuItem("New projet", new gestureListener("New project",this.scene)));
 			menuLoad.add(new MenuItem("Existing projets", new gestureListener("Existing projects", this.scene)));	
 			
-			if(nameArea != null) nameArea.destroy();
-			if(projectList != null) projectList.destroy();
-			
 			if(state == 2 || state == 3)
 			{
 				rMenu.destroy();
 				rMenu = null;
 			}
+			
+			if(nameArea != null) nameArea.destroy();
+			if(projectList != null)projectList.destroy();
 			
 			if(rMenu != null)
 			{
@@ -188,7 +213,7 @@ public class StartMenuScene extends AbstractScene{
 		private void createNewProject()
 		{
 			System.out.println("new project");
-		
+			
 			if(nameArea != null) nameArea.destroy();
 			nameArea = new NewProjectMenu(app, model, 0, 0, 440, 120);
 			nameArea.setPositionGlobal(new Vector3D(app.width/2, app.height/2));
@@ -213,7 +238,34 @@ public class StartMenuScene extends AbstractScene{
 			scene.getCanvas().addChild(projectList);
 			scene.getCanvas().setFrustumCulling(true); 
 			
+		/*	hMenu.destroy();
+			hMenu = null;
+			hMenu2 = new HexagonMenu(app, new Vector3D(app.getWidth()-LIB_WIDTH*2,550), menus2, 70);
+			scene.getCanvas().addChild(hMenu2);*/
+			
 			state = 3;
+		}
+		
+		private void cancelLoadFromExistingProject()
+		{
+			if(projectList != null) projectList.destroy();
+			if(nameArea != null) nameArea.destroy();
+		
+			//hMenu2.destroy();
+			
+			hMenu = new HexagonMenu(app, new Vector3D(app.getWidth()-LIB_WIDTH*2,550), menus, 70);
+			scene.getCanvas().addChild(hMenu);	
+			
+			/*if(hMenu2 == null)
+			{
+				hMenu = new HexagonMenu(app, new Vector3D(app.getWidth()-LIB_WIDTH*2,550), menus, 70);
+				scene.getCanvas().addChild(hMenu);	
+			}
+			else
+			{
+				hMenu2.destroy();
+				hMenu2 = null;	
+			}*/
 		}
 	
 	    private void createNewPage()
@@ -226,17 +278,8 @@ public class StartMenuScene extends AbstractScene{
 	    }
 	    		
 		private void openWidgetLibrary()
-		{
-			if ( widgets == null )
-			{
-				widgets = new WidgetLibrary(app, 0, 0, LIB_WIDTH, app.getHeight());
-				scene.getCanvas().addChild(widgets);
-			}
-			else
-			{
-				widgets.destroy();
-				widgets = null;	
-			}
+		{	
+			widgets.setVisible(!widgets.isVisible());
 		}
 		
 		private void openScenesLibrary()
@@ -254,10 +297,6 @@ public class StartMenuScene extends AbstractScene{
 			app.exit();
 	    }
 		
-		private void saveProject()
-	    {
-			model.saveCurrentProject(Project._path);
-	    }
 		
 		private void exportToPngOperation()
 	    {
@@ -309,4 +348,12 @@ public class StartMenuScene extends AbstractScene{
         frame.addChild(sceneTexture);
 	}
 
+	private void onDrawingMode()
+	{
+		MainDrawingScene scene = new MainDrawingScene(app,"Main drawing scene", widgets);
+		app.addScene(scene);
+		app.pushScene();
+		app.changeScene(scene);
+	}
+	
 }
