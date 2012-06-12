@@ -191,10 +191,9 @@ public class MainDrawingScene extends AbstractScene {
 							String date = sdf.format(Calendar.getInstance().getTime());
 							fileName = "perWidgets/" + date+".png";
 
-							try {
-								//à améliorer
-								Dimension drawingSize = new Dimension(pa.width-10, pa.height-10);
-								Rectangle screenRectangle = new Rectangle(drawingSize);
+							try {														
+								System.out.println("app x:" + pa.getLocationOnScreen().x + "\n" + "app y:" + pa.getLocationOnScreen().y);
+								Rectangle screenRectangle = new Rectangle(pa.getLocationOnScreen().x + 50, pa.getLocationOnScreen().y + 50, pa.width-120,pa.height-120);
 								Robot robot = new Robot();
 								BufferedImage image = robot.createScreenCapture(screenRectangle);
 								File f = new File(fileName);
