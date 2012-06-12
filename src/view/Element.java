@@ -168,6 +168,8 @@ public abstract class Element extends MTClipRectangle implements PropertyChangeL
 			el = new view.widget.List(applet, (model.widget.ListWidget) e);
 		else if ( e instanceof model.widget.ImgWidget )
 			el = new view.widget.Image(applet, (model.widget.ImgWidget) e);
+		else if ( e instanceof model.widget.PersonalWidget )
+			el = new view.widget.PerWidget(applet, (model.widget.PersonalWidget) e);
 		else if ( e instanceof model.widget.Widget )
 			el = new view.widget.Widget(applet, (model.widget.Widget) e);
 	

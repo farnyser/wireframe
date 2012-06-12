@@ -5,6 +5,8 @@ import java.beans.PropertyChangeSupport;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import model.widget.Widget;
+
 import utils.Slugger;
 
 public class Project implements Serializable
@@ -21,6 +23,11 @@ public class Project implements Serializable
 	 * The list of scenes
 	 */
 	private ArrayList<Page> _pageList;
+	
+	/**
+	 * The list of custom widgets
+	 */
+	private ArrayList<model.widget.PersonalWidget> _widgetList;
 	
 	/**
 	 * The project label slugged (for save)
@@ -43,6 +50,7 @@ public class Project implements Serializable
 		_sluggedLabel = Slugger.toSlug(_label);
 
 		_pageList = new ArrayList<Page>();
+		_widgetList = new ArrayList<model.widget.PersonalWidget>();
 	}
 	
 	/**
@@ -133,5 +141,16 @@ public class Project implements Serializable
 	public void resetListener()
 	{
 		_pcs = new PropertyChangeSupport(this);
+	}
+
+	public void addWidget(model.widget.PersonalWidget model) 
+	{
+		_updated = true;
+		_widgetList.add(model);
+	}
+
+	public ArrayList<model.widget.PersonalWidget> getWidgetList() 
+	{
+		return _widgetList;
 	}
 }

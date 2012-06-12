@@ -1,14 +1,10 @@
 package view;
 
-import java.awt.Dimension;
-import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.Robot;
-import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -181,9 +177,8 @@ public class MainDrawingScene extends AbstractScene {
 						private void addPerWidget() {
 							model.widget.PersonalWidget modelWigdet = new model.widget.PersonalWidget();
 							modelWigdet.setSize(200,200); 
-							view.widget.PerWidget widget = new view.widget.PerWidget(pa, modelWigdet,fileName);
-							widget.setImage(fileName);
-							MainDrawingScene.this.wigdets.addWidget(pa, widget);
+							modelWigdet.setTexture(fileName);
+							MainDrawingScene.this.wigdets.addWidget(modelWigdet);
 						}
 						private void saveFrame() {
 							

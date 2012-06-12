@@ -75,7 +75,7 @@ public class StartMenuScene extends AbstractScene{
 		this.getCanvas().addChild(pages);
 		
 		//default: create widget library 
-		this.widgets = new WidgetLibrary(app, 0, 0, LIB_WIDTH, app.getHeight());
+		this.widgets = new WidgetLibrary(app, 0, 0, LIB_WIDTH, app.getHeight(), model);
 		this.widgets.setVisible(false);
 		this.getCanvas().addChild(widgets);
 		
