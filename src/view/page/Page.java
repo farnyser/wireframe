@@ -19,6 +19,7 @@ import org.mt4j.util.math.Vector3D;
 
 import processing.core.PApplet;
 import view.Element;
+import view.Library;
 
 public class Page extends Element
 {
@@ -37,6 +38,12 @@ public class Page extends Element
 	public Page(Page p, Boolean create_new_model)
 	{
 		super(p,create_new_model);
+		
+		for ( PropertyChangeListener c : p.getViewNotifier().getPropertyChangeListeners() )
+		{
+			if ( c instanceof Library )
+				this.addListener(c);
+		}
 	}
 	
 	public model.Page getModel() 
@@ -197,11 +204,17 @@ public class Page extends Element
 		menu.sendToFront();
 	}
 	
+	public void fireDuplicate(model.Page model) 
+	{
+		this.getViewNotifier().firePropertyChange("duplicatedPage", null, model);
+	}
+
 	public void addListener(PropertyChangeListener listener)
 	{
+		_viewNotifier.removePropertyChangeListener(listener);
 		_viewNotifier.addPropertyChangeListener(listener);
 	}
-	
+
 	public void removeListener(PropertyChangeListener listener)
 	{
 		_viewNotifier.removePropertyChangeListener(listener);
@@ -217,9 +230,14 @@ public class Page extends Element
 		return _viewNotifier; 
 	}
 	
-	public void setIsLocked(boolean locked) {
+	public void setIsLocked(boolean locked) 
+	{
 		this.isLocked = locked;
+		this.content.setComposite(locked);
 	}
 	
-	public boolean getIsLocked() { return isLocked; }
+	public boolean getIsLocked() 
+	{ 
+		return isLocked; 
+	}
 }

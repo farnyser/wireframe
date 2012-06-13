@@ -4,6 +4,8 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.HashMap;
 
+import model.Page;
+
 import org.mt4j.components.visibleComponents.widgets.MTListCell;
 
 import processing.core.PApplet;
@@ -59,6 +61,11 @@ public class PageLibrary extends Library implements PropertyChangeListener
 		{
 			this.removeAllListElements();
 			this.initViewFromModel();
+		}
+		else if(ev.getPropertyName() == "duplicatedPage") 
+		{
+			System.out.println("duplicate");
+			this._application.getCurrentProject().addPage((Page) ev.getNewValue());
 		}
 		else if(ev.getPropertyName() == "newProject") 
 		{

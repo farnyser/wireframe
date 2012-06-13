@@ -35,6 +35,7 @@ public class PageMenu extends MTClipRectangle
 	protected MTClipRectangle topbar;
 	protected MTClipRectangle arrowDown;
 	protected MTClipRoundRect close;
+	protected MTClipRoundRect duplicate;
 	protected PApplet applet;
 	protected MTTextArea lockButton;
 	
@@ -117,6 +118,11 @@ public class PageMenu extends MTClipRectangle
 		arrowDown.rotateZ(arrowDown.getCenterPointLocal(), 45, TransformSpace.LOCAL);
 		
 		textArea.sendToFront();
+		
+		duplicate = new MTClipRoundRect(applet, 0, 0, 0, CLOSE_HEIGHT, CLOSE_HEIGHT, CLOSE_HEIGHT/2, CLOSE_HEIGHT/2);
+		duplicate.setFillColor(MTColor.BLUE);
+		duplicate.setPositionRelativeToParent(new Vector3D(this.getWidth()-3*CLOSE_HEIGHT/2 - 3*CLOSE_PADDING, CLOSE_HEIGHT/2 + CLOSE_PADDING, 0));
+		this.addChild(duplicate);
 		
 		close = new MTClipRoundRect(applet, 0, 0, 0, CLOSE_HEIGHT, CLOSE_HEIGHT, CLOSE_HEIGHT/2, CLOSE_HEIGHT/2);
 		close.setFillColor(MTColor.RED);
@@ -221,6 +227,33 @@ public class PageMenu extends MTClipRectangle
 		
 		arrowDown.removeAllGestureEventListeners();
 		
+		duplicate.removeAllGestureEventListeners();
+		duplicate.registerInputProcessor(new TapProcessor(this.applet));
+		duplicate.addGestureListener(TapProcessor.class, new IGestureEventListener()
+		{
+			public boolean processGestureEvent(MTGestureEvent ge) 
+			{
+				if (ge instanceof TapEvent) 
+				{
+					TapEvent te = (TapEvent) ge;
+					if (te.getTapID() == TapEvent.TAPPED) 
+					{
+						if ( view.page.PageMenu.this.getParent() != null )
+						{
+							view.page.Page page = new view.page.Page(
+								((view.page.Page)view.page.PageMenu.this.getParent()), 
+								true
+							);
+							view.page.PageMenu.this.getRoot().addChild(page);
+							((view.page.Page)view.page.PageMenu.this.getParent()).fireDuplicate(page.getModel());
+						}
+					}
+		        }
+				
+		        return false;
+			}
+		});
+		
 		close.removeAllGestureEventListeners(); // supprime les comportements par defaut (drag, zoom, ...)
 		close.registerInputProcessor(new TapProcessor(this.applet));
 		close.addGestureListener(TapProcessor.class, new IGestureEventListener()
@@ -243,6 +276,7 @@ public class PageMenu extends MTClipRectangle
 			}
 		});
 		
+
 		lockButton.removeAllGestureEventListeners();
 		lockButton.registerInputProcessor(new TapProcessor(this.applet));
 		lockButton.addGestureListener(TapProcessor.class, new IGestureEventListener()

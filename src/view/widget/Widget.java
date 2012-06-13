@@ -230,12 +230,13 @@ public class Widget extends view.Element
 				DragEvent de = (DragEvent)ge;
 				
 				MTComponent parent = Widget.this.getParent();
-				while(!(parent instanceof view.page.Page) && parent !=null) {
+				while(!(parent instanceof view.page.Page) && parent !=null) 
+				{
 					parent = parent.getParent();
 				}
 				
-				if(parent instanceof view.page.Page) {
-						
+				if(parent instanceof view.page.Page) 
+				{
 					view.page.Page thePage = (view.page.Page) parent;
 					if(thePage.getIsLocked() == true) {
 						return false;
