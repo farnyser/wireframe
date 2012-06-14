@@ -118,6 +118,7 @@ public class MainDrawingScene extends AbstractScene {
         eraserButton.setNoStroke(true);
         eraserButton.translate(new Vector3D(-50,65,0));
         eraserButton.setStrokeColor(new MTColor(0,0,0));
+        frame.addChild(eraserButton);
         
         // . Texture brush selector button
         PImage brushIcon = pa.loadImage(imagesPath + "paintbrush.png");
@@ -157,7 +158,6 @@ public class MainDrawingScene extends AbstractScene {
 				return true;
 			}
         });
-        frame.addChild(deleteButton);
         
         // Eraser button behaviour
         eraserButton.addGestureListener(TapProcessor.class, new IGestureEventListener() {
@@ -182,7 +182,7 @@ public class MainDrawingScene extends AbstractScene {
 				return true;
 			}
         });
-        frame.addChild(eraserButton);
+    
         
        
         

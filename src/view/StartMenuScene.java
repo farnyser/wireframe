@@ -23,7 +23,9 @@ import model.Project;
 import org.mt4j.AbstractMTApplication;
 import org.mt4j.components.visibleComponents.shapes.MTEllipse;
 import org.mt4j.components.visibleComponents.shapes.MTRectangle;
+import org.mt4j.components.visibleComponents.shapes.MTRoundRectangle;
 import org.mt4j.components.visibleComponents.widgets.MTSceneTexture;
+import org.mt4j.components.visibleComponents.widgets.buttons.MTImageButton;
 import org.mt4j.input.inputProcessors.IGestureEventListener;
 import org.mt4j.input.inputProcessors.MTGestureEvent;
 import org.mt4j.input.inputProcessors.componentProcessors.tapProcessor.TapEvent;
@@ -51,6 +53,7 @@ public class StartMenuScene extends AbstractScene{
 	private DrawSurfaceScene drawingScene;
 	private MTEllipse pencilBrush;	
 	private List<MenuItem> menus = new ArrayList<MenuItem>();
+	private String imagesPath = "drawingIcon/";
 	//private List<MenuItem> menus2 = new ArrayList<MenuItem>();
 	private int state = 0;
 	
@@ -78,6 +81,9 @@ public class StartMenuScene extends AbstractScene{
 		this.widgets = new WidgetLibrary(app, 0, 0, LIB_WIDTH, app.getHeight(), model);
 		this.widgets.setVisible(false);
 		this.getCanvas().addChild(widgets);
+		
+		
+		/** Hexagon menu **/
 		
 		PImage newPageIcon = app.loadImage("data/Plus.jpg");
 		
@@ -325,6 +331,36 @@ public class StartMenuScene extends AbstractScene{
         MTRectangle frame = new MTRectangle(app, app.width, app.height);
         this.getCanvas().addChild(frame);
         
+        /** Drawing Menu **/
+		// Create menu frame
+        MTRoundRectangle frameMenu = new MTRoundRectangle(app,90, app.getHeight()-150, 0, 220, 68, 25, 25);
+        frameMenu.setSizeXYGlobal(220, 68);
+        this.getCanvas().addChild(frameMenu);
+        // Menu buttons
+        // . Pen brush selector button
+        PImage freemodeIcon = app.loadImage(imagesPath + "freemode.png");
+        final MTImageButton freemodeButton = new MTImageButton(app, freemodeIcon);
+        freemodeButton.translate(new Vector3D(110,app.getHeight()-140,0));
+        freemodeButton.setNoStroke(false);
+        freemodeButton.setStrokeColor(new MTColor(0,0,0));
+        frameMenu.addChild(freemodeButton);
+        // . Pen brush selector button
+        PImage penIcon = app.loadImage(imagesPath + "pen.png");
+        final MTImageButton penButton = new MTImageButton(app, penIcon);
+        penButton.translate(new Vector3D(175,app.getHeight()-140,0));
+        penButton.setNoStroke(true);
+        penButton.setStrokeColor(new MTColor(0,0,0));
+        frameMenu.addChild(penButton);
+        // . Eraser button
+        PImage eraser = app.loadImage(imagesPath + "Kde_crystalsvg_eraser.png");
+        final MTImageButton eraserButton = new MTImageButton(app, eraser);
+        eraserButton.setNoStroke(true);
+        eraserButton.translate(new Vector3D(240,app.getHeight()-140,0));
+        eraserButton.setStrokeColor(new MTColor(0,0,0));
+        frameMenu.addChild(eraserButton);
+		
+        
+        // Canvas frame
         frame.setFillColor(new MTColor(200, 210, 215));
         
         //Create the scene in which we actually draw
@@ -334,8 +370,8 @@ public class StartMenuScene extends AbstractScene{
 		//Create pencil brush
 		pencilBrush = new MTEllipse(this.getMTApplication(), new Vector3D(7.5f, 7.5f,0), 7.5f, 7.5f, 60);
 		pencilBrush.setPickable(false);
-		pencilBrush.setNoFill(false);
-		pencilBrush.setNoStroke(false);
+		pencilBrush.setNoFill(true); // disabled at start-up
+		pencilBrush.setNoStroke(true); // disabled at start-up
 		pencilBrush.setDrawSmooth(true);
 		pencilBrush.setStrokeColor(new MTColor(0, 0, 0, 255));
 		pencilBrush.setFillColor(new MTColor(0, 0, 0, 255));
@@ -346,6 +382,10 @@ public class StartMenuScene extends AbstractScene{
         sceneTexture.getFbo().clear(true, 255, 255, 255, 0, true);
         sceneTexture.setStrokeColor(new MTColor(155,155,155));
         frame.addChild(sceneTexture);
+        
+        
+        /** Drawing menu behaviour **/
+        
 	}
 
 	private void onDrawingMode()
