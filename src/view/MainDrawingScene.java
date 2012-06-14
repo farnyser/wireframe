@@ -64,6 +64,7 @@ public class MainDrawingScene extends AbstractScene {
 		
 		//Create window frame
         MTRoundRectangle frame = new MTRoundRectangle(pa,-50, -50, 0, pa.width+100, pa.height+100,25, 25);
+        frame.setPickable(false); // fix the frame on the scene
         
         frame.setSizeXYGlobal(pa.width-10, pa.height-10);
         this.getCanvas().addChild(frame);
