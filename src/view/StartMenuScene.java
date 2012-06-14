@@ -87,7 +87,7 @@ public class StartMenuScene extends AbstractScene{
 		menus.add(new MenuItem("Project", new gestureListener("Project",this)));
 		menus.add(new MenuItem(newPageIcon, new gestureListener("New page",this)));
 		menus.add(new MenuItem("Exit", new gestureListener("Exit",this)));
-		menus.add(new MenuItem("Drawing", new gestureListener("Draw Widget",this)));
+		menus.add(new MenuItem("DrawWidget", new gestureListener("Draw Widget",this)));
 		menus.add(new MenuItem("Export", new gestureListener("Export",this)));
 		
 		//New Menu Items After clicking on Project
@@ -183,8 +183,8 @@ public class StartMenuScene extends AbstractScene{
 		private void openProject()
 		{
 			List<MenuItem> menuLoad = new ArrayList<MenuItem>();
-			menuLoad.add(new MenuItem("New projet", new gestureListener("New project",this.scene)));
-			menuLoad.add(new MenuItem("Existing projets", new gestureListener("Existing projects", this.scene)));	
+			menuLoad.add(new MenuItem("New project", new gestureListener("New project",this.scene)));
+			menuLoad.add(new MenuItem("Existing projects", new gestureListener("Existing projects", this.scene)));	
 			
 			if(state == 2 || state == 3)
 			{
