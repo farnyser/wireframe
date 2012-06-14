@@ -55,6 +55,7 @@ public class StartMenuScene extends AbstractScene{
 	private MTEllipse pencilBrush,eraserBrush,noBrush;	
 	private List<MenuItem> menus = new ArrayList<MenuItem>();
 	private String imagesPath = "drawingIcon/";
+	private MTSceneTexture sceneTexture;
 	//private List<MenuItem> menus2 = new ArrayList<MenuItem>();
 	private int state = 0;
 	
@@ -245,6 +246,9 @@ public class StartMenuScene extends AbstractScene{
 			scene.getCanvas().addChild(projectList);
 			scene.getCanvas().setFrustumCulling(true); 
 			
+			// Erase eventual previous drawing content
+			sceneTexture.getFbo().clear(true, 200, 210, 215, 0, true);		
+			
 		/*	hMenu.destroy();
 			hMenu = null;
 			hMenu2 = new HexagonMenu(app, new Vector3D(app.getWidth()-LIB_WIDTH*2,550), menus2, 70);
@@ -395,7 +399,7 @@ public class StartMenuScene extends AbstractScene{
 		
 		drawingScene.setBrush(noBrush); // disabled at start-up
 		
-		final MTSceneTexture sceneTexture = new MTSceneTexture(app, 0, 0, app.width, app.height, drawingScene);
+		sceneTexture = new MTSceneTexture(app, 0, 0, app.width, app.height, drawingScene);
         sceneTexture.getFbo().clear(true, 255, 255, 255, 0, true);
         sceneTexture.setStrokeColor(new MTColor(155,155,155));
         frame.addChild(sceneTexture);
