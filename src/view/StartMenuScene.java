@@ -436,8 +436,8 @@ public class StartMenuScene extends AbstractScene{
 					app.invokeLater(new Runnable() {
 						public void run() {
 							// Set color to white and a pencil brush
-							drawingScene.setBrushColor(pencilBrush.getStrokeColor());
 							drawingScene.setBrush(pencilBrush);
+							drawingScene.setBrushColor(MTColor.BLACK);
 							
 							// Highlight current button
 							eraserButton.setNoStroke(true);
@@ -458,8 +458,8 @@ public class StartMenuScene extends AbstractScene{
 					app.invokeLater(new Runnable() {
 						public void run() {
 							// Set color to white and a pencil brush
-							drawingScene.setBrushColor(eraserBrush.getStrokeColor());
 							drawingScene.setBrush(eraserBrush);
+							drawingScene.setBrushColor(new MTColor(200, 210, 215, 255));
 							
 							// Highlight current button
 							eraserButton.setNoStroke(false);

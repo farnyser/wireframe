@@ -168,7 +168,7 @@ public class DrawSurfaceScene extends AbstractScene {
 	}
 	
 	
-	public void setBrush(AbstractShape brush){
+	public void setBrush(final AbstractShape brush){
 		this.drawShape = brush;
 		this.localBrushCenter = drawShape.getCenterPointLocal();
 		this.brushWidthHalf = drawShape.getWidthXY(TransformSpace.LOCAL)/2f;
