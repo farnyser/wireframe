@@ -44,6 +44,7 @@ public class MainDrawingScene extends AbstractScene {
 	private WidgetLibrary wigdets;
 	private MTRectangle textureBrush;
 	private MTEllipse pencilBrush;
+	private MTColor currentColor;
 	private DrawSurfaceScene drawingScene;
 	private String imagesPath = "drawingIcon/";
 	
@@ -63,12 +64,16 @@ public class MainDrawingScene extends AbstractScene {
 		
 		//Create window frame
         MTRoundRectangle frame = new MTRoundRectangle(pa,-50, -50, 0, pa.width+100, pa.height+100,25, 25);
+        
         frame.setSizeXYGlobal(pa.width-10, pa.height-10);
         this.getCanvas().addChild(frame);
         //Create the scene in which we actually draw
         drawingScene = new DrawSurfaceScene(pa, "DrawSurface Scene");
         drawingScene.setClear(false);
-       
+        
+        // Default color
+        currentColor = new MTColor(0, 0, 0, 255);
+        
         //Create texture brush
         PImage brushImage = getMTApplication().loadImage(imagesPath + "brush1.png");
 		textureBrush = new MTRectangle(getMTApplication(), brushImage);
@@ -76,7 +81,7 @@ public class MainDrawingScene extends AbstractScene {
 		textureBrush.setNoFill(false);
 		textureBrush.setNoStroke(true);
 		textureBrush.setDrawSmooth(true);
-		textureBrush.setFillColor(new MTColor(0,0,0));
+		textureBrush.setFillColor(currentColor);
 		//Set texture brush as default
 		drawingScene.setBrush(textureBrush);
 		
@@ -86,8 +91,8 @@ public class MainDrawingScene extends AbstractScene {
 		pencilBrush.setNoFill(false);
 		pencilBrush.setNoStroke(false);
 		pencilBrush.setDrawSmooth(true);
-		pencilBrush.setStrokeColor(new MTColor(0, 0, 0, 255));
-		pencilBrush.setFillColor(new MTColor(0, 0, 0, 255));
+		pencilBrush.setStrokeColor(currentColor);
+		pencilBrush.setFillColor(currentColor);
 		
         //Create the frame/window that displays the drawing scene through a FBO
 //        final MTSceneTexture sceneWindow = new MTSceneTexture(0,0, pa, drawingScene);
@@ -97,59 +102,81 @@ public class MainDrawingScene extends AbstractScene {
         sceneTexture.setStrokeColor(new MTColor(155,155,155));
         frame.addChild(sceneTexture);
         
-        //Eraser button
-        PImage eraser = pa.loadImage(imagesPath + "Kde_crystalsvg_eraser.png");
-        MTImageButton b = new MTImageButton(pa, eraser);
-        b.setNoStroke(true);
-        b.translate(new Vector3D(-50,0,0));
-        b.addGestureListener(TapProcessor.class, new IGestureEventListener() {
-			public boolean processGestureEvent(MTGestureEvent ge) {
-				TapEvent te = (TapEvent)ge;
-				if (te.isTapped()){
-//					//As we are messing with opengl here, we make sure it happens in the rendering thread
-					pa.invokeLater(new Runnable() {
-						public void run() {
-							sceneTexture.getFbo().clear(true, 255, 255, 255, 0, true);						
-						}
-					});
-				}
-				return true;
-			}
-        });
-        frame.addChild(b);
         
-        //Pen brush selector button
+        // Drawing left menu buttons
+        // . Pen brush selector button
         PImage penIcon = pa.loadImage(imagesPath + "pen.png");
         final MTImageButton penButton = new MTImageButton(pa, penIcon);
         frame.addChild(penButton);
         penButton.translate(new Vector3D(-50f, 65,0));
         penButton.setNoStroke(true);
         penButton.setStrokeColor(new MTColor(0,0,0));
+        // . Eraser button
+        PImage eraser = pa.loadImage(imagesPath + "Kde_crystalsvg_eraser.png");
+        final MTImageButton eraserButton = new MTImageButton(pa, eraser);
+        eraserButton.setNoStroke(true);
+        eraserButton.translate(new Vector3D(-50,0,0));
+        eraserButton.setStrokeColor(new MTColor(0,0,0));
         
-        //Texture brush selector button
+        // . Texture brush selector button
         PImage brushIcon = pa.loadImage(imagesPath + "paintbrush.png");
         final MTImageButton brushButton = new MTImageButton(pa, brushIcon);
         frame.addChild(brushButton);
         brushButton.translate(new Vector3D(-50f, 130,0));
         brushButton.setStrokeColor(new MTColor(0,0,0));
+        
+        
+        // Eraser button behaviour
+        eraserButton.addGestureListener(TapProcessor.class, new IGestureEventListener() {
+			public boolean processGestureEvent(MTGestureEvent ge) {
+				TapEvent te = (TapEvent)ge;
+				if (te.isTapped()){
+//					//As we are messing with opengl here, we make sure it happens in the rendering thread
+					pa.invokeLater(new Runnable() {
+						public void run() {
+							//sceneTexture.getFbo().clear(true, 255, 255, 255, 0, true);	
+							// Set color to white and a pencil brush
+							drawingScene.setBrushColor(new MTColor(255,255,255));
+							drawingScene.setBrush(pencilBrush);
+							
+							// Highlight current button
+							eraserButton.setNoStroke(false);
+							penButton.setNoStroke(true);
+							brushButton.setNoStroke(true);
+						}
+					});
+				}
+				return true;
+			}
+        });
+        frame.addChild(eraserButton);
+        
+       
+        
+        //Texture brush selector button behaviour
         brushButton.addGestureListener(TapProcessor.class, new IGestureEventListener() {
 			public boolean processGestureEvent(MTGestureEvent ge) {
 				TapEvent te = (TapEvent)ge;
 				if (te.isTapped()){
 					drawingScene.setBrush(textureBrush);
+					drawingScene.setBrushColor(currentColor);
 					brushButton.setNoStroke(false);
+					eraserButton.setNoStroke(true);
 					penButton.setNoStroke(true);
 				}
 				return true;
 			}
         });
         
+        // Penbutton behaviour
         penButton.addGestureListener(TapProcessor.class, new IGestureEventListener() {
 			public boolean processGestureEvent(MTGestureEvent ge) {
 				TapEvent te = (TapEvent)ge;
 				if (te.isTapped()){
 					drawingScene.setBrush(pencilBrush);
+					drawingScene.setBrushColor(currentColor);
 					penButton.setNoStroke(false);
+					eraserButton.setNoStroke(true);
 					brushButton.setNoStroke(true);
 				}
 				return true;
@@ -247,7 +274,8 @@ public class MainDrawingScene extends AbstractScene {
 						colorWidget.setVisible(false);
 					}
 				}else{
-					drawingScene.setBrushColor(colorWidget.getSelectedColor());
+					currentColor = colorWidget.getSelectedColor();
+					drawingScene.setBrushColor(currentColor);
 				}
 				return false;
 			}
