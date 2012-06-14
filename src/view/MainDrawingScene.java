@@ -108,23 +108,55 @@ public class MainDrawingScene extends AbstractScene {
         PImage penIcon = pa.loadImage(imagesPath + "pen.png");
         final MTImageButton penButton = new MTImageButton(pa, penIcon);
         frame.addChild(penButton);
-        penButton.translate(new Vector3D(-50f, 65,0));
+        penButton.translate(new Vector3D(-50f, 130,0));
         penButton.setNoStroke(true);
         penButton.setStrokeColor(new MTColor(0,0,0));
         // . Eraser button
         PImage eraser = pa.loadImage(imagesPath + "Kde_crystalsvg_eraser.png");
         final MTImageButton eraserButton = new MTImageButton(pa, eraser);
         eraserButton.setNoStroke(true);
-        eraserButton.translate(new Vector3D(-50,0,0));
+        eraserButton.translate(new Vector3D(-50,65,0));
         eraserButton.setStrokeColor(new MTColor(0,0,0));
         
         // . Texture brush selector button
         PImage brushIcon = pa.loadImage(imagesPath + "paintbrush.png");
         final MTImageButton brushButton = new MTImageButton(pa, brushIcon);
         frame.addChild(brushButton);
-        brushButton.translate(new Vector3D(-50f, 130,0));
+        brushButton.translate(new Vector3D(-50f, 195,0));
         brushButton.setStrokeColor(new MTColor(0,0,0));
         
+        // . Save to file button
+        PImage floppyIcon = pa.loadImage(imagesPath + "floppy.png");
+        final MTImageButton floppyButton = new MTImageButton(pa, floppyIcon);
+        frame.addChild(floppyButton);
+        floppyButton.translate(new Vector3D(-50f, 260,0));
+        floppyButton.setNoStroke(true);
+     
+        // . Delete button
+        PImage deleteIcon = pa.loadImage(imagesPath + "delete.png");
+        final MTImageButton deleteButton = new MTImageButton(pa, deleteIcon);
+        frame.addChild(deleteButton);
+        deleteButton.translate(new Vector3D(-50f, 0,0));
+        deleteButton.setNoStroke(true);
+        
+        
+        // Delete button behaviour
+        deleteButton.addGestureListener(TapProcessor.class, new IGestureEventListener() {
+			public boolean processGestureEvent(MTGestureEvent ge) {
+				TapEvent te = (TapEvent)ge;
+				if (te.isTapped()){
+					//As we are messing with opengl here, we make sure it happens in the rendering thread
+					pa.invokeLater(new Runnable() {
+						public void run() {
+							// Replace background with white
+							sceneTexture.getFbo().clear(true, 255, 255, 255, 0, true);		
+						}
+					});
+				}
+				return true;
+			}
+        });
+        frame.addChild(deleteButton);
         
         // Eraser button behaviour
         eraserButton.addGestureListener(TapProcessor.class, new IGestureEventListener() {
@@ -184,12 +216,7 @@ public class MainDrawingScene extends AbstractScene {
         });
                
         
-        //Save to file button
-        PImage floppyIcon = pa.loadImage(imagesPath + "floppy.png");
-        final MTImageButton floppyButton = new MTImageButton(pa, floppyIcon);
-        frame.addChild(floppyButton);
-        floppyButton.translate(new Vector3D(-50f, 260,0));
-        floppyButton.setNoStroke(true);
+        //Save to file button behaviour
         floppyButton.addGestureListener(TapProcessor.class, new IGestureEventListener() {
 			public boolean processGestureEvent(MTGestureEvent ge) {
 				TapEvent te = (TapEvent)ge;
@@ -265,7 +292,7 @@ public class MainDrawingScene extends AbstractScene {
         PImage colPick = pa.loadImage(imagesPath + "colorcircle.png");
 //        final MTColorPicker colorWidget = new MTColorPicker(0, pa.height-colPick.height, colPick, pa);
         final MTColorPicker colorWidget = new MTColorPicker(pa, 0, 0, colPick);
-        colorWidget.translate(new Vector3D(0f, 135,0));
+        colorWidget.translate(new Vector3D(0f, 230,0));
         colorWidget.setStrokeColor(new MTColor(0,0,0));
         colorWidget.addGestureListener(DragProcessor.class, new IGestureEventListener() {
 			public boolean processGestureEvent(MTGestureEvent ge) {
@@ -286,7 +313,7 @@ public class MainDrawingScene extends AbstractScene {
         PImage colPickIcon = pa.loadImage(imagesPath + "ColorPickerIcon.png");
         MTImageButton colPickButton = new MTImageButton(pa, colPickIcon);
         frame.addChild(colPickButton);
-        colPickButton.translate(new Vector3D(-50f, 195,0));
+        colPickButton.translate(new Vector3D(-50f, 320,0));
         colPickButton.setNoStroke(true);
         colPickButton.addGestureListener(TapProcessor.class, new IGestureEventListener() {
 			public boolean processGestureEvent(MTGestureEvent ge) {
@@ -308,7 +335,7 @@ public class MainDrawingScene extends AbstractScene {
         slider.setValue(1.0f);
         frame.addChild(slider);
         slider.rotateZ(new Vector3D(), 90, TransformSpace.LOCAL);
-        slider.translate(new Vector3D(-7, 325));
+        slider.translate(new Vector3D(-7, 425));
         slider.setStrokeColor(new MTColor(0,0,0));
         slider.setFillColor(new MTColor(220,220,220));
         slider.getKnob().setFillColor(new MTColor(70,70,70));
