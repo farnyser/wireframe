@@ -29,6 +29,7 @@ import org.mt4j.components.visibleComponents.widgets.buttons.MTImageButton;
 import org.mt4j.input.inputProcessors.IGestureEventListener;
 import org.mt4j.input.inputProcessors.MTGestureEvent;
 import org.mt4j.input.inputProcessors.componentProcessors.tapProcessor.TapEvent;
+import org.mt4j.input.inputProcessors.componentProcessors.tapProcessor.TapProcessor;
 import org.mt4j.input.inputProcessors.globalProcessors.CursorTracer;
 import org.mt4j.sceneManagement.AbstractScene;
 import org.mt4j.util.MTColor;
@@ -51,7 +52,7 @@ public class StartMenuScene extends AbstractScene{
 	private NewProjectMenu nameArea = null;
 	private ExistProjectMenu projectList = null;
 	private DrawSurfaceScene drawingScene;
-	private MTEllipse pencilBrush;	
+	private MTEllipse pencilBrush,eraserBrush,noBrush;	
 	private List<MenuItem> menus = new ArrayList<MenuItem>();
 	private String imagesPath = "drawingIcon/";
 	//private List<MenuItem> menus2 = new ArrayList<MenuItem>();
@@ -367,16 +368,32 @@ public class StartMenuScene extends AbstractScene{
         drawingScene = new DrawSurfaceScene(app, "DrawSurface Scene");
         drawingScene.setClear(false);
 		
-		//Create pencil brush
+		// Create pencil brush
 		pencilBrush = new MTEllipse(this.getMTApplication(), new Vector3D(7.5f, 7.5f,0), 7.5f, 7.5f, 60);
 		pencilBrush.setPickable(false);
-		pencilBrush.setNoFill(true); // disabled at start-up
-		pencilBrush.setNoStroke(true); // disabled at start-up
+		pencilBrush.setNoFill(false); 
+		pencilBrush.setNoStroke(false); 
 		pencilBrush.setDrawSmooth(true);
 		pencilBrush.setStrokeColor(new MTColor(0, 0, 0, 255));
 		pencilBrush.setFillColor(new MTColor(0, 0, 0, 255));
 		
-		drawingScene.setBrush(pencilBrush);
+		// Create eraser brush
+		eraserBrush = new MTEllipse(this.getMTApplication(), new Vector3D(7.5f, 7.5f,0), 20.0f, 20.0f, 60);
+		eraserBrush.setPickable(false);
+		eraserBrush.setNoFill(false); 
+		eraserBrush.setNoStroke(false); 
+		eraserBrush.setDrawSmooth(true);
+		eraserBrush.setStrokeColor(new MTColor(200, 210, 215, 255));
+		eraserBrush.setFillColor(new MTColor(200, 210, 215, 255));
+		
+		// No Brush (while freemode activated)
+		noBrush =  new MTEllipse(this.getMTApplication(), new Vector3D(7.5f, 7.5f,0), 7.5f, 7.5f, 60);
+		noBrush.setPickable(false);
+		noBrush.setNoFill(true); // disable drawing
+		noBrush.setNoStroke(true); // disabled drawing
+		noBrush.setDrawSmooth(true);
+		
+		drawingScene.setBrush(noBrush); // disabled at start-up
 		
 		final MTSceneTexture sceneTexture = new MTSceneTexture(app, 0, 0, app.width, app.height, drawingScene);
         sceneTexture.getFbo().clear(true, 255, 255, 255, 0, true);
@@ -385,6 +402,73 @@ public class StartMenuScene extends AbstractScene{
         
         
         /** Drawing menu behaviour **/
+        // Freemode button behaviour
+        freemodeButton.addGestureListener(TapProcessor.class, new IGestureEventListener() {
+			public boolean processGestureEvent(MTGestureEvent ge) {
+				TapEvent te = (TapEvent)ge;
+				if (te.isTapped()){
+					//As we are messing with opengl here, we make sure it happens in the rendering thread
+					app.invokeLater(new Runnable() {
+						public void run() {
+							// Set color to white and a pencil brush
+							drawingScene.setBrush(noBrush);
+							
+							// Highlight current button
+							eraserButton.setNoStroke(true);
+							penButton.setNoStroke(true);
+							freemodeButton.setNoStroke(false);
+						}
+					});
+				}
+				return true;
+			}
+        });
+        // Pen button behaviour
+        penButton.addGestureListener(TapProcessor.class, new IGestureEventListener() {
+			public boolean processGestureEvent(MTGestureEvent ge) {
+				TapEvent te = (TapEvent)ge;
+				if (te.isTapped()){
+					//As we are messing with opengl here, we make sure it happens in the rendering thread
+					app.invokeLater(new Runnable() {
+						public void run() {
+							// Set color to white and a pencil brush
+							drawingScene.setBrushColor(pencilBrush.getStrokeColor());
+							drawingScene.setBrush(pencilBrush);
+							
+							// Highlight current button
+							eraserButton.setNoStroke(true);
+							penButton.setNoStroke(false);
+							freemodeButton.setNoStroke(true);
+						}
+					});
+				}
+				return true;
+			}
+        });
+        // Eraser button behaviour
+        eraserButton.addGestureListener(TapProcessor.class, new IGestureEventListener() {
+			public boolean processGestureEvent(MTGestureEvent ge) {
+				TapEvent te = (TapEvent)ge;
+				if (te.isTapped()){
+					//As we are messing with opengl here, we make sure it happens in the rendering thread
+					app.invokeLater(new Runnable() {
+						public void run() {
+							// Set color to white and a pencil brush
+							drawingScene.setBrushColor(eraserBrush.getStrokeColor());
+							drawingScene.setBrush(eraserBrush);
+							
+							// Highlight current button
+							eraserButton.setNoStroke(false);
+							penButton.setNoStroke(true);
+							freemodeButton.setNoStroke(true);
+						}
+					});
+				}
+				return true;
+			}
+        });
+    
+        
         
 	}
 

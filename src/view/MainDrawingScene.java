@@ -138,8 +138,15 @@ public class MainDrawingScene extends AbstractScene {
         PImage deleteIcon = pa.loadImage(imagesPath + "delete.png");
         final MTImageButton deleteButton = new MTImageButton(pa, deleteIcon);
         frame.addChild(deleteButton);
-        deleteButton.translate(new Vector3D(-50f, 0,0));
+        deleteButton.translate(new Vector3D(-45f, 0,0));
         deleteButton.setNoStroke(true);
+        
+        // . Go back button
+        PImage backIcon = pa.loadImage(imagesPath + "back.png");
+        final MTImageButton backButton = new MTImageButton(pa, backIcon);
+        frame.addChild(backButton);
+        backButton.translate(new Vector3D(pa.width,-40,0));
+        backButton.setNoStroke(true);
         
         
         // Delete button behaviour
@@ -183,7 +190,21 @@ public class MainDrawingScene extends AbstractScene {
 			}
         });
     
-        
+        // Back button behaviour
+        backButton.addGestureListener(TapProcessor.class, new IGestureEventListener() {
+			public boolean processGestureEvent(MTGestureEvent ge) {
+				TapEvent te = (TapEvent)ge;
+				if (te.isTapped()){
+					//As we are messing with opengl here, we make sure it happens in the rendering thread
+					pa.invokeLater(new Runnable() {
+						public void run() {
+							pa.popScene(); // Quit current scene
+						}
+					});
+				}
+				return true;
+			}
+        });
        
         
         //Texture brush selector button behaviour
