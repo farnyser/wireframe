@@ -142,7 +142,7 @@ public class MainDrawingScene extends AbstractScene {
         deleteButton.setNoStroke(true);
         
         // . Go back button
-        PImage backIcon = pa.loadImage(imagesPath + "back.png");
+        PImage backIcon = pa.loadImage(imagesPath + "return.jpg");
         final MTImageButton backButton = new MTImageButton(pa, backIcon);
         frame.addChild(backButton);
         backButton.translate(new Vector3D(pa.width,-40,0));
