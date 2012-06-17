@@ -27,3 +27,10 @@ Nous avons proposé notre projet sujet à l'équipe enseignantes : une applicati
 Le but est de permettre aux concepteurs d'interface de penser l'ergonomie globale et l'enchaînement des écrans. Ainsi, ils pourront à la fois discuter de leur travail au sein de leur équipe et le présenter au client très visuellement.
 
 <a href="#top">Retour en haut</a>
+
+<div id="lesite"></div>
+Ce que vous trouverez sur ce site
+=================================
+Vous trouverez sur ce site l'ensemble des documents relatifs au projet : les rapports et le code source.
+
+<a href="#top">Retour en haut</a>
